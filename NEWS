@@ -1,0 +1,43 @@
+New changes in ecochange V1.3:
+
+New function "getrsp" replaces previous
+function "FCPolygon" in old package "forestChange". The function can
+download now several ecological remote sensing products, see
+package documentation.
+
+New function "rsp2ebv" replaces previous functions
+"FCPolygon","CCPolygon", and "FCMosaic" in old package "forestChange",
+see the package documentation.
+
+New function "deforest" replaces previous function "FCMask" in old
+package "forestChange", see the package documentation.
+
+
+New changes in forestChange V1.0:
+
+Dependence "SDMTools" has been replace by "landscapemetrics".
+
+New functions "barplot.EBVstats", "CCPolygon", "EBVMask", "EBVstats",
+and "FCMask" has been added to the package, see the package
+documentation.
+
+Changes in function "plot.EBVmetric": New multi-panel plot has been created.
+
+New changes in forestChange V0.6:
+
+Changes in function "FCPolygon": New argument 'url' has been added to
+the function, see manual of the package.
+
+New changes in forestChange V0.5:
+
+Changes in function "GFCurls": 'readTable' is implemented changing two
+defaults: 'encoding = latin1' and 'skipNul = TRUE'.
+
+New changes in forestChange V0.4:
+
+Changes in function "GFCurls": A friendly message is printed if there
+is no internet connection. Besides, routines for processing URLs were
+changed implementing the functions "read_html" (package "curl"), and
+"html_nodes" and "html_attr" (package "rvest"). Finally, This function
+uses now the system of the machine ("Windows", "Linux") to change the
+encoding argument in "read.table" ("unknown", "UTF-8").

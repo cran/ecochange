@@ -1,0 +1,25 @@
+[general]
+creator=R package 'raster'
+created=2020-09-15 13:59:49
+[georeference]
+nrows=64
+ncols=45
+xmin=548621.329819352
+ymin=115153.019511063
+xmax=549971.329819352
+ymax=117073.019511063
+projection=+proj=utm +zone=18 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs
+[data]
+datatype=FLT4S
+byteorder=little
+nbands=7
+bandorder=BIL
+minvalue=0:0:0:0:8:3:0
+maxvalue=100:19:86:86:220:211:1
+nodatavalue=-3.4e+38
+[legend]
+legendtype=
+values=
+color=
+[description]
+layername=treecover2000:lossyear:TC_2000:TC_2005:TC_2010:TC_2015:nigricollis
