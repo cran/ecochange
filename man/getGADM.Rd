@@ -18,18 +18,17 @@ printed.}
 indicating any of the levels of administrative
 subdivisions in \code{GADM} (\code{0=country},
 \code{1=first level of subdivision}, and
-\code{2=second level of subdivision}).}
+\code{2=second level of subdivision})}
   \item{country}{\code{character}. \code{ISO} code specifying
 a \code{country}. Default \code{'COL'}}
   \item{path}{\code{character}. Path name indicating where
-the unit will be stored.Default
-\code{tempdir()}.}
+the unit will be stored. Default stores the data in a temporary directory}
 }
 
 \value{\code{SpatialPolygonsDataFrame} or \code{character} vector of
 \code{GADM} units..}
 \references{\href{https://gadm.org/}{https://gadm.org/}}
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut]}
+\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
 
 
 
@@ -37,9 +36,9 @@ the unit will be stored.Default
 \examples{
 ## Printing municipalities of Colombia:    
 
-     \donttest{
-         muni <- getGADM()
-         head(muni)
-     }
+    \donttest{
+        muni <- getGADM()
+        head(muni)
+    }
 
 }

@@ -11,8 +11,10 @@ EBVstats <- structure(function #EBV Stats
     ... ##<<Additional arguments in \code{cellStats}
 
 ){
-    if(is.null(ccp))
-        return(NULL)
+    if(is.logical(ccp)){
+        class(ccp) <- append('EBVstats', class(ccp))
+        return(ccp)
+    }
     if(missing(stats))
         stats <- c('min','mean', 'max', 'sd', 'skew')
     tyr <- names(ccp)
@@ -41,9 +43,12 @@ EBVstats <- structure(function #EBV Stats
     ## deforested:
 
     suppressWarnings(
-        def <- deforest(amazon, names(amazon)[grepl('TC', names(amazon))],
-                        ebv.vals = 0:100,
-                        remnant.areas = TRUE, keep.ebv = TRUE, mc.cores = 2)
+    def <- echanges(amazon, eco = 'TC',
+                    change = 'lossyear',
+                    eco_range = c(1,80),
+                    get_unaffected = TRUE,
+                    binary_output = FALSE,
+                    mc.cores = 2)
     )
 
     ## Deforestation Statistics:

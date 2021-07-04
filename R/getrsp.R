@@ -63,8 +63,10 @@ getrsp <- structure(function #Get remote sensing product
     on.exit(options(old), add = TRUE)
     class. <- 'getrsp'
     if(missing(path)){
-        dir.create(file.path(tempdir(),'ecochange'))
-        path  <- file.path(tempdir(), 'ecochange')}
+        ecodir <- file.path(tempdir(),'ecochange')
+        if(!file.exists(ecodir))
+        dir.create(ecodir)
+        path  <- ecodir}
     if(inherits(roi, getOption('inh')[3:4])){
         roi. <- roi
         roi <- getGADM(roi,..., path = path)
@@ -78,15 +80,30 @@ getrsp <- structure(function #Get remote sensing product
     urt. <- suppressMessages(
         unlist(get_EOURL(roi, lyrs, path = path, verify.web = verify.web),
                use.names = FALSE))# <-
+    lsRoi <- list2env(list(roi = roi))
+    if(is.null(urt.)){
+        ps <- paste(lyrs, collapse = '|')
+        indir <- grep(ps,dir(path))
+        if(length(indir) == 0){
+            stop("'lyrs' can not be retrieved")}
+        else{
+                flcls <- file.path(path, dir(path)[indir])
+                class(flcls) <- append(class(flcls),class.)
+                ## print("'lyrs' already stored in path:")
+                ## print(flcls)
+                attributes(flcls) <- c(attributes(flcls), env = lsRoi)
+                return(flcls)}
+    }
     urt1 <- urt.[!basename(urt.)%in%dir(path)]
     urt2 <- urt.[basename(urt.)%in%dir(path)]
-    if(length(urt2) != 0){
-        print('Data already retrieved:')
-        print(file.path(path,basename(urt2)))}
+    ## if(length(urt2) != 0){
+    ##     print("'lyrs' already retrieved:")
+    ##     print(file.path(path,basename(urt2)))}
     if(length(urt1) == 0){
         flcls <- file.path(path,basename(urt.))
-        class(flcls) <- append(class(flcls),class.)
-        return(flcls)}
+        attributes(flcls) <- c(attributes(flcls), env = lsRoi)
+        class(flcls) <- append(class(flcls), class.)
+   return(flcls)}
     if(length(urt1) != 0){
         urt. <- urt1}
     fl <- file.path(path, basename(urt.))
@@ -126,6 +143,7 @@ getrsp <- structure(function #Get remote sensing product
     docs <- file.path(path,basename(c(docs, urt2)))
     names(docs) <- NULL
     class(docs) <- append(class(docs),class.)
+    attributes(docs) <- c(attributes(docs), env = lsRoi)
     return(docs)
 ### Path names of the remote sensing products just retrieved, or
 ### character lists suggesting GADM units/Global Products that can be
@@ -135,10 +153,12 @@ getrsp <- structure(function #Get remote sensing product
 
     ## Warnings from GDAL/PROJ are suppressed.
 
-    ## A Global Surface Water layer ('seasonality') covering the extent of a
-    ## Colombian municipality Cartagena del Chairá is retrieved:
+    ## Polygon of the Colombian municipality of Cartagena del Chairá:
         load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
+    ## A Global Surface Water layer ('seasonality') which covers the
+    ## extent of the polygon is retrieved:
+    
     ## \donttest{
     ## suppressWarnings(
     ## rsp_cchaira <- getrsp(roi = cchaira_roi,

@@ -1,8 +1,8 @@
 sampleIndicator <- structure(function #Sample Indicator 
-### This function can divide Essential Biodiversity Variables into
-### fixed-size grids and calculate biodiversity indicators in the
-### grids. To compute indicators avoiding the grid sampling
-### procedure see \code{\link{gaugeIndicator}}
+### This function can sample biodiversity indicators in equally spaced
+### grids disctributed across Earth Observation Variables. To compute
+### indicators avoiding the grid sampling procedure see
+### \code{\link{gaugeIndicator}}
 
                       ##references<< {Hesselbarth, M. H., Sciaini,
                       ##M., With, K. A., Wiegand, K., & Nowosad,
@@ -28,53 +28,61 @@ sampleIndicator <- structure(function #Sample Indicator
 (
         roi = NULL, ##<<\code{Raster*}; or
                     ##\code{SpatialPolygonsDataFrame}; or
-                    ##\code{character}; or \code{NULL}. Raster object such as
-                    ##these produced by \code{\link{rsp2ebv}} and
-                    ##\code{\link{deforest}}; or region of interest
+                    ##\code{character}; or \code{NULL}. Raster object
+                    ##such as these produced by
+                    ##\code{\link{echanges}}; or region of interest
                     ##(\code{roi}). The \code{roi} can be whether 1) a
                     ##polygon geometry; or 2) the name of a
                     ##\code{GADM} unit (see \code{\link{getGADM}}); or
                     ##3) a \code{NULL} value. Default \code{NULL}
                     ##makes the function to print a list of
                     ##\code{GADM} units.
-    ..., ##<<If \code{roi} is not a \code{Raster*} then additional
-         ##arguments in \code{\link{rsp2ebv}} can be specified here.
-    ind = 'condent', ##<<\code{character}. Indicator. This can be
-                     ##cohesion (\code{'cohesion'}), conditional
-                     ##entropy (\code{'condent'}), perimeter-area
-                     ##fractal dimension (\code{'condent'}), among
-                     ##other, see package
-                     ##\code{\link{landscapemetrics}}. Default
-                     ##computes conditional entropy \code{'condent'}.
-    min = 1, ##<<\code{numeric}. Minimum cell value in the
-             ##layers. This value is used to subset the data before it
-             ##is reclassified, see argument \code{'classes'}
-             ##below. Default \code{1}
-    max = 100, ##<<\code{numeric}. Maximum cell value in the
-             ##layers. This value is used to subset the data before it
-             ##is reclassified, see argument \code{'classes'}
-             ##below. Default \code{100}
-    classes = 5, ##<<\code{numeric}; or \code{NULL}. Number of classes
-                 ##between \code{1-30} used to reclassify the
+    ..., ##<<If \code{roi} is a \code{polygon} then additional
+         ##arguments in \code{\link{echanges}} can be specified here.
+    metric = 'condent', ##<<\code{character}. Indicator. This can be
+                        ##cohesion (\code{'cohesion'}), conditional
+                        ##entropy (\code{'condent'}), perimeter-area
+                        ##fractal dimension (\code{'pafrac'}), among
+                        ##others, see package
+                        ##\code{\link{list_lsm}}. Default
+                        ##\code{'condent'}.
+    classes = 5, ##<<\code{numeric}; or \code{NULL}. Number of evenly
+                 ##spaced classes used to reclassify the
                  ##layers. Default \code{5}. If \code{NULL} then the
                  ##layers are not reclassified.
-    side, ##<<\code{numeric}. The side of the sampling grid
-          ##(\code{m}). If this is not specified, the function tries
-          ##to find the maximum \code{side} length that allows splitting the
-          ##layer extents into \code{n} suitable grids.
-    perc. = 15, ##<<\code{numeric}. Minimum percentage of features per
-                ##grid. Grids with lower percentages than this value are set
-                ##to \code{NA}.
+    min = 1, ##<<\code{numeric}. If \code{classes != NULL} then
+             ##minimum cell value in the layers. Default \code{1}
+    max = 100, ##<<\code{numeric}. If \code{classes != NULL} then
+               ##maximum cell value in the layers. Default \code{100}
+    side, ##<<\code{numeric}. Side for the sampling grids
+          ##(\code{m}). If missing the function tries to find the a
+          ##minimum number of grids that samples at least a non-NA
+          ##indicator.
+    smp_lsm = list(level = 'landscape'), ##<<\code{List}. Additional
+                                         ##arguments in
+                                         ##\code{\link{sample_lsm}}
     mc.cores = round(detectCores()*0.6,0) ##<<\code{numeric}. The
                                           ##number of cores. Default
                                           ##uses 60 percent of the
                                           ##cores.
 ) {
-    if(inherits(roi, getOption('inh')[c(1,3:4)])){
+    isLayer <- 'lyrs'%in%names(list(...))
+    if(isLayer)
+        isLayer <- is.null(list(...)$'lyrs')
+
+    if(inherits(roi, getOption('inh'))|is.logical(roi)){
         roi. <- roi
-        roi <- rsp2ebv(roi,...)
-        if(is.null(roi.))
-            return(roi)}
+        ## roi <- win_echanges(roi,mc.cores = mc.cores, ...)
+        roi <- echanges(roi,mc.cores = mc.cores, ...)
+        if(is.null(roi.)|is.logical(roi.))
+            return(roi)
+        if(isLayer)
+            return(roi)
+    }
+    
+    
+    nm. <- names(roi)
+    ## return(roi)
     nm. <- names(roi)
     if(!is.null(classes)){
     recl.m <- recMatrix(min:max, classes)
@@ -88,7 +96,8 @@ sampleIndicator <- structure(function #Sample Indicator
         dff <- diff(extent(roi)[1:2])
         side <- dff*sdc[order(sdc, decreasing = TRUE)]
         recr.fnrs <- function(x){
-            if(all(is.finite(fnrs(x)@'data'@'max'))) return(min(res(fnrs(x))))
+            if(all(is.finite(fnrs(x)@'data'@'max')))
+                return(min(res(fnrs(x))))
             else return(recr.fnrs(x + 1))}
         side <- recr.fnrs(side)
         side <- rep(side,2)}
@@ -102,19 +111,19 @@ sampleIndicator <- structure(function #Sample Indicator
     roi <- raster::as.list(roi)
     if(!getOption('isWin')){
         marg[['mc.cores']] <- mc.cores}
-    ## marg. <- c(list(FUN = function(w,z, ...)
-    ##     sample_lsm(landscape = w, y = z,
-    ##                ...),
-    ##     w = roi,
-    ##     z = r2pol,
-    ##     ...), marg)
-    marg. <- c(list(FUN = function(w,z)
-        sample_lsm(landscape = w, y = z,
-                   level = 'landscape',
-                   metric = ind),
-        w = roi,
-        z = r2pol), marg)
+
+    fn_smp_lsm <- function(w,z, metric, smp_lsm){
+        lst2 <- c(list(landscape = w, y = z, metric = metric), smp_lsm)
+        return(lst2)}
+    args <- Map(function(w,z)
+        fn_smp_lsm(w, z, metric, smp_lsm), roi, r2pol)
+    marg. <- c(list(FUN = function(x)
+        do.call('sample_lsm', x),
+        x = args), marg)
     myMetric <- do.call(getOption('fapp'), marg.)
+    if(any(is.character(myMetric))){
+        stop(myMetric)}
+
     rasterizeMetric <- function(x,w,z, val = 'value'){
         spl1 <- as.data.frame(x)
         rstt <- rasterize(w, z, field = spl1[,val])
@@ -127,29 +136,36 @@ sampleIndicator <- structure(function #Sample Indicator
     return(rspr)
 ### \code{Raster*}.
 } , ex=function() {
+
     ## Warnings from GDAL/PROJ are suppressed.
 
-    ## Brick with structural Essential Biodiversity Variables covering the
-    ## extent of a location in the northern Amazon basin (Colombia):
-
+    ## RasterBrick of structural Essential Biodiversity Variables
+    ## covering the extent of a location in the northern Amazon basin
+    ## (Colombia) is imported:
     path. <- system.file('amazon.grd',package = 'ecochange')
     amazon <- suppressWarnings(brick(path.))
     
-    ## Tree-cover layers in the 'amazon' brick are both formatted and
-    ## deforested:
-
+    ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
+    ## brick are computed:
     suppressWarnings(
-        def <- deforest(amazon, names(amazon)[grepl('TC', names(amazon))],
-                        ebv.vals = 0:100,
-                        remnant.areas = TRUE, keep.ebv = TRUE, mc.cores = 2)
+    def <- echanges(amazon, eco = 'TC',
+                    change = 'lossyear',
+                    eco_range = c(1,80),
+                    get_unaffected = TRUE,
+                    binary_output = FALSE,
+                    mc.cores = 2)
     )
 
-    ## Conditional entropy is sampled along the deforested layers using
-    ## cell sides of 300m:
+
+    plotebv(amazon)
+
+    ## Function 'sampleIndicator' is implemented to sample a metric of
+    ## conditional entropy (default):
+
     suppressWarnings(
-    condent <- sampleIndicator(def, side = 300, mc.cores = 2)
+        def_condent <- sampleIndicator(def, side = 400, mc.cores = 2)
     )
-    suppressWarnings(
-        plotebv(condent)
-        )
+
+    plotebv(def_condent)
+
 })

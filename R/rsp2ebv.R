@@ -61,34 +61,44 @@ rsp2ebv <- structure(function #Remote Sensing Product to EBV
     sr, ##<< \code{character}. \code{PROJ.4} description of the target
         ##coordinate reference system. If missing then the target
         ##layers are projected to metric system \code{UTM}.
-    ofr = c(30,30) ##<< \code{numeric}. \code{c(xres,yres)}.  Output
+    ofr = c(30,30), ##<< \code{numeric}. \code{c(xres,yres)}.  Output
                    ##file resolution (in target georeferenced
-                   ##units). Default \code{c(30,30)} m2.
+    ##units). Default \code{c(30,30)} m2.
+    mc.cores = round(detectCores()*0.6,0) ##<<\code{numeric}. The
+                                          ##number of cores. Default
+                                          ##uses around 60 percent of
+                                          ##the cores.
+
 ) {
-    mssp <- missing(path)
-    if(mssp){
-        dir.create(file.path(tempdir(),'ecochange'))
-        path  <- file.path(tempdir(), 'ecochange')}
-    ## if(mssp&!is.null(getOption('path')))
-    ##     path  <- getOption('path')
-    if(inherits(roi, getOption('inh')[3:4])){
+    # unlink(file.path(path,'ebv'), recursive = TRUE)
+    # unlink(file.path(path,'ecochange'), recursive = TRUE)
+    
+    if(missing(path)){
+        ecodir <- file.path(tempdir(),'ecochange')
+        if(!file.exists(ecodir))
+        dir.create(ecodir)
+        path  <- ecodir}
+
+    if(inherits(roi, getOption('inh')[c(1,3:4)])){
         roi. <- roi
-        roi <- getGADM(roi,..., path = path)
+        roi <- getrsp(roi, ...,lyrs = lyrs, path = path, mc.cores = mc.cores)
         if(is.null(roi.))
+            return(roi)
+        if(is.null(lyrs))
             return(roi)}
-    if(!compareCRS(crs(roi), getOption('longlat')))
-    roi <- spTransform(roi, getOption('longlat'))
-    ## if(is.null(lyrs)&is.null(getOption('lyrs'))){
-    ##     return(listGP()$'layer')}
-    ## if(is.null(lyrs)&!is.null(getOption('lyrs'))){
-    ##     lyrs  <- getOption('lyrs')}
+
+    roi <- attributes(roi)$env$roi
+    
     if(is.null(lyrs))return(listGP()$'layer')
     if(any(grepl('.01.01', lyrs))){
         lyrs <- rnm.lyrs0(lyrs)}
     int.patt  <- '[[:digit:]|N|S|E|W].tif'
     zfe <- file.path(path, dir(path))
+    dec <- zfe
+    with_zip <- any(grepl(paste(lyrs, collapse = "|"), zfe)&grepl('.zip', zfe))
+    if(with_zip){
     dec <- decompMap0(zfe, td = path, int.patt = int.patt)
-    tor <- attr(dec,'inzip')
+    tor <- attr(dec,'inzip')}
     dec <- sort(dec[grepl(paste(lyrs, collapse = "|"), dec)])
     rst <- Map(function(x)
         tryCatch(raster(x),error = function(e){
@@ -97,16 +107,16 @@ rsp2ebv <- structure(function #Remote Sensing Product to EBV
         lapply(z, function(x)
             spTransform(roi, crs(x)))}
     et <- ftr(roi,rst)
+
     trs. <- Map(function(x,y)
         raster::intersect(extent(x),extent(y)),rst, et)
     trs <- names(Filter(function(x)
         !is.null(x),trs.))
     rst <- raster::subset(rst,names(rst)%in%trs)
     et <- et[trs]
-    crdifs <- function(ly, ex){
-        Map(function(x,y)
-            crop(x,y), ly, ex)}
-    cr <- crdifs(rst, et)
+    
+    cr <- rst
+    
     if(missing(sr)){
         l2u <- long2UTM(extent(roi)[1L])
         sr <- sub('utm.z',l2u, getOption('utm1'))}
@@ -121,52 +131,85 @@ rsp2ebv <- structure(function #Remote Sensing Product to EBV
     nex <- as.vector(uxt)
     te. <- nex[c(1,3,2,4)]
     flnm <- 'ebv'
-    if(length(file.path(path, flnm)) != 0){
-        unlink(file.path(path, flnm), recursive = TRUE)}
-    crf <- dir(file.path(path, flnm))
-    if(length(crf)==0){
-        dir.create(file.path(path,flnm))}
-    nwp <- file.path(path, 'ebv')
+    # if(length(file.path(path, flnm)) != 0){
+    #     unlink(file.path(path, flnm), recursive = TRUE)}
+    # crf <- dir(file.path(path, flnm))
+    # if(length(crf)==0){
+    #     dir.create(file.path(path,flnm))}
+    # nwp <- file.path(path, 'ebv')
+    
+    # if(length(file.path(tempdir(), flnm)) != 0){
+        unlink(file.path(tempdir(), flnm), recursive = TRUE)
+        # }
+    # crf <- dir(file.path(tempdir(), flnm))
+    # if(length(crf)==0){
+        dir.create(file.path(tempdir(),flnm))
+        # }
+    nwp <- file.path(tempdir(), flnm)
+    
     gdf <- names(cr)
-    nwp. <- file.path(nwp, basename(gdf))
-    ## nmdst <- '0'
-    nmdst <- '250' ## <- preserves zero values
-    pr <- Map(function(x,y,z)
-        gdalUtils::gdalwarp(x, y, crs(z),
+
+    nwp. <- file.path(tempdir(), flnm, basename(gdf))
+
+        nmdst <- '250' ## <- preserves zero values
+
+    fshp <- function(x,y){
+        fname <- file.path(tempdir(),paste0(basename(y),'.shp'))
+        raster::shapefile(x, filename = fname,
+                          overwrite = TRUE)
+        return(fname)
+    }
+    
+    sps <- Map(function(x,y)
+        fshp(x, y), et, names(et))
+
+
+
+    marg. <- c(list(FUN = function(x,y,z,w)
+        gdalUtils::gdalwarp(srcfile = x,
+                            dstfile = y, crs(z),
                             sr, te = te., tr = ofr,
+                            crop_to_cutline = TRUE,
+                            cutline = w,
                             output_Raster = TRUE,
                             overwrite=TRUE,
                             dstnodata = nmdst,
-                            nomd = TRUE), gdf, nwp.,cr)
+                            nomd = TRUE),
+        x = gdf, y = nwp., z = cr, w = sps), marg)
+    pr <- stack(do.call(getOption('fapp'), marg.))
+
     fmos <- function(sll){
         crm <- 'Formatting image'
         dst <- file.path(nwp,paste0(sll,'.tif'))
         gdf. <- nwp.[grepl(sll, nwp.)]
         if(length(gdf.) == 1){
-            print(paste0(crm,' of ', sll))
+            ## print(paste0(crm,' of ', sll))
             mr <- raster(gdf.)}
-        else{print(paste0(crm, ' mosaic of ', sll,':'))
+        else{
+                ## print(paste0(crm, ' mosaic of ', sll,':'))
                 mr <- gdalUtils::mosaic_rasters(
                                      gdalfile=gdf.,
                                      dst_dataset=dst,
                                      output_Raster = TRUE)}
         return(mr)}
-    mos <- Map(function(x)
-        fmos(x), lyrs)
-    mos <- stack(mos)
-    names(mos) <- lyrs
-    spt <- spTransform(roi, crs(pre))
-    mos <- rasterize(spt, mos, mask = TRUE)
-    file.remove(tor)
+    
+    marg. <- c(list(FUN = function(x)
+        fmos(x), x = lyrs), marg)
+    
+    temple <- do.call(getOption('fapp'), marg.)
+ 
+    if(with_zip){
+        file.remove(tor)}
     dr <- dir(path)
     dr1 <- dir(tempdir())
-    rexp2rem <- '.vrt|.txt'
+    
+    rexp2rem <- '.vrt|.txt|.dbf|.prj|.shp|.shx'
     torem <- file.path(path,dr[grepl(rexp2rem,dr)])
     torem1 <- file.path(tempdir(),dr1[grepl(rexp2rem,dr1)])
     file.remove(c(torem,torem1))
-    unlink(file.path(path, flnm), recursive = TRUE)
-    return(mos)
-### \code{RasterBrick} of essential biodiversity variables (UTM crs), or
+    temple <- stack(temple)
+return(temple)
+### \code{RasterStack} of essential biodiversity variables (UTM crs), or
 ### character lists suggesting GADM units/Global Products that can be
 ### used to download \code{rsp} (see \code{NULL} defaults in arguments
 ### \code{'roi'} and \code{'lyrs'}).

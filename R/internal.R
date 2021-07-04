@@ -1,77 +1,134 @@
 ## Internal utility functions used by ecochange
 
-## Classes
-## setClass('FCMask', contains = 'RasterBrick')
-## setClass('FCPolygon', contains = 'RasterBrick')
+msk_0 <- function(treeTemp, lossTemp, perc = c(1,100),tim = c(1,19), td){
+  if(missing(td)){
+    td <- file.path(tempdir(),'ecochange','aoo')
+    if(!file.exists(td))
+      dir.create(td, recursive = TRUE)
+    td  <- td}
+    ## td <- file.path(tempdir(),'ecochange','aoo')
+    ## unlink(td, recursive = TRUE)
+    ## dir.create(td, recursive = TRUE)
+    ## perc <- perc[order(perc)]
+    writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+    writeRaster(lossTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+    if(!getOption('isWin')){
+        gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="logical_and(A>=',min(perc), ',A<=',max(perc),')*logical_and(B>=',min(tim), ',B<=',max(tim),')*B" --NoDataValue=0 --quiet --type Int16 --overwrite')
+        system(gdal_cmd)
+        gdal_cmd_1 <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc="logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
+        system(gdal_cmd_1)
+    }
+    if(getOption('isWin')){
+        dir. <- getwd()
+        setwd('c:/OSGeo4W64')
+        gdal_cmd <- paste0('python -m gdal_calc -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="B*logical_and(A>=',min(perc), ',A<=',max(perc),')" --NoDataValue=0 --quiet --type Int16 --overwrite')
+        system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
+        gdal_cmd_1 <- paste0('python -m gdal_calc -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc="logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
+    system2("OSGeo4W.bat", input = gdal_cmd_1, stdout = NULL)
+    }
+
+    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
+    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')))
+    out <- stack(file.path(td,paste0(names(treeTemp),'.tif')),
+                 file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
+    return(out)}
+
+## msk_0 <- function(treeTemp, lossTemp, perc = c(1,100),td, keep = FALSE){
+##   if(missing(td)){
+##     td <- file.path(tempdir(),'ecochange','aoo')
+##     if(!file.exists(td))
+##       dir.create(td, recursive = TRUE)
+##     td  <- td}
+##   rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')"')
+##   if(!keep){
+##     rmn <- paste0('"',rmn)}
+##   else{
+##     rmn <- paste0('"A*',rmn)}
+##   writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+##   writeRaster(lossTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+##  if(!getOption('isWin')){
+##    gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="B*logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
+##   system(gdal_cmd)
+##   gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
+##   system(gdal_cmd)}
+  
+##   if(getOption('isWin')){
+##     dir. <- getwd()
+##     setwd('c:/OSGeo4W64')
+##     gdal_cmd <- paste0('python -m gdal_calc -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="B*logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
+##     system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
+##     gdal_cmd <- paste0('python -m gdal_calc -A ', file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
+##     system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
+##     setwd(dir.)}
+ 
+##   file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
+##   file.remove(file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')))
+##   out <- stack(file.path(td,paste0(names(treeTemp),'.tif')),
+##                file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
+##   return(out)}
+
+msk_1 <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100), tim = c(1,1), td){
+  if(missing(td)){
+    td <- file.path(tempdir(),'ecochange','aoo')
+    if(!file.exists(td))
+      dir.create(td, recursive = TRUE)
+    td  <- td}
+  writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+  writeRaster(lossTemp, filename = file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+  rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*(logical_and(B>=',min(tim), ',B<=',max(tim),')==0)"')
+  if(!remnant)
+    rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*logical_and(B>=',min(tim), ',B<=',max(tim),')"')
+  if(!keep)
+    rmn <- paste0('"',rmn)
+  if(keep)
+    rmn <- paste0('"A*',rmn)
+  if(!getOption('isWin')){
+  gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
+  system(gdal_cmd)}
+  if(getOption('isWin')){
+    dir. <- getwd()
+    setwd('c:/OSGeo4W64')
+    gdal_cmd <- paste0('python -m gdal_calc -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
+    system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
+    setwd(dir.)}
+  file.remove(file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
+  file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
+  fsel <- raster(file.path(td,paste0(names(treeTemp),'.tif')))    
+  return(fsel)
+}
+
+msk_2 <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100), tim = c(0,19), td){
+  if(missing(td)){
+    td <- file.path(tempdir(),'ecochange','change')
+    if(!file.exists(td)){
+      dir.create(td, recursive = TRUE)}
+    td  <- td}
+  writeRaster(treeTemp, filename = file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')), format = 'GTiff', overwrite = TRUE)
+  writeRaster(lossTemp, filename = file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')), format = 'GTiff', overwrite = TRUE)
+  rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*(logical_and(B>=',min(tim), ',B<=',max(tim),')==0)"')
+  if(!remnant)
+    rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*logical_and(B>=',min(tim), ',B<=',max(tim),')"')
+  if(!keep)
+    rmn <- paste0('"',rmn)
+  if(keep)
+    rmn <- paste0('"A*',rmn)
+  if(!getOption('isWin')){
+  gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')),' -B ',file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')),' --outfile=',file.path(td,paste0('change_',max(tim),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
+  system(gdal_cmd)}
+  if(getOption('isWin')){
+    dir. <- getwd()
+    setwd('c:/OSGeo4W64')
+    gdal_cmd <- paste0('python -m gdal_calc -A ',file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')),' -B ',file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')),' --outfile=',file.path(td,paste0('change_',max(tim),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
+    system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
+    setwd(dir.)}
+  
+  file.remove(file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')))
+  file.remove(file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')))
+  fsel <- raster(file.path(td,paste0('change_',max(tim),'.tif')))    
+  return(fsel)
+}
 
 
-## fa <- function(x){
-##     ar <- area(x, na.rm = TRUE)
-##     ar <- na.omit(values(ar))
-##     ar. <- length(ar)*median(ar)
-##     return(ar.)}
-
-## fa <- function(x, fun = 'median') {
-##     v <- area(x, na.rm = TRUE)
-##     y <- cellStats(x, stat = sum)
-##     if(fun == 'mean')
-##         z <- cellStats(v, stat = fun)
-##     if(fun == 'median')
-##         z <- quantile(v, probs = 0.5,
-##                       names = FALSE)
-##     ar <- y * z  
-##     return(ar)}
-
-
-## getTileEdges <- function(pol, add.zero2NS = c(gsw = FALSE, gfc = TRUE)){
-##     edgs <- function(pol, add.zero2NS){
-##         fn. <- function(ext){
-##             e2v <- as.vector(ext)
-##             xtr <- e2v[c(1,4)]
-##             iswe <- ifelse(xtr[1L] < 0, 'W', 'E')
-##             issn <- ifelse(xtr[2L] < 0, 'S', 'N')
-##             abxtr <- abs(xtr)
-##             is.lon100 <- xtr[2L] < 100
-##             is.lat10 <- xtr[1L] < 10
-##             txtt <- paste0(abxtr, c(iswe, issn))
-##             if(add.zero2NS){
-##                 txtt <- rev(txtt)
-##                 ## if(is.lat10)
-##                 ##     txtt  <- paste(c('0',''), txtt, sep = '')
-##                 if(is.lon100)
-##                     txtt  <- paste(c('','0'), txtt, sep = '')}
-##             ## if(add.zero2NS){
-##             ##     txtt  <- rev(paste(c('0',''), txtt, sep = ''))
-##             ## if(add.zero2NS&is.lat10)
-##             ##     txtt  <- paste(c('',''), txtt, sep = '')}
-##             return(txtt)}
-##         edg <- Map(function(x)
-##             fn.(x), selTile(pol))
-##         return(edg)}
-##     edgs <- Map(function(x)
-##         edgs(pol, x),
-##         x = add.zero2NS)
-##     edgs <- lapply(edgs, function(x)
-##         lapply(x, function(y)
-##             paste(y[1],y[2], sep ='_')))
-## edgs <- lapply(edgs, unlist)
-## return(edgs)
-## }
-
-## ziptoEnv <- function(zfe, int.patt){
-## zps <- Map(function(x)
-##     unzip(x, list = TRUE,exdir = tempdir()), zfe)
-## znms <- lapply(zps, function(x)x[1L,1L])
-## find <- lapply(znms, function(x)x[grepl(int.patt, x)])
-## zps <- Map(function(x,y)
-##     unzip(x, files = y,exdir = tempdir()), x = zfe, y = find)
-## zpu <- unlist(zps, use.names = FALSE)
-## tifimag <- Map(function(x)
-##     raster(x), x = zpu)
-## return(tifimag)
-## }
-
-#<==================================================================
 
 bindLayers <- function(ars., time, pol){
     fn. <- function(ars., time, pol){
@@ -182,7 +239,6 @@ int.patt = '[[:digit:]|N|S|E|W].tif'){
 ## return(tifimag)}
 return(ls2r)}
 
-
 decompMap0 <- function(zfe, td = tempdir(),
 int.patt = '[[:digit:]|N|S|E|W].tif'){
     ## ls2r <- unique(unlist(Map(function(x)
@@ -194,7 +250,6 @@ int.patt = '[[:digit:]|N|S|E|W].tif'){
         attr(x, 'inzip'))))
     attributes(ls3r) <- c(attributes(ls3r), list(inzip = lsinz))
     return(ls3r)}
-
 
 edge2url <- function(str, dtnm, url.){
 flnm <- paste(dtnm, '_', str[1L], '_', str[2L], "_v1_1.tif", sep = '')
@@ -264,6 +319,7 @@ f23 <- function(x, a){
         x <- setValues(x, v)
         return(x)}
 
+
 f8 <- function(x, a, filename='', ...) {
     out <- raster(x)
     big <- ! canProcessInMemory(out, 3)
@@ -307,6 +363,15 @@ f8 <- function(x, a, filename='', ...) {
     pbClose(pb)
     return(out)
 }
+
+fast_areas <- function(ar1){
+    cms <- tapply(ar1$'value',ar1$'layer', cumsum)
+    rst <- do.call('-',cms)
+    rst1 <- unlist(c(cms[[1L]], rst))
+    ar1[,c('value')] <- rst1
+    ar1[1L,c('class')] <- 0
+    ar1[,c('layer')] <- ar1[,c('class')]
+    return(ar1)}
 
 fget <- function(x,y, overwrite = TRUE, path){
     GET(x,write_disk(y, overwrite = overwrite), timeout(1E4))
@@ -361,6 +426,13 @@ ftibb <- function(msk, tyr){
     return(tbb)
 }
 
+getRoi <- function(im, ...){
+    plotRGB(im, ...)
+    e <- drawExtent()
+    plotRGB(im, ..., ext = e)
+    cr <- crop(im, e)
+    return(cr)}
+
 get_EOURL <- function(adm, lyrs, funs., path, verify.web = FALSE){
     if(missing(funs.))
     funs. <- c('gwsBase','gfcBase','gfccBase')
@@ -375,13 +447,6 @@ get_EOURL <- function(adm, lyrs, funs., path, verify.web = FALSE){
         w = funs.., z = dt1)
     allf <- allf[order(names(allf))]
     return(allf)}
-
-getRoi <- function(im, ...){
-    plotRGB(im, ...)
-    e <- drawExtent()
-    plotRGB(im, ..., ext = e)
-    cr <- crop(im, e)
-    return(cr)}
 
 gfcBase <- function(adm, lyrs,path = tempdir()){
     wb <- getOption('apis')['gfc']
@@ -408,6 +473,9 @@ eds <- urlE(adm, FALSE) #<-
     paste0(wb,'/',f,'/',f,'_',eds,'_v1_1.tif')))}
 
 isWin <- Sys.info()['sysname']%in%'Windows'
+hasOsgeo4w <- 'OSGeo4W64'%in%list.files('C:/')
+
+systemName <- Sys.info()['sysname']
 
 layers2url <- function(pol, lyrs){
 dts <- verifyInWebs(getOption('webs'), lyrs)
@@ -494,8 +562,92 @@ lsm_l_tafc <- function(msk){
 
 marg <- list(SIMPLIFY = FALSE)
 
+msk0 <- function(treeTemp, lossTemp, perc = c(1,100),td, keep = FALSE){
+    if(missing(td)){
+        td <- file.path(tempdir(),'ecochange','aoo')
+        if(!file.exists(td))
+            dir.create(td, recursive = TRUE)
+        td  <- td}
+    rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')"')
+    if(!keep){
+        rmn <- paste0('"',rmn)}
+    else{
+        rmn <- paste0('"A*',rmn)}
+    writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+writeRaster(lossTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+ gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="B*logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
+system(gdal_cmd)
+gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
+system(gdal_cmd)
+    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
+    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')))
+    out <- stack(file.path(td,paste0(names(treeTemp),'.tif')),
+                 file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
+    return(out)}
+
+msk1 <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100), tim = c(0,19), td){
+    if(missing(td)){
+        td <- file.path(tempdir(),'ecochange','aoo')
+        if(!file.exists(td))
+            dir.create(td, recursive = TRUE)
+        td  <- td}
+    writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+    writeRaster(lossTemp, filename = file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
+rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*(logical_and(B>=',min(tim), ',B<=',max(tim),')==0)"')
+if(!remnant)
+rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*logical_and(B>=',min(tim), ',B<=',max(tim),')"')
+if(!keep)
+rmn <- paste0('"',rmn)
+if(keep)
+    rmn <- paste0('"A*',rmn)
+gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
+system(gdal_cmd)
+    ## file.remove(file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')))
+    file.remove(file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
+    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
+    fsel <- raster(file.path(td,paste0(names(treeTemp),'.tif')))    
+return(fsel)
+}
+
+msk2 <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100), tim = c(0,19), td){
+    if(missing(td)){
+        td <- file.path(tempdir(),'ecochange')
+        if(!file.exists(td))
+        dir.create(td)
+        td  <- td}
+    writeRaster(treeTemp, filename = file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')), format = 'GTiff', overwrite = TRUE)
+    writeRaster(lossTemp, filename = file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')), format = 'GTiff', overwrite = TRUE)
+rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*(logical_and(B>=',min(tim), ',B<=',max(tim),')==0)"')
+if(!remnant)
+rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*logical_and(B>=',min(tim), ',B<=',max(tim),')"')
+if(!keep)
+rmn <- paste0('"',rmn)
+if(keep)
+    rmn <- paste0('"A*',rmn)
+gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')),' -B ',file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')),' --outfile=',file.path(td,paste0('change_',max(tim),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
+system(gdal_cmd)
+    file.remove(file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')))
+    file.remove(file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')))
+    fsel <- raster(file.path(td,paste0('change_',max(tim),'.tif')))    
+return(fsel)
+}
+
 myClamp <- function(x, lw, up)
     raster::clamp(x, lw, up, useValues = FALSE)
+
+nm2yr <- function(ebv){
+        if(any(grepl('[[:digit:]]+',
+                     names(ebv)))){
+            loss.vals <- as.numeric(
+                unique(unlist(
+                    regmatches(names(ebv),
+                               gregexpr("[[:digit:]]+",
+                                        names(ebv))))))}
+        else{stop("'names(ebv)' must include digits")}
+loss.vals <- scaleYear(loss.vals)
+        return(loss.vals)}
+
+only_letters <- function(x) {unique(gsub("^([[:alpha:]]*).*$","\\1",x))}
 
 ordLayers <- function(ars., time){
     fn. <- function(ars.,time){
@@ -661,6 +813,106 @@ source2Env <- function(zfe, int.patt){
     return(tifimag)
 }
 
+tabuleRaster <- structure(
+  function( # Count the pixels in a given raster
+    ### This function generate a frequency table for a given raster dataset
+    layer = '',      ##<<\code{character}. Raster object or raster path
+    del0 = TRUE,    ##<<\code{boolean}. Determines if 0 count  categories should me removed
+    useNA = "no",   ##<<\code{boolean}. Determines if include NA. Passed to rasterDT::freqDT
+    n256 = FALSE      ##<<\code{boolean}. Determines if the raster contains less than 256 unique values, with
+  ) {
+    # requires: raster, rasterDT, gdalUtilities, 
+    allowedRastClass <- c('RasterLayer', 'RasterBrick', 'RasterStack')
+    if (!class(layer) %in% c(allowedRastClass, 'character')){
+      stop('Class not RasterLayer or character')
+    }
+    if (class(layer) %in% c('character')){
+      if (!file.exists(layer)){
+        stop('File not found')
+      }
+    }
+    if (n256){
+      if (class(layer) %in% allowedRastClass){
+        if (layer[[1]]@file@name != ''){
+          layerPath <- layer[[1]]@file@name
+        } else {
+          layerPath <- paste0(tempfile(), '.tif')
+          writeRaster(layer, filename = layerPath)
+        }
+        layer <- layerPath
+      }
+      gdalLog <- capture.output(gdalUtilities::gdalinfo(datasetname = layer, hist = TRUE))
+      (nbands <- grep('Band [[:digit:]]{1,} Block', gdalLog))
+      ansList <- list()
+      for(n in 1:length(nbands)){ # n <- 1
+        (bucxml <- as.numeric(sub('buckets.+', '', grep('buckets ', gdalLog, value = TRUE)))[n])
+        (minxml <- as.numeric(gsub('.+from | to.+', '', grep('buckets ', gdalLog, value = TRUE)) )[n] )
+        (maxxml <- as.numeric(gsub('.+to |:', '', grep('buckets ', gdalLog, value = TRUE)))[n] )
+        (histxml <- as.numeric(strsplit(split = '[[:space:]]', gsub("^ |^  ", "", 
+                                                                    gdalLog[grep('buckets', gdalLog)[n]+1]
+                                                                    ))[[1]]))
+        labs <- seq(from = minxml, to = maxxml, length.out = bucxml)
+        # length(histxml)
+        df2 <- data.frame(labs, nwlab = c(ceiling(labs[1]),
+                                          round(labs[2:(bucxml-1)]),
+                                          floor(labs[bucxml])), 
+                          val = histxml)
+        hist2 <- aggregate(df2$val, by = list(df2$nwlab), sum)
+        ## result <- data.frame(id = hist2$Group.1, count = hist2$x, stringsAsFactors = FALSE)
+        result <- data.frame(id = hist2$Group.1, cnt = hist2$x, stringsAsFactors = FALSE)
+        ## Delete 0 count values
+        if(del0){
+          ## result <- subset(result, count > 0)
+          result <- subset(result, result$'cnt' > 0)
+        }
+        ansList[[n]] <- result
+      }
+      if(length(nbands) == 1){
+        result <- ansList[[1]]
+      } else {
+        result <- ansList
+      }
+    } else {
+      if (class(layer) %in% c('character')){
+        layer <- tryCatch(raster::stack(layer), error = function (e) stop( "Can't open raster layer"))
+      }
+        if(!grepl('+units=m',crs(layer))){
+            warning("missing +units=m in 'crs(layer)'")
+        }
+        res. <- Reduce('*',raster::res(layer))
+        freqTable <-  rasterDT::freqDT(layer, useNA = useNA)
+        if(length(freqTable$'freq') == 0)
+            freqTable  <- data.table(ID = NA, freq = NA)
+        ## if (class(freqTable) == 'list'){
+      if (all(class(freqTable) == 'list')){
+        result <- lapply(freqTable, function(x){
+            ## data.frame(class = x$ID, class = NA, metric = 'ta',
+            data.frame(class = x$ID, class = NA, metric = 'area_ha',
+                       value = x$freq * res. * 1E-4, stringsAsFactors = FALSE )
+          ## data.frame(id = x$ID, count = x$freq, 
+          ##            stringsAsFactors = FALSE )
+        })
+      } else {
+        ## result <- data.frame(id = freqTable$ID, count = freqTable$freq, stringsAsFactors = FALSE )
+        ## result <- data.frame(class = freqTable$ID, id = NA,metric = 'ta', value = freqTable$freq * res. * 1E-4, stringsAsFactors = FALSE )
+        result <- data.frame(class = freqTable$ID, id = NA,metric = 'area_ha', value = freqTable$freq * res. * 1E-4, stringsAsFactors = FALSE )
+      }
+    }
+      result  <- cbind(layer = names(layer), level = 'class', 
+                       result)
+    return(result)
+    # if(del0){
+    #   return(subset(result, count > 0) )
+    # } else {
+    #   return(result)
+    # }
+    ### \code{data.frame}.
+  } , ex = function() {
+    ## \donttest{
+    ## raster_count(raster(volcano), n256 = FALSE)
+    ## }
+  })
+
 urlE <- function(pol, add.0 = TRUE){
 ext <- selTile(pol)
 fn. <- function(ext, add.0){
@@ -782,11 +1034,12 @@ else
                   webs = c(gsw = "https://global-surface-water.appspot.com/download",
                            gfc = "https://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.7.html",
                            gfcc = "https://e4ftl01.cr.usgs.gov/MEASURES/GFCC30TC.003"),
-                  inh = c('SpatialPolygonsDataFrame','Extent','character','NULL'),
+                  inh = c('SpatialPolygonsDataFrame','Extent','character','NULL','logical'),
                   utm = "+proj=utm +zone=utm.z +ellps=GRS80 +datum=NAD83 +units=m +no_defs",
                   utm1 = "+proj=utm +zone=utm.z +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0",
                   longlat = '+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs',
                   isWin = isWin,
+                  hasOsgeo4w = hasOsgeo4w,
                   fapp = 'mcmapply',
                   miss = ' Missing layer ',
                   trls = c('treecover2000','lossyear'),
@@ -799,3 +1052,76 @@ toset <- !(names(op.FC) %in% names(op))
 invisible()
 
 }
+
+## Classes
+## setClass('FCMask', contains = 'RasterBrick')
+## setClass('FCPolygon', contains = 'RasterBrick')
+
+## fa <- function(x){
+##     ar <- area(x, na.rm = TRUE)
+##     ar <- na.omit(values(ar))
+##     ar. <- length(ar)*median(ar)
+##     return(ar.)}
+
+
+## fa <- function(x, fun = 'median') {
+##     v <- area(x, na.rm = TRUE)
+##     y <- cellStats(x, stat = sum)
+##     if(fun == 'mean')
+##         z <- cellStats(v, stat = fun)
+##     if(fun == 'median')
+##         z <- quantile(v, probs = 0.5,
+##                       names = FALSE)
+##     ar <- y * z  
+##     return(ar)}
+
+## getTileEdges <- function(pol, add.zero2NS = c(gsw = FALSE, gfc = TRUE)){
+##     edgs <- function(pol, add.zero2NS){
+##         fn. <- function(ext){
+##             e2v <- as.vector(ext)
+##             xtr <- e2v[c(1,4)]
+##             iswe <- ifelse(xtr[1L] < 0, 'W', 'E')
+##             issn <- ifelse(xtr[2L] < 0, 'S', 'N')
+##             abxtr <- abs(xtr)
+##             is.lon100 <- xtr[2L] < 100
+##             is.lat10 <- xtr[1L] < 10
+##             txtt <- paste0(abxtr, c(iswe, issn))
+##             if(add.zero2NS){
+##                 txtt <- rev(txtt)
+##                 ## if(is.lat10)
+##                 ##     txtt  <- paste(c('0',''), txtt, sep = '')
+##                 if(is.lon100)
+##                     txtt  <- paste(c('','0'), txtt, sep = '')}
+##             ## if(add.zero2NS){
+##             ##     txtt  <- rev(paste(c('0',''), txtt, sep = ''))
+##             ## if(add.zero2NS&is.lat10)
+##             ##     txtt  <- paste(c('',''), txtt, sep = '')}
+##             return(txtt)}
+##         edg <- Map(function(x)
+##             fn.(x), selTile(pol))
+##         return(edg)}
+##     edgs <- Map(function(x)
+##         edgs(pol, x),
+##         x = add.zero2NS)
+##     edgs <- lapply(edgs, function(x)
+##         lapply(x, function(y)
+##             paste(y[1],y[2], sep ='_')))
+## edgs <- lapply(edgs, unlist)
+## return(edgs)
+## }
+
+## ziptoEnv <- function(zfe, int.patt){
+## zps <- Map(function(x)
+##     unzip(x, list = TRUE,exdir = tempdir()), zfe)
+## znms <- lapply(zps, function(x)x[1L,1L])
+## find <- lapply(znms, function(x)x[grepl(int.patt, x)])
+## zps <- Map(function(x,y)
+##     unzip(x, files = y,exdir = tempdir()), x = zfe, y = find)
+## zpu <- unlist(zps, use.names = FALSE)
+## tifimag <- Map(function(x)
+##     raster(x), x = zpu)
+## return(tifimag)
+## }
+
+#<==================================================================
+

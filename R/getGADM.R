@@ -18,8 +18,7 @@ getGADM <- structure(function #Get Geographic Adminitrative Unit
     country = 'COL', ##<<\code{character}. \code{ISO} code specifying
                      ##a country. Default \code{'COL'}
     path = tempdir() ##<<\code{character}. Path name indicating where
-                     ##the unit will be stored.Default
-                     ##\code{tempdir()}.
+                     ##the unit will be stored. Default stores the data in a temporary directory.
 ) {
     ## if(missing(path))
     ## path <- tempdir()

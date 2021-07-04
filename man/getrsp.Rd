@@ -67,7 +67,7 @@ Landsat-based rescaling of MODIS vegetation
 continuous fields with lidar-based estimates
 of error. International Journal of Digital
 Earth, 6(5), 427-448.}}
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut]}
+\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
 
 
 
@@ -76,15 +76,17 @@ Earth, 6(5), 427-448.}}
 
 ## Warnings from GDAL/PROJ are suppressed.
 
-## A Global Surface Water layer ('seasonality') covering the extent of a
-## Colombian municipality Cartagena del Chairá is retrieved:
+## Polygon of the Colombian municipality of Cartagena del Chairá:
     load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
- \donttest{
- suppressWarnings(
- rsp_cchaira <- getrsp(roi = cchaira_roi,
-   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
+## A Global Surface Water layer ('seasonality') which covers the
+## extent of the polygon is retrieved:
+
+\donttest{
+suppressWarnings(
+rsp_cchaira <- getrsp(roi = cchaira_roi,
+  lyrs = 'seasonality', mc.cores = 2, path = tempdir())
 )
- file.exists(rsp_cchaira) #TRUE
- }
+file.exists(rsp_cchaira) ##TRUE
+}
 }

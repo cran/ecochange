@@ -6,7 +6,9 @@
 (RSP) into Essential biodiversity variables.}
 \usage{rsp2ebv(roi = NULL, ..., 
     lyrs = NULL, path, 
-    sr, ofr = c(30, 30))}
+    sr, ofr = c(30, 30), 
+    mc.cores = round(detectCores() * 
+        0.6, 0))}
 \arguments{
   \item{roi}{\code{SpatialPolygonsDataFrame}; or
 \code{character}; or \code{NULL}. Region of
@@ -30,6 +32,10 @@ layers are projected to metric system \code{UTM}.}
   \item{ofr}{\code{numeric}. \code{c(xres,yres)}.  Output
 file resolution (in target georeferenced
 units). Default \code{c(30,30)} m2.}
+  \item{mc.cores}{\code{numeric}. The
+number of cores. Default
+uses around 60 percent of
+the cores.}
 }
 \details{This function implements
 \code{'gdalUtils'} so it assumes the user
@@ -45,7 +51,7 @@ executed to attempt to find a working
 GDAL that has the right drivers as
 specified with the \code{'of'} (output
 format) parameter", see example below.}
-\value{\code{RasterBrick} of essential biodiversity variables (UTM crs), or
+\value{\code{RasterStack} of essential biodiversity variables (UTM crs), or
 character lists suggesting GADM units/Global Products that can be
 used to download \code{rsp} (see \code{NULL} defaults in arguments
 \code{'roi'} and \code{'lyrs'}).}
@@ -70,7 +76,7 @@ N. (2015). Agree on biodiversity metrics to
 track from space: Ecologists and space
 agencies must forge a global monitoring
 strategy. Nature, 523(7561), 403-406.}}
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut]}
+\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
 
 
 
@@ -79,33 +85,33 @@ strategy. Nature, 523(7561), 403-406.}}
 ## First, we'll check to make sure there is a valid GDAL
 ## installation (from 'gdalUtils):
 
-## \\donttest{
-## gdalUtils::gdal_setInstallation()
-## valid_install <- !is.null(getOption("gdalUtils_gdalPath"))
-## }
+\donttest{
+gdalUtils::gdal_setInstallation()
+valid_install <- !is.null(getOption("gdalUtils_gdalPath"))
+}
 
 ## Warnings from GDAL/PROJ are suppressed.
 
 ## A Global Surface Water layer ('seasonality') covering the extent of a
 ## Colombian municipality Cartagena del Chairá is formated into an
-## spatial EBV:
+## spatial \code{EBV}:
         load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
- \donttest{
- suppressWarnings(
- rsp_cchaira <- getrsp(roi = cchaira_roi,
-   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
+\donttest{
+suppressWarnings(
+rsp_cchaira <- getrsp(roi = cchaira_roi,
+  lyrs = 'seasonality', mc.cores = 2, path = tempdir())
 )
 
- file.exists(rsp_cchaira) #TRUE
+file.exists(rsp_cchaira) ##TRUE
 
- suppressWarnings(
- season_cchaira <- rsp2ebv(roi = cchaira_roi,
-                               lyrs = 'seasonality', path = tempdir())
- )
+suppressWarnings(
+season_cchaira <- rsp2ebv(roi = cchaira_roi,
+                              lyrs = 'seasonality', path = tempdir())
+)
 
- suppressWarnings(
- plotebv(season_cchaira)
- )
- }
+suppressWarnings(
+plotebv(season_cchaira)
+)
+}
 }

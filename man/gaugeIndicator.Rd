@@ -1,28 +1,45 @@
 \name{gaugeIndicator}
 \alias{gaugeIndicator}
 \title{Gauge Indicator}
-\description{This function processes stacks of essential biodiversity variables
-(\code{ebv} stacks) to gauge indicators related to horizontal
-ecosystem extent, degradation, fragmentation, among others. To
-sample the indicators in fixed-size grids across \code{ebv} stacks
-see \code{\link{sampleIndicator}}.}
-\usage{gaugeIndicator(pol, ind = "lsm_l_tafc", 
-    ...)}
+\description{This function processes either regions of interest (polygons) or
+stacks of essential biodiversity variables (\code{ebv} stacks) to
+calculate indicators related to horizontal ecosystem extent,
+degradation, fragmentation, among others. To sample the indicators
+in fixed-size grids across \code{ebv} stacks see
+\code{\link{sampleIndicator}}.}
+\usage{gaugeIndicator(pol, ..., 
+    met = "area_ha", 
+    smp_lsm = list(level = "landscape"), 
+    mc.cores = round(detectCores() * 
+        0.6, 0))}
 \arguments{
-  \item{pol}{\code{RasterStack}. \code{ebv} stack such as that
-produced by \code{\link{rsp2ebv}}.}
-  \item{ind}{\code{character}. An \code{ebv}
-metric. \code{'lsm_l_tafc'} computes total
-forest-cover areas (ha). See
-\code{\link{calculate_lsm}} to compute
-other metrics. Default
-(\code{'lsm_l_tafc'}).}
-  \item{\dots}{additional arguments in \code{\link{calculate_lsm}}.}
+  \item{pol}{\code{SpatialPolygonsDataFrame} or \code{Raster*}. Region
+of interest or Stack of essential biodiversity variables.}
+  \item{\dots}{If \code{pol} is not a \code{Raster*} then additional
+arguments in \code{\link{echanges}}.}
+  \item{met}{\code{character}. An \code{ebv}
+metric. Default \code{'area_ha'} computes
+ecosystem areas (ha) at class level. See
+argument 'metric' in \code{\link{list_lsm}}
+to compute other metrics.
+spread = TRUE, ##<<\code{logical}. Try to dimension the ecosystem
+##variable across space and along time.}
+  \item{smp_lsm}{\code{list}. If
+\code{met} is not
+\code{'area_ha'} then
+additional arguments in
+\code{\link{calculate_lsm}}. }
+  \item{mc.cores}{\code{numeric}. The
+number of cores. Default
+uses 60 percent of the
+cores.}
 }
-\details{Coordinate system of the spatial
-units should be \code{ UTM}. Metrics other
-than \code{'lsm_l_tafc'} are calculated
-implementing \code{\link{calculate_lsm}}.}
+\details{Coordinate reference system of the
+spatial units must have metric units \code{
+UTM}. Indicators other than ecosystem areas
+are calculated implementing
+\code{\link{calculate_lsm}}.
+}
 \value{\code{tibble}.}
 \references{{Hesselbarth, M. H., Sciaini, M.,
 With, K. A., Wiegand, K., & Nowosad,
@@ -43,7 +60,7 @@ N. (2015). Agree on biodiversity metrics to
 track from space: Ecologists and space
 agencies must forge a global monitoring
 strategy. Nature, 523(7561), 403-406.}}
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut]}
+\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
 
 
 
@@ -51,36 +68,27 @@ strategy. Nature, 523(7561), 403-406.}}
 \examples{
 ## Warnings from GDAL/PROJ are suppressed.
 
-## Brick with structural Essential Biodiversity Variables covering the
-## extent of a location in the northern Amazon basin (Colombia):
-
+## RasterBrick of structural Essential Biodiversity Variables
+## covering the extent of a location in the northern Amazon basin
+## (Colombia) is imported:
 path. <- system.file('amazon.grd',package = 'ecochange')
 amazon <- suppressWarnings(brick(path.))
 
-## Tree-cover layers in the 'amazon' brick are both formatted and
-## deforested:
+## Changes in layers of tree-canopy cover (TC) in the 'amazon'
+## brick are computed:
 suppressWarnings(
-    def <- deforest(amazon, names(amazon)[grepl('TC', names(amazon))],
-                    ebv.vals = 0:100,
-                    remnant.areas = TRUE, keep.ebv = TRUE, mc.cores = 2)
+    def <- echanges(amazon, eco = 'TC',
+                    change = 'lossyear',
+                    eco_range = c(1,80),
+                    get_unaffected = TRUE,
+                    binary_output = FALSE,
+                    mc.cores = 2)
 )
 
-## Binary layers of Forest and non-forest areas (keep.ebv = FALSE):
+## Function 'gaugeIndicator' is used to compute ecosystem areas
+## (default):
+am_areas <- gaugeIndicator(def,
+                           mc.cores = 2)
 
-suppressWarnings(
-    def_bin <- deforest(amazon, names(amazon)[grepl('TC', names(amazon))],
-                        ebv.vals = 0:100,
-                        remnant.areas = TRUE, keep.ebv = FALSE, mc.cores = 2)
-)
-
-## Areas for both the binary and the continuous forest layers:
-
-defareas <- suppressWarnings(gaugeIndicator(def_bin, ind = 'lsm_c_ca'))
-defclasses <- suppressWarnings(gaugeIndicator(def, ind = 'lsm_c_ca'))
-
-## plot.gaugeIndicator method:
-
-plot(defareas)
-plot(defclasses)
 
 }

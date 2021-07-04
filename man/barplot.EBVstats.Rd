@@ -11,7 +11,7 @@
 
 \value{Plot of \code{EBVstats}.}
 
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut]}
+\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
 
 
 
@@ -28,17 +28,22 @@ amazon <- suppressWarnings(brick(path.))
 ## Tree-cover layers in the 'amazon' brick are both formatted and
 ## deforested:
 
+\donttest{
 suppressWarnings(
-    def <- deforest(amazon, names(amazon)[grepl('TC', names(amazon))],
-                    ebv.vals = 0:100,
-                    remnant.areas = TRUE, keep.ebv = TRUE, mc.cores = 2)
+def <- echanges(amazon, eco = 'TC',
+                change = 'lossyear',
+                eco_range = c(1,80),
+                get_unaffected = TRUE,
+                binary_output = FALSE,
+                mc.cores = 2)
 )
 
 ## Deforestation Statistics:
 
-defstats <- EBVstats(def)
+defstats <- suppressWarnings(EBVstats(def))
 
-## Barplot:
+## barplot method:
 
 barplot(defstats)
+}
 }

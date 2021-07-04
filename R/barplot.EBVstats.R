@@ -6,6 +6,9 @@ barplot.EBVstats <- structure(function #barplot EBV Stats
     
 
 ){
+    if(is.logical(height))
+        return(plot(height))
+    
     opar <- par('oma')
     on.exit(par(opar))
     height <- na.omit(height)
@@ -39,16 +42,19 @@ barplot.EBVstats <- structure(function #barplot EBV Stats
     ## deforested:
 
     suppressWarnings(
-        def <- deforest(amazon, names(amazon)[grepl('TC', names(amazon))],
-                        ebv.vals = 0:100,
-                        remnant.areas = TRUE, keep.ebv = TRUE, mc.cores = 2)
+    def <- echanges(amazon, eco = 'TC',
+                    change = 'lossyear',
+                    eco_range = c(1,80),
+                    get_unaffected = TRUE,
+                    binary_output = FALSE,
+                    mc.cores = 2)
     )
 
     ## Deforestation Statistics:
 
-    defstats <- EBVstats(def)
+    defstats <- suppressWarnings(EBVstats(def))
 
-    ## Barplot:
+    ## barplot method:
 
     barplot(defstats)
 })
