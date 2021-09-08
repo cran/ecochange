@@ -1,8 +1,8 @@
 \name{listGP}
 \alias{listGP}
 \title{List of global products}
-\description{This function prints a list of remote sensing products that can be
-downloaded with \code{\link{getrsp}}.}
+\description{This function prints information about ecosystem remote sensing
+products that can be downloaded with \code{\link{getrsp}}.}
 \usage{listGP(layer = TRUE, 
     Algorithm = TRUE, 
     author = TRUE, funs = FALSE, 
@@ -41,7 +41,7 @@ Landsat-based rescaling of MODIS vegetation
 continuous fields with lidar-based estimates
 of error. International Journal of Digital
 Earth, 6(5), 427-448.}}
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
 
 
 

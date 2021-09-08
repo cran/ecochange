@@ -9,9 +9,9 @@
   \item{\dots}{Additional arguments in \code{\link{barplot}}.}
 }
 
-\value{Plot of \code{EBVstats}.}
+\value{Bar plot.}
 
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
 
 
 
@@ -28,7 +28,6 @@ amazon <- suppressWarnings(brick(path.))
 ## Tree-cover layers in the 'amazon' brick are both formatted and
 ## deforested:
 
-\donttest{
 suppressWarnings(
 def <- echanges(amazon, eco = 'TC',
                 change = 'lossyear',
@@ -45,5 +44,4 @@ defstats <- suppressWarnings(EBVstats(def))
 ## barplot method:
 
 barplot(defstats)
-}
 }

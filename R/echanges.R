@@ -1,5 +1,8 @@
-echanges <- structure(function #Ecological changes
-###This function can compute ecological changes from spatial variables, focussing analyses on affected or unaffected areas and across predefined species distribution ranges.
+echanges <- structure(function#Ecosystem changes
+###This function produces ecosystem-change maps by masking cell values
+###in a layer of ecosystem changes over a target set of ecosystem
+###variables. The function allows focusing the ecosystem-change
+###analysis on a species distribution range.
                       ##references<< {Jetz, W., McGeoch, M. A.,
                       ##Guralnick, R., Ferrier, S., Beck, J.,
                       ##Costello, M. J., ... & Meyer,
@@ -28,66 +31,69 @@ echanges <- structure(function #Ecological changes
                       ##of error. International Journal of Digital
                       ##Earth, 6(5), 427-448.}
 (
-    stk, ##<<\code{Raster*} or \code{SpatialPolygonsDataFrame}. Stack
-         ##of spatial variables or polygon geometry.
-    eco = names(stk[[1:(nlayers(stk)-1)]]), ##<<\code{character}. Regular
-                                            ##expression matching the
-                                            ##name of the ecological
-                                            ##variable. Default uses
-                                            ##the names of the first
-                                            ##\code{1:(n-1)} layers in
-                                            ##\code{souk} are
-                                            ##processed.
-    change = names(stk[[(nlayers(stk))]]), ##<<\code{character}. Name
-                               ##of the ecosystem-change variable. If
-                               ##missing, then the name of the last
-                               ##layer in \code{stk} is processed.
-    sp_dist, ##<<\code{character}. Name of an alternative species
-             ##distribution layer covering the region of interest.
+    ps, ##<<\code{RasterStack} or
+        ##\code{SpatialPolygonsDataFrame}. Stack of spatial data,
+        ##including the target ecosystem variables, a layer of
+        ##changes, and an alternative layer of a species distribution
+        ##range. This argument can also be a polygon geometry used to
+        ##integrate such spatial data via implementation of
+        ##\code{\link{rsp2ebv}}; see the ellipsis term below.
+    eco = names(ps[[1:(nlayers(ps)-1)]]), ##<<\code{character}. Regular
+                                          ##expression matching names
+                                          ##of a subset of layers
+                                          ##representing the target
+                                          ##ecosystem
+                                          ##variables. Default matches
+                                          ##names of the first
+                                          ##\code{1:(n-1)} layers in
+                                          ##\code{ps}.
+    change = names(ps[[(nlayers(ps))]]), ##<<\code{character}. Name of
+                                         ##the layer of ecosystem
+                                         ##changes. Default matches
+                                         ##the name of the last layer
+                                         ##in \code{ps}.
+    sp_dist, ##<<\code{character}. Name of an alternative layer
+             ##representing a species distribution range. If missing
+             ##then this argument is ignored.
     eco_range = c(1,100), ##<< \code{numeric}. Range of values in the
-                          ##ecological variable.
+                          ##target ecosystem variable.
     change_vals = 1:19, ##<<\code{numeric}. Vector of values in the
-                        ##change variable.
+                        ##layer of ecosystem changes.
     sp_dist_range = c(1,1), ##<<\code{numeric}. Range of values in the
-                            ##species distribution layer.
-    spread = TRUE, ##<<\code{logical}. Spread changes according to
-                   ##both the number of layers in \code{eco} and the
-                   ##values in \code{change_vals}. Users do not need
-                   ##to change this argument. It is used by other
-                   ##rouines to fasten computation of ecosystem
-                   ##horizontal extents. If \code{FALSE} then two sets
-                   ##of layers are extrated, including masks of
-                   ##ecological variables and layers of
-                   ##changes. Default \code{TRUE}.
-    get_unaffected = TRUE, ##<<\code{logical}. Process unaffected
-                           ##areas. If \code{FALSE} then ranges of
-                           ##values in the ecological variable across
+                            ##alternative layer of species.
+                            ##distribution range. This argument is
+                            ##ignored if \code{sp_dist} is missing.
+    spread = TRUE, ##<<\code{logical}. Spread representation of
+                   ##ecosystem changes. Users do not need to change
+                   ##this argument. It is used by other rouines to
+                   ##fastening computation of ecosystem horizontal
+                   ##extents. If \code{FALSE} then the function mask
+                   ##cell values in the target ecosystem variables
+                   ##over over the layer of ecosystem changes. Default
+                   ##\code{TRUE}.
+    get_unaffected = TRUE, ##<<\code{logical}. Extract unaffected
+                           ##areas. If \code{FALSE} then pixel
+                           ##values of the ecological variable across
                            ##the changed areas are extracted. Default
                            ##\code{TRUE}.
     binary_output = FALSE, ##<<\code{logical}. Produce binary outputs
                            ##(masks). If \code{FALSE} then ranges of
                            ##values of the ecological variable are
                            ##maintained. Default \code{FALSE}.
+    noDataValue = 0, ##<<\code{numeric}. Output NoDataValue. Default
+                     ##\code{0}.
     mc.cores = round(detectCores()*0.6,0), ##<<\code{numeric}. The
                                            ##number of cores. Default
                                            ##uses around 60 percent
-                                           ##CPU capacity.
-    ... ##<<If \code{stk} is a polygon then additional arguments in
+                                           ##of the CPU capacity.
+    ... ##<<If \code{ps} is a polygon then additional arguments in
         ##\code{\link{rsp2ebv}}.
 )
 
 {
+    if(is.logical(ps))
+        return(ps)
 
-    if(getOption('isWin')&!getOption('hasOsgeo4w')){
-        ## if(isWin&!hasOsgeo4w){
-        print('missing OSGeo4W64 binary')
-        return(FALSE)
-    }
- 
-    if(is.logical(stk))
-        return(stk)
-    
-    ## unlink(file.path(tempdir(),'ecochange'), recursive = TRUE)
     unlink(file.path(tempdir(),'ecochange','change'), recursive = TRUE)
     
         if(length(eco_range) > 2){
@@ -99,53 +105,52 @@ echanges <- structure(function #Ecological changes
     if(isLayer)
         isLayer <- is.null(list(...)$'lyrs')
     
-    if(inherits(stk, getOption('inh'))){
-        stk. <- stk
-        stk <- rsp2ebv(stk,mc.cores = mc.cores, ...)
-        if(is.null(stk.))
-            return(stk)
+    if(inherits(ps, getOption('inh'))){
+        ps. <- ps
+        ps <- rsp2ebv(ps,mc.cores = mc.cores, ...)
+        if(is.null(ps.))
+            return(ps)
         if(isLayer)
-            return(stk)
+            return(ps)
     }
 
-        ecopatrn <- gsub("\\d+", "", eco)
-        if(!all(grepl(ecopatrn[1L], ecopatrn))){
-            stop("Ambiguous layer names: provide arguments 'eco' and 'change'")}
+    ecopatrn <- gsub("\\d+", "", eco)
+    if(!all(grepl(ecopatrn[1L], ecopatrn))){
+        stop("Ambiguous layer names: provide arguments 'eco' and 'change'")}
         
     reg2rst <- function(exp){ 
         exp. <- paste(exp, collapse = '|')
-        exp <- names(stk)[grepl(exp., names(stk))]
-        rst <- raster::subset(stk,exp)
+        exp <- names(ps)[grepl(exp., names(ps))]
+        rst <- raster::subset(ps,exp)
         return(rst)}
         eco <- reg2rst(eco)
-        change <- reg2rst(change)
+    change <- reg2rst(change)
+
+    if(dim(change)[3] > 1)
+        stop("'change' must be a single layer")
+    
         if(!missing(sp_dist)){
             sp_dist <- reg2rst(sp_dist)}
     
         if(!missing(sp_dist)){
-            ## for the case of species d.ranges
-        ## sp_dist <- raster::subset(stk,sp_dist)
+            ## No missing sp_dist
         marg. <- c(list(FUN = function(x)
-            msk_1(x, sp_dist,
-                 remnant = FALSE,
-                 keep = TRUE,
-                 perc=eco_range, tim = sp_dist_range),
+         msk_sp_(x, sp_dist,
+                tim = sp_dist_range),
             x = raster::as.list(eco)),marg)
-    eco <- stack(do.call(getOption('fapp'), marg.))
-    }
-
+            eco <- stack(do.call(getOption('fapp'), marg.))
+        }
     if(dim(eco)[3] > 1){
-        print("'eco' has length > 1: matching names of 'eco' with values in 'change_vals'")
+        print("'eco' has length > 1: matching names of 'eco' with values in 'change_vals'...")
         change_vals <- nm2yr(eco)
     }
     if(!getOption('isWin')){
         marg[['mc.cores']] <- mc.cores}
     
         if(!spread){
-            print("'spreads = FALSE: Fast-computing inputs for ecosystem horizontal extents")
-            eco_range[eco_range==0] <- 1 # this is weird, verify it!
+            print("'Fast-computing inputs for landscape areas")
             marg. <- c(list(FUN = function(x,y)
-                msk_0(x, y,
+                msk_0_(x, y,
                       perc=eco_range,
                       tim = c(1, max(change_vals))),
                 x = raster::as.list(eco),
@@ -156,33 +161,17 @@ echanges <- structure(function #Ecological changes
             return(w)
         }        
 
-    change[change == 0] <- NA
-
-## return(list(eco = eco, change = change))
-
-  ## ## if(missing(td)){
-  ##   td <- file.path(tempdir(),'ecochange','change')
-  ##   ## td <- file.path(tempdir(),'ecochange')
-  ##   if(!file.exists(td)){
-  ##     dir.create(td)}
-  ##   td  <- td
-    
     marg. <- c(list(FUN = function(x,y)
-        msk_2(x, change,
+        msk_2_(x, change,
               remnant = get_unaffected,
               keep = !binary_output,
-              perc=eco_range, tim = c(0,y)),
-      ## , td = td),
+              perc = eco_range,
+              tim = c(0,y),
+              noData = noDataValue),
         x = raster::as.list(eco),
         y = change_vals), marg)
-
+    
     w <- stack(do.call(getOption('fapp'), marg.))
-
-    ## if(!missing(sp_dist)){
-    ##     dr <- file.path(tempdir(),'ecochange','aoo')
-    ##     drr <- file.path(dr, dir(dr))
-    ##     file.remove(drr,dr)
-    ## }
     
     return(w)
 ### \code{RasterBrick}.

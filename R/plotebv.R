@@ -1,16 +1,16 @@
 plotebv <- structure(function #Plot EBV
-### This function displays levelplots of Essential Biodiverstiy
-### Variables using common scale-bar. The function is helpful
-### to compare EBV indicators.
+### This function displays level plots for ecosystem remote sensing
+### products using common scale-bars. The function is helpful to
+### visualize patterns in biodiversity indicators.
 (
     ebv, ##<<\code{Raster*}. Raster Object.
     col.regions = rev(viridis_pal(option="D")(255)), ##<<\code{}. Color
-                                                       ##palette. If
-                                                       ##null then
-                                                       ##\code{viridis_pal(option
-                                                       ##= 'D')} is
-                                                       ##implemented.
-    ...
+                                                     ##palette. If
+                                                     ##null then
+                                                     ##\code{viridis_pal(option
+                                                     ##= 'D')} is
+                                                     ##implemented.
+    ... ##<<\code{}. Further arguments in \code{panel.levelplot()}
 ) {
     if(is.logical(ebv))
         return(plot(ebv))
@@ -18,6 +18,9 @@ plotebv <- structure(function #Plot EBV
     ## if(is.null(col.regions)){
     ##     pal.n <- max(ebv@'data'@'max')
     ##     col.regions <- rev(viridis_pal(option="D")(pal.n))}
+
+      if (requireNamespace("rasterVis", quietly = TRUE)) {
+
     plt <- rasterVis::levelplot(ebv,
                                 margin = list(x = TRUE,
                                               y = TRUE),
@@ -37,7 +40,11 @@ plotebv <- structure(function #Plot EBV
                                                col = 'grey95',
                                                lty = 1)
                                     panel.levelplot(x, y, ...)})
-    print(plt)
+      }else{
+          print("Package 'rasterVis' needed for this function to display panels with improved scale-bar")
+         plt <- raster::plot(ebv, col = col.regions)
+          }
+    return(plt)
 ### \code{levelplot}.
 } , ex=function() {
     ## Warnings from GDAL/PROJ are suppressed.

@@ -1,18 +1,17 @@
 ---
-title: "Introduction to 'ecochange'"
+title: "Introduction to the package ecochange"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to 'ecochange'}
+  %\VignetteIndexEntry{Introduction to the package ecochange}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
-
 ## Introduction
-The R package ‘ecochange’ can compute biodiversity indicators related to structural biodiversity variables such as ecosystem areas, entropy, and fractal dimension indices. To do so, the package processes both Regions of Interest (ROI) (polygons) and ecological-data rasters. The rasters include Earth Observation Products (EOP), species distribution ranges, and other user-defined rasters. The package uses polygons to harmonize spatial data focusing analysis on the ROI. The users can provide predefined polygons or implement the in-package functions to download ROI representing Geographic Administrative Data Maps (GADM).  The package can also download up to 16 ecological variables available in three global products: Forest Cover (GFC; Hansen et al., 2013), Tree-canopy Cover (TC; Sexton et al., 2013), and Water Surface (GWS; Pekel et al., 2017). Routines of the package harmonize these and the other predefined rasters if such data cover the extent of the processed ROI. In-package functions for statistical analysis and graphics process these products and focus on the EOP sections to derivate the biodiversity indicators. 
+The R-package <span style="font-family:courier; font-size:1.15em;">ecochange</span> can assist users in monitoring ecosystem changes by computing biodiversity indicators related to structural essential biodiversity variables, including ecosystem areas, fractal dimension, and information-theory indices. The package processes polygons ---defined here as Regions of Interest (ROI)--- and Ecosystem Remote Sensing Products (ERSP).  <span style="font-family:courier; font-size:1.15em;">ecochange</span> harmonizes ERSP using the geometry of the ROI. The users can provide predefined polygons or implement the in-package functions to download ROI representing Geographic Administrative Data Maps (GADM).  The package can also download up to 16 ERSP available in three global databases: Forest Cover (GFC; Hansen et al., 2013), Tree-canopy Cover (TC; Sexton et al., 2013), and Water Surface (GWS; Pekel et al., 2017). Routines of the package integrate these and other predefined rastersif these data cover the extent of the processed ROI. In-package functions for statistical analysis and graphics provide tools to inform and visualize ecosystem changes. 
 
-## Installation
-The first requirement is to install and load the package in the R environment. The users can install the package running the install.packages() command. They can load it using either the require() or the library() functions. The package relies on several dependencies. It uses these to improve execution performance during spatial analysis. The users must be sure that all these are correctly installed.
+### Installation
+The first requirement is to install and load the package in the R environment. Users can install the package and the dependencies running <span style="font-family:courier; font-size:1.15em;">install.packages()</span>. They can load it using either <span style="font-family:courier; font-size:1.15em;">require()</span> or <span style="font-family:courier; font-size:1.15em;">library()</span>. The package relies on several dependencies. It uses these to improve execution performance during spatial analysis. The users must be sure that all these are correctly installed.
 
 ```{r load_libraries_hidden,eval=TRUE,message=FALSE,results='hide',warning=FALSE}
 # install.packages('ecochange')
@@ -21,42 +20,22 @@ require('ecochange')
 dependencies <- c('ecochange','raster','rgdal','parallel', 'R.utils', 'rvest','xml2',
             'tidyverse','landscapemetrics','sf','dplyr','httr','getPass','gdalUtils',
             'gdalUtilities','rgeos','viridis', 'rasterVis','rlang', 'rasterDT')
-#
-# #All values in the following list must be TRUE
+
+# Values in the next list must be allx TRUE
 sapply(dependencies, require, character.only = TRUE)
 
 ```
 
-# Defining and downloading spatial data
-Function 'getrsp' can download spatial variables, including the GADM and EOP. To download GADM, the function uses an internal wrapper of 'getData' ('raster' package).   
+## Retrieving spatial data
 
-Here we implement the function to choose a polygon corresponding with a municipality of Colombia. 
+Function <span style="font-family:courier; font-size:1.15em;">getrsp</span> can download the ERSP by processing the extent of a predefined region of interest (polygon geometry or GADM unit).
 
-```{r, eval=FALSE}
-rsp <- getrsp(level = 2, country = 'COL', mc.cores = 2)
-rsp
-
-# The output is a list of municipalities (level = 2) in Colombia (country = 'COL')
-```
-
-We chose from the list the municipality of 'chimichagua' and use it as the first argument of 'getrsp'. Next, we find the EOP making the function to print information about EOP retrievable with the package. To do so, we  preserve the default 'lyrs = NULL'.  The output result is a list of EOP names.
+Here we implement <span style="font-family:courier; font-size:1.15em;">getrsp()</span> to download a polygon corresponding with a Colombian municipality. We control the function using three arguments: <span style="font-family:courier; font-size:1.15em;">level</span>, <span style="font-family:courier; font-size:1.15em;">country</span>, and <span style="font-family:courier; font-size:1.15em;">mc.cores</span>. These specify the GADM level (level 2 retrieves municipalities), the country ISO, and the number of cores, respectively.
 
 
-```{r, eval=TRUE}
-rsp <- getrsp("Chimichagua", mc.cores = 2)
-rsp
-```
+### Harmonizing spatial data
+Function <span style="font-family:courier; font-size:1.15em;">rsp2ebv</span> processes ERSP to produce harmonized raster-data sections with the cell values enclosed in an ROI.
 
-We aim to compute effects of deforestation on the landscape diversity of the municipality processing two ecological-data rasters available in the list output; these are the variables 'treecover2000' and 'lossyear'. The first variable is a raster of tree canopy covers per grid cell for the year 2000 from GFC. The second one is a raster of annual deforestation observed between 2000 and 2019 from the same GFC. By default, the function downloads the data using a temporary directory, but the users can change the working directory using the argument 'path'. Here we maintain the default to temporarily download the data. The function output is a list of path names indicating where the variables are stored.
-
-```{r, eval=TRUE, message=FALSE,warning=FALSE} 
- rsp <- getrsp("Chimichagua", lyrs=c('treecover2000','lossyear'), mc.cores = 2)
-
-rsp
-```
- 
-## Harmonizing spatial data
-Function 'rsp2ebv' helps the users to focus analysis on the derivation of biodiversity indicators across the ROI. This function uses the polygon to harmonize the ecological data using routines for raster cropping, merging, masking, and projection. 
 
 ```{r}
 ?rsp2ebv
@@ -69,23 +48,32 @@ ebv
 plot(ebv)
 ```
 
-# Computing ecological changes
-Function 'echanges' can map changes in ecological variables over the time improving the visualization of ecosystem changes. The function processes RasterStack objects that contain both ecological data and a change map.
+## Deriving ecological changes
+Function <span style="font-family:courier; font-size:1.15em;">echanges</span> can generate ecosystem-change maps by masking cell values in a layer of ecosystem changes over a target set of ecosystem variables.
 
-'echanges' incorporates a variety of arguments with defaults, but the users must provide the RasterStack object. By default, the first layer in the RasterStack is considered the ecological variable, and the last one is the change map. When these are not the correct layers, the users must provide two additional arguments: 'eco' and 'change'; such arguments are regular expressions for the names of both the ecological variable and the change map. For instance, the term 'tree'  can specify the 'treecover2000' layer, and the name 'loss' can indicate the 'lossyear' layer. Another important argument is 'change_vals'. This arguments allows the users to process specific values in the change map. Here we process the years 2000, 2010, and 2019; those years correspond with the values 0, 10, and 19 in the 'lossyear' layer.
+This function can process the raster-data section previously harmonized with <span style="font-family:courier; font-size:1.15em;">rsp2ebv()</span>. It can also inherit arguments in <span style="font-family:courier; font-size:1.15em;">rsp2ebv()</span> and derive the data sections as an intermediate step.
 
-The output  of the function will be a 'RasterStack' object with the dimension of the values in the change map. For instance,
+By default, <span style="font-family:courier; font-size:1.15em;">echanges()</span> process the raster-data sections considering that the first layer is the target variable and the last layer is the change raster. If these layer positions are incorrect, the users must provide two additional arguments: <span style="font-family:courier; font-size:1.15em;">eco</span> and <span style="font-family:courier; font-size:1.15em;">change</span>. Such arguments provide regular expressions matching the names of the variables in the raster-data sections. For instance, we can use the arguments <span style="font-family:courier; font-size:1.15em;">eco</span> and <span style="font-family:courier; font-size:1.15em;">change</span>  to provide the expressions <span style="font-family:courier; font-size:1.15em;">'tree'</span> and <span style="font-family:courier; font-size:1.15em;">'loss'</span> corresponding with the layers <span style="font-family:courier; font-size:1.15em;">'treecover2000'</span> and <span style="font-family:courier; font-size:1.15em;">'lossyear'</span>, respectively.
+
+Arguments <span style="font-family:courier; font-size:1.15em;">eco_range</span> and <span style="font-family:courier; font-size:1.15em;">change_vals</span> control the pixel values processed in the target variable and the change raster. Here we maintain the default in <span style="font-family:courier; font-size:1.15em;">eco_range</span> to process canopy covers between 1 and 100% and modify the argument <span style="font-family:courier; font-size:1.15em;">change_vals</span> to process pixels  0, 10, and 19 in the layer <span style="font-family:courier; font-size:1.15em;">'lossyear'</span>. These last values represent deforested areas observed during the years 2000, 2010, and 2019.
+
+The output of <span style="font-family:courier; font-size:1.15em;">echanges()</span> is a RasterStack object with dimensionality defined by the values provided in <span style="font-family:courier; font-size:1.15em;">change_vals</span>. Here we obtain three layers corresponding with deforestations observed during the three years.
 
 ```{r, fig.height=3, fig.width=7}
 ech <- echanges(ebv, eco = 'tree', echanges = 'loss',
                 change_vals = c(0,10,19), mc.cores = 2)
 plotebv(ech)
 ```
+The plot suggests that canopy covers between 1-100% has decreased between 2000-2019. Let's compute the areas occupied by each canopy-cover value.
 
 ## Calculating biodiversity indicators
-Function 'gaugeIndicator' can calculate average biodiversity indicators for the scenes in the ecological-data raster. Besides the RasterStack object, the users can specify the biodiversity indicator using abbreviations in the argument 'met'. Examples of such abbreviations include the default 'area_ha' (area, hectare), 'condent' (conditional entropy, dimensionless), 'lsm_l_frac_mn' (mean fractal dimension index of all patches in the landscape, dimensionless), among others (Hesselbarth et al., 2019).
 
-The function output is a tibble of indicators ordered according to the values in the ecological variable. In-package 'plotind' prints stacked barplots that help to visualize the output.
+### Gauging indicators
+In-package <span style="font-family:courier; font-size:1.15em;">gaugeIndicator()</span> calculates the biodiversity indicators by processing ecosystem-change maps from <span style="font-family:courier; font-size:1.15em;">echanges()</span>. It can also inherit arguments in <span style="font-family:courier; font-size:1.15em;">rsp2ebv()</span> and <span style="font-family:courier; font-size:1.15em;">echanges()</span> to derive the ecosystem-change maps.
+
+Argument <span style="font-family:courier; font-size:1.15em;">metric</span> in the function provides the name of a biodiversity indicator. By default, <span style="font-family:courier; font-size:1.15em;">metric = 'area_ha'</span> makes the function to compute ecosystem areas (hectare). Besides, the users can provide hundreds of other abbreviations available in the landscape dependency (Hesselbarth et al., 2019).  Examples of these include <span style="font-family:courier; font-size:1.15em;">'condent'</span> and <span style="font-family:courier; font-size:1.15em;">'lsm_l_frac_mn'</span> which make the function to compute conditional entropy (dimensionless) and mean fractal dimension index for all patches in the raster (dimensionless).
+
+The function output is a tibble of indicators ordered according to classes in the ecological variable. This output can be visualized using the in-package <span style="font-family:courier; font-size:1.15em;">plotind()</span>.
 
 ```{r, fig.height=7, fig.width=7}
 ?gaugeIndicator
@@ -97,24 +85,12 @@ gi
 plotind(gi)
 ```
 
-Forest areas in the municipality have decreased over the time. We can test if the observed deforestation have affected the landscape diversity. To do so, we calculate an indicator called conditional entropy. This indicator integrates measures of changes in pixel adjacencies and landscape diversity (canopy-cover values).
+Forest areas in the municipality have decreased from to between 2000-2019. We can test if the observed deforestation has affected the landscape diversity by computing changes in conditional entropy.
 
-The users can control other defaults from the 'landscapemetrics' dependency using the argument 'smp_lsm'. For instance 'level' argument in the dependence controls the level of the metric (landscape, class, etc.). Here we compute the conditional entropy ('condent') at the level of landscape:
+### Sampling indicators across grids
+In-package <span style="font-family:courier; font-size:1.15em;">sampleIndicator()</span> divides into fixed-size grids each of the scenes of a stack of ecosystem-spatial data and samples a biodiversity indicator by every grid. This function helps the users to visualize changes in the spatial distribution of the biodiversity indicators.
 
-```{r, fig.height=3, fig.width=7}
-
-# Computing of conditional entropy:
-gi_ent <- gaugeIndicator(ech, met = 'condent',
-                         smp_lsm = list(level = 'landscape'), mc.cores = 2)
-gi_ent
-
-plotind(gi_ent)
-```
-
-Average conditional entropy at the landscape level over the time seems relatively constant. Lets check out patterns in the spatial distribution of the indicator.
-
-## Sampling indicators across grids
-Function 'sampleIndicator' helps the users to visualize changes in the spatial distribution of the biodiversity indicators. This function can split EOP sections into grid maps and sample a biodiversity indicator across each of the grids. Default argument 'side' (missing) can find an optimum grid size (m) that returns at least a numeric indicator by grid. The users can also change the 'side' argument to specify a customized grid size. The function output is a 'RasterStack' object with the same number of layers of these included in the RasterStack input. For instance,
+Default <span style="font-family:courier; font-size:1.15em;">metric = 'condent'</span> makes the function to compute conditional entropy (dimensionless).  Users can define any other biodiversity indicator. Here we calculate changes in conditional entropy to measure ecosystem degradation in terms of changes of pixel adjacency and canopy-cover diversity. Default <span style="font-family:courier; font-size:1.15em;">side</span> (missing) can find an optimum grid size (m) that returns at least a numeric value in one grid by scene. The users can change the <span style="font-family:courier; font-size:1.15em;">side</span> default to specify a customized grid size. The function output is a RasterStack object with the same number of scenes of the ecosystem-change map. For instance,
 
 ```{r, fig.height=3, fig.width=7,message=FALSE,results='hide',warning=FALSE}
 si_ent <- sampleIndicator(ech, mc.cores = 2)
@@ -122,26 +98,26 @@ si_ent
 plotebv(si_ent)
 ```
 
-It seems conditional entropy has increased only in the central areas of the ecological section between 2000-2019. Lets check out the importance of such increases in entropy by computing averages and standard deviations:
+Changes in conditional entropy across the ecosystem-change map between 2000-2019 remained relatively constant. Let's compute means and standard deviations.
 
-## Calculating statistics
-In-package 'EBVstats' can map statistics for the ecological-data rasters:
+### Calculating statistics
+Function <span style="font-family:courier; font-size:1.15em;">EBVstats</span> can map statistics over scenes in RasterStack objects. Here we implement <span style="font-family:courier; font-size:1.15em;"> EBVstats()</span> to derive statistics for the changes of entropy observed across the grid maps.
 
 ```{r, fig.height=3, fig.width=7}
-## Deforestation Statistics:
+##Statistics for changes in entropy:
 sts <- EBVstats(si_ent)
 sts
 
-## In-package barplot method:
+## In-package bar plot method:
 barplot(sts)
 ```
 
-Averages and standard deviations in the plot suggest that the increases in entropy over the time are similar; such changes have not strongly affected the forest-cover diversity across the municipality.
+Averages and standard deviations for the grids suggest the relationship between changes in pixel adjacency and canopy-cover diversity between 2000-2019 has remained relatively constant across the municipality.
 
 ## Conclusion
-This is a brief introduction to the ecochange package. There are other arguments to control the package functionality. For instance, the function 'listGP' prints detailed information about EOP downloadable with the package. Likewise, the function 'echanges' includes other arguments, e.g., 'eco_range', 'get_unaffected', 'binary_output' and 'mc.cores'; these help the users either to define a range of pixel values in the biodiversity variable, or to focus analyses on unaffected areas, or to format the outputs into binary layers, or to implement parallel processing, respectively. Please refer to the package documentation for more information.
+This is a brief introduction to the package <span style="font-family:courier; font-size:1.15em;">ecochange</span>. There are other arguments to control the package functionality. For instance, the function <span style="font-family:courier; font-size:1.15em;">listGP</span> can print detailed information about ERSP downloadable with the package. Likewise, the function <span style="font-family:courier; font-size:1.15em;">echanges()</span> includes other arguments, e.g., <span style="font-family:courier; font-size:1.15em;">'sp_dist'</span>, <span style="font-family:courier; font-size:1.15em;">'get_unaffected'</span>,  and <span style="font-family:courier; font-size:1.15em;">'binary_output'</span>; these arguments help the users to provide an alternative raster indicating a species distribution range, or to switch analyses focussing on affected/unaffected areas, or to format the outputs into binary layers, respectively. Please refer to the package documentation for more information.
 
-# Citing ecochange
+## Citing ecochange
 The package can be cited using the citation() function. Please cite ecochange appropriately in your work.
 
 ```{r, eval=FALSE}

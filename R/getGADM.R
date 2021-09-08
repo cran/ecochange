@@ -1,6 +1,6 @@
 getGADM <- structure(function #Get Geographic Adminitrative Unit
 ### This function is a wrapper of \code{\link{getData}} used to import
-### levels in Geographic Administrative Departments and Municipalities
+### levels in Geographic Administrative Data Maps
 ### (\code{GADM}).
                      ##references<<\href{https://gadm.org/}{https://gadm.org/}
 (

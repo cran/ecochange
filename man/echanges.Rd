@@ -1,63 +1,78 @@
 \name{echanges}
 \alias{echanges}
-\title{Ecological changes}
-\description{This function can compute ecological changes from spatial variables, focussing analyses on affected or unaffected areas and across predefined species distribution ranges.}
-\usage{echanges(stk, eco = names(stk[[1:(nlayers(stk) - 
-    1)]]), change = names(stk[[(nlayers(stk))]]), 
+\title{Ecosystem changes}
+\description{This function produces ecosystem-change maps by masking cell values
+in a layer of ecosystem changes over a target set of ecosystem
+variables. The function allows focusing the ecosystem-change
+analysis on a species distribution range.}
+\usage{echanges(ps, eco = names(ps[[1:(nlayers(ps) - 
+    1)]]), change = names(ps[[(nlayers(ps))]]), 
     sp_dist, eco_range = c(1, 
         100), change_vals = 1:19, 
     sp_dist_range = c(1, 
         1), spread = TRUE, 
     get_unaffected = TRUE, 
     binary_output = FALSE, 
+    noDataValue = 0, 
     mc.cores = round(detectCores() * 
         0.6, 0), ...)}
 \arguments{
-  \item{stk}{\code{Raster*} or \code{SpatialPolygonsDataFrame}. Stack
-of spatial variables or polygon geometry.}
+  \item{ps}{\code{RasterStack} or
+\code{SpatialPolygonsDataFrame}. Stack of spatial data,
+including the target ecosystem variables, a layer of
+changes, and an alternative layer of a species distribution
+range. This argument can also be a polygon geometry used to
+integrate such spatial data via implementation of
+\code{\link{rsp2ebv}}; see the ellipsis term below.}
   \item{eco}{\code{character}. Regular
-expression matching the
-name of the ecological
-variable. Default uses
-the names of the first
+expression matching names
+of a subset of layers
+representing the target
+ecosystem
+variables. Default matches
+names of the first
 \code{1:(n-1)} layers in
-\code{souk} are
-processed.}
-  \item{change}{\code{character}. Name
-of the ecosystem-change variable. If
-missing, then the name of the last
-layer in \code{stk} is processed.}
-  \item{sp_dist}{\code{character}. Name of an alternative species
-distribution layer covering the region of interest.}
+\code{ps}.}
+  \item{change}{\code{character}. Name of
+the layer of ecosystem
+changes. Default matches
+the name of the last layer
+in \code{ps}.}
+  \item{sp_dist}{\code{character}. Name of an alternative layer
+representing a species distribution range. If missing
+then this argument is ignored.}
   \item{eco_range}{\code{numeric}. Range of values in the
-ecological variable.}
+target ecosystem variable.}
   \item{change_vals}{\code{numeric}. Vector of values in the
-\code{change} variable.}
+layer of ecosystem changes.}
   \item{sp_dist_range}{\code{numeric}. Range of values in the
-species distribution layer.}
-  \item{spread}{\code{logical}. Spread changes according to
-both the number of layers in \code{eco} and the
-values in \code{change_vals}. Users do not need
-to \code{change} this argument. It is used by other
-rouines to fasten computation of ecosystem
-horizontal extents. If \code{FALSE} then two sets
-of layers are extrated, including masks of
-ecological variables and layers of
-changes. Default \code{TRUE}.}
-  \item{get_unaffected}{\code{logical}. Process unaffected
-areas. If \code{FALSE} then ranges of
-values in the ecological variable across
+alternative layer of species.
+distribution range. This argument is
+ignored if \code{sp_dist} is missing.}
+  \item{spread}{\code{logical}. Spread representation of
+ecosystem changes. Users do not need to \code{change}
+this argument. It is used by other rouines to
+fastening computation of ecosystem horizontal
+extents. If \code{FALSE} then the function mask
+cell values in the target ecosystem variables
+over over the layer of ecosystem changes. Default
+\code{TRUE}.}
+  \item{get_unaffected}{\code{logical}. Extract unaffected
+areas. If \code{FALSE} then pixel
+values of the ecological variable across
 the changed areas are extracted. Default
 \code{TRUE}.}
   \item{binary_output}{\code{logical}. Produce binary outputs
 (masks). If \code{FALSE} then ranges of
 values of the ecological variable are
 maintained. Default \code{FALSE}.}
+  \item{noDataValue}{\code{numeric}. Output NoDataValue. Default
+\code{0}.}
   \item{mc.cores}{\code{numeric}. The
 number of cores. Default
 uses around 60 percent
-CPU capacity.}
-  \item{\dots}{If \code{stk} is a polygon then additional arguments in
+of the CPU capacity.}
+  \item{\dots}{If \code{ps} is a polygon then additional arguments in
 \code{\link{rsp2ebv}}.}
 }
 
@@ -89,7 +104,7 @@ Landsat-based rescaling of MODIS vegetation
 continuous fields with lidar-based estimates
 of error. International Journal of Digital
 Earth, 6(5), 427-448.}}
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
 
 
 
@@ -102,8 +117,6 @@ Earth, 6(5), 427-448.}}
     ## extent of a location in the northern Amazon basin (Colombia):
     path. <- system.file('amazon.grd',package = 'ecochange')
     amazon <- suppressWarnings(brick(path.))
-
-\donttest{
     
     ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
     ## brick are computed:
@@ -120,5 +133,4 @@ Earth, 6(5), 427-448.}}
     suppressWarnings(
     plotebv(def)
 )
-}
 }

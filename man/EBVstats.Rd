@@ -1,7 +1,7 @@
 \name{EBVstats}
 \alias{EBVstats}
 \title{EBV Stats}
-\description{This function is a wrapper of \code{cellStats} to compute 
+\description{This function is a wrapper of \code{cellStats} used to compute
 statistics of essential biodiversity variables.}
 \usage{EBVstats(ccp, stats, 
     ...)}
@@ -15,9 +15,9 @@ statistics, including \code{'mean'}, \code{'sd'},
   \item{\dots}{Additional arguments in \code{cellStats}}
 }
 
-\value{\code{list} of \code{EBVstats}.}
+\value{\code{tibble}.}
 
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
 
 
 
@@ -34,7 +34,6 @@ amazon <- suppressWarnings(brick(path.))
 ## Tree-cover layers in the 'amazon' brick are both formatted and
 ## deforested:
 
-\donttest{
 suppressWarnings(
 def <- echanges(amazon, eco = 'TC',
                 change = 'lossyear',
@@ -51,5 +50,4 @@ defstats <- suppressWarnings(EBVstats(def))
 ## barplot method:
 
 barplot(defstats)
-}
 }

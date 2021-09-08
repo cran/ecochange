@@ -13,7 +13,6 @@ plotind <- structure(function#Plot indicator
     if(is.logical(data)){
         return(plot(data))}
 
-    
     xx <- factor(rownames(data), levels = rownames(data))
     fill. <- fct_rev(factor(data$'layer'))
     ang. <- 0
@@ -33,12 +32,23 @@ plotind <- structure(function#Plot indicator
 
     q <- ggplot2::geom_bar(stat = "identity", position = "stack", color = 'black')
 
-    p + q +
-    do.call('labs', labs) +
-    ggplot2::theme(legend.position="right",
-                     aspect.ratio = 1/1, text = element_text(size = 14),
-                   axis.text.x = element_text(angle = ang., vjust = 0.5, hjust=1)) +
-    viridis::scale_fill_viridis(discrete = TRUE)
+     if (requireNamespace("viridis", quietly = TRUE)) {
+         
+         p + q +
+             do.call('labs', labs) +
+             ggplot2::theme(legend.position="right",
+                            aspect.ratio = 1/1, text = element_text(size = 14),
+                            axis.text.x = element_text(angle = ang., vjust = 0.5, hjust=1)) +
+             viridis::scale_fill_viridis(discrete = TRUE)
+     } else {
+         p + q +
+             do.call('labs', labs) +
+             ggplot2::theme(legend.position="right",
+                            aspect.ratio = 1/1, text = element_text(size = 14),
+                            axis.text.x = element_text(angle = ang., vjust = 0.5, hjust=1)) 
+         
+     }
+    
 } , ex=function(){
     ## Warnings from GDAL/PROJ are suppressed.
 

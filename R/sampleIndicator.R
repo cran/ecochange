@@ -1,8 +1,8 @@
-sampleIndicator <- structure(function #Sample Indicator 
-### This function can sample biodiversity indicators in equally spaced
-### grids disctributed across Earth Observation Variables. To compute
-### indicators avoiding the grid sampling procedure see
-### \code{\link{gaugeIndicator}}
+sampleIndicator <- structure(function #Sample Biodiversity indicator 
+### This function divides into fixed-size grids each of the scenes of
+### a stack of ecosystem-spatial data and samples a biodiversity
+### indicator by every grid. To compute biodiversity indicators at the
+### class and landscape levels, see \code{\link{gaugeIndicator}}
 
                       ##references<< {Hesselbarth, M. H., Sciaini,
                       ##M., With, K. A., Wiegand, K., & Nowosad,
@@ -26,20 +26,16 @@ sampleIndicator <- structure(function #Sample Indicator
 
 
 (
-        roi = NULL, ##<<\code{Raster*}; or
-                    ##\code{SpatialPolygonsDataFrame}; or
-                    ##\code{character}; or \code{NULL}. Raster object
-                    ##such as these produced by
-                    ##\code{\link{echanges}}; or region of interest
-                    ##(\code{roi}). The \code{roi} can be whether 1) a
-                    ##polygon geometry; or 2) the name of a
-                    ##\code{GADM} unit (see \code{\link{getGADM}}); or
-                    ##3) a \code{NULL} value. Default \code{NULL}
-                    ##makes the function to print a list of
-                    ##\code{GADM} units.
-    ..., ##<<If \code{roi} is a \code{polygon} then additional
-         ##arguments in \code{\link{echanges}} can be specified here.
-    metric = 'condent', ##<<\code{character}. Indicator. This can be
+        ps = NULL, ##<<\code{SpatialPolygonsDataFrame} or
+                    ##\code{RasterStack}. Polygon geometry used to
+                    ##produce ecosystem-change maps via the
+                    ##implementation of \code{\link{echanges}} or the
+                    ##stack of ecosystem-change maps.
+    ..., ##<<If \code{ps} is a \code{polygon} then additional
+         ##arguments in \code{\link{echanges}}  or
+         ##\code{\link{rsp2ebv}}.
+    metric = 'condent', ##<<\code{character}. The name of an indicator
+                        ##other than ecosystem extent. This can be
                         ##cohesion (\code{'cohesion'}), conditional
                         ##entropy (\code{'condent'}), perimeter-area
                         ##fractal dimension (\code{'pafrac'}), among
@@ -54,10 +50,9 @@ sampleIndicator <- structure(function #Sample Indicator
              ##minimum cell value in the layers. Default \code{1}
     max = 100, ##<<\code{numeric}. If \code{classes != NULL} then
                ##maximum cell value in the layers. Default \code{100}
-    side, ##<<\code{numeric}. Side for the sampling grids
-          ##(\code{m}). If missing the function tries to find the a
-          ##minimum number of grids that samples at least a non-NA
-          ##indicator.
+    side, ##<<\code{numeric}. Side of the sampling grid (\code{m}). If
+          ##missing the function tries to find a grid size the samples
+          ##at least a grid with a non-NA value of the indicator.
     smp_lsm = list(level = 'landscape'), ##<<\code{List}. Additional
                                          ##arguments in
                                          ##\code{\link{sample_lsm}}
@@ -70,30 +65,27 @@ sampleIndicator <- structure(function #Sample Indicator
     if(isLayer)
         isLayer <- is.null(list(...)$'lyrs')
 
-    if(inherits(roi, getOption('inh'))|is.logical(roi)){
-        roi. <- roi
-        ## roi <- win_echanges(roi,mc.cores = mc.cores, ...)
-        roi <- echanges(roi,mc.cores = mc.cores, ...)
-        if(is.null(roi.)|is.logical(roi.))
-            return(roi)
+    if(inherits(ps, getOption('inh'))|is.logical(ps)){
+        ps. <- ps
+        ps <- echanges(ps,mc.cores = mc.cores, ...)
+        if(is.null(ps.)|is.logical(ps.))
+            return(ps)
         if(isLayer)
-            return(roi)
+            return(ps)
     }
     
     
-    nm. <- names(roi)
-    ## return(roi)
-    nm. <- names(roi)
+    nm. <- names(ps)
     if(!is.null(classes)){
     recl.m <- recMatrix(min:max, classes)
-    roi <- reclassify(roi, recl.m)}
+    ps <- reclassify(ps, recl.m)}
     fnrs <- function(x){
-        pjr <- projectRaster(roi, crs = crs(roi),
+        pjr <- projectRaster(ps, crs = crs(ps),
                              res = x, method = 'ngb')
         return(pjr)}
     if(missing(side)){
         sdc <- c(10^-c(1:3),5*(10^-c(2:3)))
-        dff <- diff(extent(roi)[1:2])
+        dff <- diff(extent(ps)[1:2])
         side <- dff*sdc[order(sdc, decreasing = TRUE)]
         recr.fnrs <- function(x){
             if(all(is.finite(fnrs(x)@'data'@'max')))
@@ -108,7 +100,7 @@ sampleIndicator <- structure(function #Sample Indicator
                         ", change 'side' argument")))
     r2pol <- rasterToPolygons(pr)
     r2pol <- lapply(1:nlayers(r2pol), function(x)r2pol[x])
-    roi <- raster::as.list(roi)
+    ps <- raster::as.list(ps)
     if(!getOption('isWin')){
         marg[['mc.cores']] <- mc.cores}
 
@@ -116,7 +108,7 @@ sampleIndicator <- structure(function #Sample Indicator
         lst2 <- c(list(landscape = w, y = z, metric = metric), smp_lsm)
         return(lst2)}
     args <- Map(function(w,z)
-        fn_smp_lsm(w, z, metric, smp_lsm), roi, r2pol)
+        fn_smp_lsm(w, z, metric, smp_lsm), ps, r2pol)
     marg. <- c(list(FUN = function(x)
         do.call('sample_lsm', x),
         x = args), marg)

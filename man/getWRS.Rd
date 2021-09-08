@@ -22,15 +22,15 @@ the \code{WRS} data are processed.}
 
 \value{\code{SpatialPolygonsDataFrame}, or set of \code{GADM} units.}
 
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
 
 
 
 
 \examples{
 load(system.file('cchaira_roi.RData',package = 'ecochange'))
-\donttest{
-wrs_cchaira <- suppressWarnings(getWRS(cchaira_roi))
-    plot(wrs_cchaira)
-}
+ \donttest{
+ wrs_cchaira <- suppressWarnings(getWRS(cchaira_roi))
+     plot(wrs_cchaira)
+ }
 }

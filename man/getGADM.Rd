@@ -2,7 +2,7 @@
 \alias{getGADM}
 \title{Get Geographic Adminitrative Unit}
 \description{This function is a wrapper of \code{\link{getData}} used to import
-levels in Geographic Administrative Departments and Municipalities
+levels in Geographic Administrative Data Maps
 (\code{GADM}).}
 \usage{getGADM(unit.nm = NULL, 
     level = 2, country = "COL", 
@@ -18,17 +18,17 @@ printed.}
 indicating any of the levels of administrative
 subdivisions in \code{GADM} (\code{0=country},
 \code{1=first level of subdivision}, and
-\code{2=second level of subdivision})}
+\code{2=second level of subdivision}).}
   \item{country}{\code{character}. \code{ISO} code specifying
 a \code{country}. Default \code{'COL'}}
   \item{path}{\code{character}. Path name indicating where
-the unit will be stored. Default stores the data in a temporary directory}
+the unit will be stored. Default stores the data in a temporary directory.}
 }
 
 \value{\code{SpatialPolygonsDataFrame} or \code{character} vector of
 \code{GADM} units..}
 \references{\href{https://gadm.org/}{https://gadm.org/}}
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
 
 
 
@@ -36,9 +36,9 @@ the unit will be stored. Default stores the data in a temporary directory}
 \examples{
 ## Printing municipalities of Colombia:    
 
-    \donttest{
-        muni <- getGADM()
-        head(muni)
-    }
+     \donttest{
+         muni <- getGADM()
+         head(muni)
+     }
 
 }

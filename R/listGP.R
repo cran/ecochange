@@ -1,6 +1,6 @@
 listGP <- structure(function #List of global products
-### This function prints a list of remote sensing products that can be
-### downloaded with \code{\link{getrsp}}.
+### This function prints information about ecosystem remote sensing
+### products that can be downloaded with \code{\link{getrsp}}.
                     
                     ##references<< {Pekel, J. F., Cottam, A.,
                     ##Gorelick, N., & Belward,

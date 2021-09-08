@@ -1,134 +1,56 @@
 ## Internal utility functions used by ecochange
 
-msk_0 <- function(treeTemp, lossTemp, perc = c(1,100),tim = c(1,19), td){
-  if(missing(td)){
-    td <- file.path(tempdir(),'ecochange','aoo')
-    if(!file.exists(td))
-      dir.create(td, recursive = TRUE)
-    td  <- td}
-    ## td <- file.path(tempdir(),'ecochange','aoo')
-    ## unlink(td, recursive = TRUE)
-    ## dir.create(td, recursive = TRUE)
-    ## perc <- perc[order(perc)]
-    writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
-    writeRaster(lossTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
-    if(!getOption('isWin')){
-        gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="logical_and(A>=',min(perc), ',A<=',max(perc),')*logical_and(B>=',min(tim), ',B<=',max(tim),')*B" --NoDataValue=0 --quiet --type Int16 --overwrite')
-        system(gdal_cmd)
-        gdal_cmd_1 <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc="logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
-        system(gdal_cmd_1)
-    }
-    if(getOption('isWin')){
-        dir. <- getwd()
-        setwd('c:/OSGeo4W64')
-        gdal_cmd <- paste0('python -m gdal_calc -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="B*logical_and(A>=',min(perc), ',A<=',max(perc),')" --NoDataValue=0 --quiet --type Int16 --overwrite')
-        system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
-        gdal_cmd_1 <- paste0('python -m gdal_calc -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc="logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
-    system2("OSGeo4W.bat", input = gdal_cmd_1, stdout = NULL)
-    }
+gdal_calc_exists <- function(){
+    gd <- suppressWarnings(tryCatch(
+        system2('gdal_calc.py', stdout = TRUE,stderr = FALSE),
+        error = function(e) FALSE))
+    if(!is.logical(gd))
+        gd <- TRUE
+    return(gd)}
 
-    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
-    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')))
-    out <- stack(file.path(td,paste0(names(treeTemp),'.tif')),
-                 file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
-    return(out)}
+gdalwarp_exists <- function(){
+    gd <- suppressWarnings(tryCatch(
+        system2('gdalwarp', stdout = TRUE,stderr = FALSE),
+        error = function(e) FALSE))
+    if(!is.logical(gd))
+        gd <- TRUE
+    return(gd)}
 
-## msk_0 <- function(treeTemp, lossTemp, perc = c(1,100),td, keep = FALSE){
-##   if(missing(td)){
-##     td <- file.path(tempdir(),'ecochange','aoo')
-##     if(!file.exists(td))
-##       dir.create(td, recursive = TRUE)
-##     td  <- td}
-##   rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')"')
-##   if(!keep){
-##     rmn <- paste0('"',rmn)}
-##   else{
-##     rmn <- paste0('"A*',rmn)}
-##   writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
-##   writeRaster(lossTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
-##  if(!getOption('isWin')){
-##    gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="B*logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
-##   system(gdal_cmd)
-##   gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
-##   system(gdal_cmd)}
-  
-##   if(getOption('isWin')){
-##     dir. <- getwd()
-##     setwd('c:/OSGeo4W64')
-##     gdal_cmd <- paste0('python -m gdal_calc -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="B*logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
-##     system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
-##     gdal_cmd <- paste0('python -m gdal_calc -A ', file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
-##     system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
-##     setwd(dir.)}
- 
-##   file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
-##   file.remove(file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')))
-##   out <- stack(file.path(td,paste0(names(treeTemp),'.tif')),
-##                file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
-##   return(out)}
+gdal_path <- function(){
+    gdal_setInstallation()
+    valid_install <- !is.null(getOption("gdalUtils_gdalPath"))
+    return(valid_install)}
 
-msk_1 <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100), tim = c(1,1), td){
-  if(missing(td)){
-    td <- file.path(tempdir(),'ecochange','aoo')
-    if(!file.exists(td))
-      dir.create(td, recursive = TRUE)
-    td  <- td}
-  writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
-  writeRaster(lossTemp, filename = file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
-  rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*(logical_and(B>=',min(tim), ',B<=',max(tim),')==0)"')
-  if(!remnant)
-    rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*logical_and(B>=',min(tim), ',B<=',max(tim),')"')
-  if(!keep)
-    rmn <- paste0('"',rmn)
-  if(keep)
-    rmn <- paste0('"A*',rmn)
-  if(!getOption('isWin')){
-  gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
-  system(gdal_cmd)}
-  if(getOption('isWin')){
-    dir. <- getwd()
-    setwd('c:/OSGeo4W64')
-    gdal_cmd <- paste0('python -m gdal_calc -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
-    system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
-    setwd(dir.)}
-  file.remove(file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
-  file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
-  fsel <- raster(file.path(td,paste0(names(treeTemp),'.tif')))    
-  return(fsel)
+msk_sp_ <- function(treeTemp, lossTemp, tim = c(1,1)){
+    lossTemp[!(lossTemp >= tim[1] & lossTemp <= tim[2])] <- NA
+    out <- treeTemp*lossTemp
+    names(out) <- names(treeTemp)
+    ## out <- eval(parse(text = out))
+    return(out)
 }
 
-msk_2 <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100), tim = c(0,19), td){
-  if(missing(td)){
-    td <- file.path(tempdir(),'ecochange','change')
-    if(!file.exists(td)){
-      dir.create(td, recursive = TRUE)}
-    td  <- td}
-  writeRaster(treeTemp, filename = file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')), format = 'GTiff', overwrite = TRUE)
-  writeRaster(lossTemp, filename = file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')), format = 'GTiff', overwrite = TRUE)
-  rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*(logical_and(B>=',min(tim), ',B<=',max(tim),')==0)"')
-  if(!remnant)
-    rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*logical_and(B>=',min(tim), ',B<=',max(tim),')"')
-  if(!keep)
-    rmn <- paste0('"',rmn)
-  if(keep)
-    rmn <- paste0('"A*',rmn)
-  if(!getOption('isWin')){
-  gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')),' -B ',file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')),' --outfile=',file.path(td,paste0('change_',max(tim),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
-  system(gdal_cmd)}
-  if(getOption('isWin')){
-    dir. <- getwd()
-    setwd('c:/OSGeo4W64')
-    gdal_cmd <- paste0('python -m gdal_calc -A ',file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')),' -B ',file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')),' --outfile=',file.path(td,paste0('change_',max(tim),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
-    system2("OSGeo4W.bat", input = gdal_cmd, stdout = NULL)
-    setwd(dir.)}
-  
-  file.remove(file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')))
-  file.remove(file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')))
-  fsel <- raster(file.path(td,paste0('change_',max(tim),'.tif')))    
-  return(fsel)
+msk_0_ <- function(treeTemp, lossTemp, perc = c(1,100),tim = c(1,19)){
+treeTemp[!(treeTemp >= perc[1] & treeTemp <= perc[2])] <- NA
+    lgb <- '(treeTemp >= perc[1] & treeTemp <= perc[2])*(lossTemp >= tim[1] & lossTemp <= tim[2])*lossTemp'
+    out2 <- eval(parse(text = lgb))
+    names(out2) <- names(treeTemp)
+    return(out2)}
+
+msk_2_ <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100), tim = c(0,19), noData = 0){
+    lga <- '(treeTemp >= perc[1] & treeTemp <= perc[2]) * (lossTemp*(lossTemp >= tim[1] & lossTemp <= tim[2])'
+    if(!remnant){
+        lga <- paste0(lga,'>0)')
+    }else{
+        lga <- paste0(lga,'<=0)')}
+    if(keep){
+        lga <- paste0('treeTemp*',lga)}
+    out <- eval(parse(text = lga))
+    if(!all(is.na(noData)))
+    ## out[out%in%noData] <- NA
+    out[out==noData] <- NA
+    names(out) <- paste0('eco_',max(tim))
+    return(out)
 }
-
-
 
 bindLayers <- function(ars., time, pol){
     fn. <- function(ars., time, pol){
@@ -182,8 +104,6 @@ fnd. <- find[!find%in%dir(td)]
     uz <- suppressWarnings(Map(function(x,y)
         tryCatch(do.call(fn, lsfn(x,y)),error = function(e)NULL),
         x = zfe., y = fnd.))
-        ## x = zfe., y = find))
-    ## find <- unlist(find, use.names = FALSE)
     find.. <- file.path(td, find)
     toext <- c(zfe..[!zfe..%in%find..], find..)
     toext <- toext[!grepl('.tar|.zip|.rds|/raster|\\raster|/ebv', toext)]
@@ -234,14 +154,10 @@ int.patt = '[[:digit:]|N|S|E|W].tif'){
     ls2r <- unique(unlist(Map(function(x)
         decomp(zfe, x, td, int.patt),
         c('.zip','.tar'))))
-##     tifimag <- Map(function(x)
-##         raster(x), x = ls2r)
-## return(tifimag)}
 return(ls2r)}
 
 decompMap0 <- function(zfe, td = tempdir(),
 int.patt = '[[:digit:]|N|S|E|W].tif'){
-    ## ls2r <- unique(unlist(Map(function(x)
     ls2r <- Map(function(x)
         decomp0(zfe, x, td, int.patt),
         c('.zip','.tar'))
@@ -339,9 +255,7 @@ f8 <- function(x, a, filename='', ...) {
     if (todisk) {
         for (i in 1:bs$n) {
             v <- getValues(x, row=bs$row[i], nrows=bs$nrows[i] )
-            ## v[v == 0] <- NA
             v[!v%in%a] <- NA
-            ## v[v>1] <- 1
             v[v>0] <- 1
             out <- writeValues(out, v, bs$row[i])
             pbStep(pb, i)
@@ -350,9 +264,7 @@ f8 <- function(x, a, filename='', ...) {
     } else {
         for (i in 1:bs$n) {
             v <- getValues(x, row=bs$row[i], nrows=bs$nrows[i] )
-            ## v[v == 0] <- NA
             v[!v%in%a] <- NA
-            ## v[v>1] <- 1
             v[v>0] <- 1
             cols <- bs$row[i]:(bs$row[i]+bs$nrows[i]-1)
             vv[,cols] <- matrix(v, nrow=out@ncols)
@@ -392,7 +304,6 @@ fmmx <- function(rst, extr.val){
         slot(x@'data', extr.val))
     mnf <- unlist(Filter(function(x)is.finite(x),mn))
     extr.val <- do.call(extr.val,list(mnf))
-    ## extr.val <- get(extr.val)(mnf)
     return(extr.val)}
 
 fperc <- function(x) {
@@ -452,10 +363,9 @@ gfcBase <- function(adm, lyrs,path = tempdir()){
     wb <- getOption('apis')['gfc']
     eds <- urlE(adm, TRUE) #<-
     unlist(lapply(lyrs, function(f)
-  paste0(wb,'/','Hansen_GFC-2019-v1.7_',f,'_',eds,'.tif')))}
+  paste0(wb,'/','Hansen_GFC-2020-v1.8_',f,'_',eds,'.tif')))}
 
 gfccBase <- function(adm, lyrs, path = tempdir()){
-## gfccBase <- function(adm, lyrs){
     wb <- getOption('apis')['daac']
     pr <- getWRS(adm, path) #<-
     prd <- unique(as.character(pr$PR))
@@ -490,7 +400,6 @@ concs <- lapply(1:length(eds), function(i)
 names(concs) <- names(eds)
 concs. <- concs
 concs <- unlist(concs)
-## cortsub <- paste(paste0("_",unlist(getTileEdges(pol,FALSE))),
 cortsub <- paste(paste0("_",unlist(urlEdges(pol,FALSE))),
                  collapse = "|")
 lons <- sub(cortsub,'', concs)
@@ -503,15 +412,12 @@ for(i in 1:length(concs)){
     }
 if(grepl('gfc', names(concs[i]))){
     filenm[i] <- paste0(getOption('apis')['gfc'],
-                        "/",'Hansen_GFC-2019-v1.7', "_",concs[i], ".tif")
+                        "/",'Hansen_GFC-2020-v1.8', "_",concs[i], ".tif")
 }}
 return(filenm)}
 
 loadFromZip <- function(pt., patt = '.tif',
                         mc.cores = detectCores()){
-    ## fld <- dir(pt.)
-    ## zif <- fld[grepl('.zip', fld)]
-    ## pt. <- file.path(pt., zif)
     tmp. <- tempdir()
     temp. <- file.path(tmp., 'data')
     fprll <- getOption('fapp')
@@ -562,76 +468,6 @@ lsm_l_tafc <- function(msk){
 
 marg <- list(SIMPLIFY = FALSE)
 
-msk0 <- function(treeTemp, lossTemp, perc = c(1,100),td, keep = FALSE){
-    if(missing(td)){
-        td <- file.path(tempdir(),'ecochange','aoo')
-        if(!file.exists(td))
-            dir.create(td, recursive = TRUE)
-        td  <- td}
-    rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')"')
-    if(!keep){
-        rmn <- paste0('"',rmn)}
-    else{
-        rmn <- paste0('"A*',rmn)}
-    writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
-writeRaster(lossTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
- gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --calc="B*logical_and(A>=',perc[1], ',A<=',perc[2],')" --NoDataValue=0 --quiet --type Int16 --overwrite')
-system(gdal_cmd)
-gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
-system(gdal_cmd)
-    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
-    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'_',names(lossTemp),'.tif')))
-    out <- stack(file.path(td,paste0(names(treeTemp),'.tif')),
-                 file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
-    return(out)}
-
-msk1 <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100), tim = c(0,19), td){
-    if(missing(td)){
-        td <- file.path(tempdir(),'ecochange','aoo')
-        if(!file.exists(td))
-            dir.create(td, recursive = TRUE)
-        td  <- td}
-    writeRaster(treeTemp, filename = file.path(td,paste0('aoo_',names(treeTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
-    writeRaster(lossTemp, filename = file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')), format = 'GTiff', overwrite = TRUE)
-rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*(logical_and(B>=',min(tim), ',B<=',max(tim),')==0)"')
-if(!remnant)
-rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*logical_and(B>=',min(tim), ',B<=',max(tim),')"')
-if(!keep)
-rmn <- paste0('"',rmn)
-if(keep)
-    rmn <- paste0('"A*',rmn)
-gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0('aoo_',names(treeTemp),'.tif')),' -B ',file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')),' --outfile=',file.path(td,paste0(names(treeTemp),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
-system(gdal_cmd)
-    ## file.remove(file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')))
-    file.remove(file.path(td,paste0(names(treeTemp),'_',names(lossTemp),'.tif')))
-    file.remove(file.path(td,paste0('aoo_',names(treeTemp),'.tif')))
-    fsel <- raster(file.path(td,paste0(names(treeTemp),'.tif')))    
-return(fsel)
-}
-
-msk2 <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100), tim = c(0,19), td){
-    if(missing(td)){
-        td <- file.path(tempdir(),'ecochange')
-        if(!file.exists(td))
-        dir.create(td)
-        td  <- td}
-    writeRaster(treeTemp, filename = file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')), format = 'GTiff', overwrite = TRUE)
-    writeRaster(lossTemp, filename = file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')), format = 'GTiff', overwrite = TRUE)
-rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*(logical_and(B>=',min(tim), ',B<=',max(tim),')==0)"')
-if(!remnant)
-rmn <- paste0('logical_and(A>=',perc[1], ',A<=',perc[2],')*logical_and(B>=',min(tim), ',B<=',max(tim),')"')
-if(!keep)
-rmn <- paste0('"',rmn)
-if(keep)
-    rmn <- paste0('"A*',rmn)
-gdal_cmd <- paste0('gdal_calc.py -A ',file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')),' -B ',file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')),' --outfile=',file.path(td,paste0('change_',max(tim),'.tif')),' --calc=',rmn,' --NoDataValue=0 --quiet --type Int16 --overwrite')
-system(gdal_cmd)
-    file.remove(file.path(td,paste0(names(treeTemp),'_',max(tim),'.tif')))
-    file.remove(file.path(td,paste0(names(lossTemp),'_',max(tim),'.tif')))
-    fsel <- raster(file.path(td,paste0('change_',max(tim),'.tif')))    
-return(fsel)
-}
-
 myClamp <- function(x, lw, up)
     raster::clamp(x, lw, up, useValues = FALSE)
 
@@ -679,11 +515,9 @@ dfc1 <- as.matrix(dfc1)
 return(dfc1)}
 
 recTable <- function(thr = 0, recl = NA, 
-## recTable <- function(thr = 0, 
                      oneFirst = TRUE){ 
     m <- diag(c(-1,1) * Inf)
     then <- c(1, recl)
-    ## then <- c(1, NA)
     if(thr != 0)
         m[m == 0] <- thr
     if(!oneFirst)
@@ -1029,10 +863,10 @@ else
     op.FC <- list(gfc = "https://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.6.html",
                   wrs = "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip",
                   apis = c(gsw = "http://storage.googleapis.com/global-surface-water/downloads2",
-                           gfc = "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2019-v1.7",
+                           gfc = "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8",
                            daac = "https://e4ftl01.cr.usgs.gov/MEASURES/"),
                   webs = c(gsw = "https://global-surface-water.appspot.com/download",
-                           gfc = "https://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.7.html",
+                           gfc = "https://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.8.html",
                            gfcc = "https://e4ftl01.cr.usgs.gov/MEASURES/GFCC30TC.003"),
                   inh = c('SpatialPolygonsDataFrame','Extent','character','NULL','logical'),
                   utm = "+proj=utm +zone=utm.z +ellps=GRS80 +datum=NAD83 +units=m +no_defs",
@@ -1040,6 +874,9 @@ else
                   longlat = '+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs',
                   isWin = isWin,
                   hasOsgeo4w = hasOsgeo4w,
+                  gdal_calc_py = gdal_calc_exists(),
+                  gdal_warp = gdalwarp_exists(),
+                  gdal_path = gdal_path(),
                   fapp = 'mcmapply',
                   miss = ' Missing layer ',
                   trls = c('treecover2000','lossyear'),

@@ -1,9 +1,9 @@
 \name{plotebv}
 \alias{plotebv}
 \title{Plot EBV}
-\description{This function displays levelplots of Essential Biodiverstiy
-Variables using common scale-bar. The function is helpful
-to compare EBV indicators.}
+\description{This function displays level plots for ecosystem remote sensing
+products using common scale-bars. The function is helpful to
+visualize patterns in biodiversity indicators.}
 \usage{plotebv(ebv, col.regions = rev(viridis_pal(option = "D")(255)), 
     ...)}
 \arguments{
@@ -14,13 +14,12 @@ null then
 \code{viridis_pal(option
 = 'D')} is
 implemented.}
-  \item{\dots}{
-}
+  \item{\dots}{. Further arguments in \code{panel.levelplot()}}
 }
 
 \value{\code{levelplot}.}
 
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
 
 
 

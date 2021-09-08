@@ -28,7 +28,7 @@ barplot.EBVstats <- structure(function #barplot EBV Stats
            angle = 90, lwd = 1.3)
     arrows(x0 = bp, y0 = height., y1 = height. - error,
            angle = 90, lwd = 1.3)
-### Plot of \code{EBVstats}.
+### Bar plot.
 } , ex=function(){
     ## Warnings from GDAL/PROJ are suppressed.
 

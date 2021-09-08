@@ -1,9 +1,9 @@
 getrsp <- structure(function #Get remote sensing product
 ### This function processes the extent of a predefined region of
-### interest (polygon geometry or \code{GADM} unit) to download remote
-### sensing products (RSP). Downloadable RSP include Global Surface
-### Water, Forest Change, and Continuous Tree Cover data. See
-### \code{\link{listGP}}.
+### interest (polygon geometry or \code{GADM} unit) to download
+### ecosystem remote sensing products (ERSP). Downloadable ERSP include
+### Global Surface Water, Forest Change, and Continuous Tree Cover
+### data. See \code{\link{listGP}}.
                         ##details<< Downloads of Continuous Tree Cover
                         ##data require user authentication through
                         ##the NASA Earth data Login. To obtain a NASA
@@ -35,7 +35,7 @@ getrsp <- structure(function #Get remote sensing product
 (
     roi = NULL, ##<<\code{SpatialPolygonsDataFrame}; or
                 ##\code{character}; or \code{NULL}. Region of
-                ##interest. This can be whether 1) a polygon geometry;
+                ##interest. This can be either 1) a polygon geometry;
                 ##or 2) the name of a \code{GADM} unit (see
                 ##\code{\link{getGADM}}); or 3) a \code{NULL}
                 ##value. Default \code{NULL} makes the function to
@@ -44,7 +44,7 @@ getrsp <- structure(function #Get remote sensing product
          ##arguments in \code{\link{getGADM}}.
     lyrs = NULL, ##<<\code{character}. Remote sensing
                 ##products. Default \code{NULL} makes the function to
-                ##print a list of Downloadable RSPs, see
+                ##print a list of Downloadable ERSP, see
                 ##\code{\link{listGP}}.
     path, ##<<\code{character}. Path name indicating where the
           ##variables will be stored. Default uses a folder named as
@@ -73,7 +73,8 @@ getrsp <- structure(function #Get remote sensing product
         if(is.null(roi.))
             return(roi)}
     if(!compareCRS(crs(roi), getOption('longlat')))
-        roi <- spTransform(roi, getOption('longlat'))
+        ## roi <- spTransform(roi, getOption('longlat'))
+        roi <- spTransform(roi, CRSobj = getOption('longlat'))
     if(is.null(lyrs))return(listGP()$'layer')
    if(any(grepl('TC_', lyrs)))
         lyrs <- rnm.lyrs0(lyrs)
@@ -146,8 +147,8 @@ getrsp <- structure(function #Get remote sensing product
     attributes(docs) <- c(attributes(docs), env = lsRoi)
     return(docs)
 ### Path names of the remote sensing products just retrieved, or
-### character lists suggesting GADM units/Global Products that can be
-### used to download \code{rsp} (see \code{NULL} defaults in arguments
+### character vectors suggesting GADM units/Global Products that can be
+### used to download ERSP (see \code{NULL} defaults in arguments
 ### \code{'roi'} and \code{'lyrs'}).
 } , ex=function() {
 
@@ -161,9 +162,9 @@ getrsp <- structure(function #Get remote sensing product
     
     ## \donttest{
     ## suppressWarnings(
-    ## rsp_cchaira <- getrsp(roi = cchaira_roi,
+    ## rsp_cchaira <- getrsp(cchaira_roi,
     ##   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
     ##)
-    ## file.exists(rsp_cchaira) ## TRUE
+    ## file.exists(rsp_cchaira) 
     ## }
 })

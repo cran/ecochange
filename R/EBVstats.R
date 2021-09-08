@@ -1,5 +1,5 @@
 EBVstats <- structure(function #EBV Stats
-### This function is a wrapper of \code{cellStats} to compute 
+### This function is a wrapper of \code{cellStats} used to compute
 ### statistics of essential biodiversity variables.
 (
     ccp, ##<< \code{RasterStack} or \code{NULL}. If \code{NULL} then
@@ -29,7 +29,7 @@ EBVstats <- structure(function #EBV Stats
     sts <- suppressMessages(readr::type_convert(as_tibble(sts)))
     class(sts) <- append('EBVstats', class(sts))
     return(sts)
-### \code{list} of \code{EBVstats}.
+### \code{tibble}.
 } , ex=function(){
     ## Warnings from GDAL/PROJ are suppressed.
 

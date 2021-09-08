@@ -1,11 +1,11 @@
 \name{sampleIndicator}
 \alias{sampleIndicator}
-\title{Sample Indicator }
-\description{This function can sample biodiversity indicators in equally spaced
-grids disctributed across Earth Observation Variables. To compute
-indicators avoiding the grid sampling procedure see
-\code{\link{gaugeIndicator}}}
-\usage{sampleIndicator(roi = NULL, 
+\title{Sample Biodiversity indicator }
+\description{This function divides into fixed-size grids each of the scenes of
+a stack of ecosystem-spatial data and samples a biodiversity
+indicator by every grid. To compute biodiversity indicators at the
+class and landscape levels, see \code{\link{gaugeIndicator}}}
+\usage{sampleIndicator(ps = NULL, 
     ..., metric = "condent", 
     classes = 5, min = 1, 
     max = 100, side, 
@@ -13,20 +13,16 @@ indicators avoiding the grid sampling procedure see
     mc.cores = round(detectCores() * 
         0.6, 0))}
 \arguments{
-  \item{roi}{\code{Raster*}; or
-\code{SpatialPolygonsDataFrame}; or
-\code{character}; or \code{NULL}. Raster object
-such as these produced by
-\code{\link{echanges}}; or region of interest
-(\code{roi}). The \code{roi} can be whether 1) a
-polygon geometry; or 2) the name of a
-\code{GADM} unit (see \code{\link{getGADM}}); or
-3) a \code{NULL} value. Default \code{NULL}
-makes the function to print a list of
-\code{GADM} units.}
-  \item{\dots}{If \code{roi} is a \code{polygon} then additional
-arguments in \code{\link{echanges}} can be specified here.}
-  \item{metric}{\code{character}. Indicator. This can be
+  \item{ps}{\code{SpatialPolygonsDataFrame} or
+\code{RasterStack}. Polygon geometry used to
+produce ecosystem-change maps via the
+implementation of \code{\link{echanges}} or the
+stack of ecosystem-change maps.}
+  \item{\dots}{If \code{ps} is a \code{polygon} then additional
+arguments in \code{\link{echanges}}  or
+\code{\link{rsp2ebv}}.}
+  \item{metric}{\code{character}. The name of an indicator
+other than ecosystem extent. This can be
 cohesion (\code{'cohesion'}), conditional
 entropy (\code{'condent'}), perimeter-area
 fractal dimension (\code{'pafrac'}), among
@@ -41,10 +37,9 @@ layers are not reclassified.}
 minimum cell value in the layers. Default \code{1}}
   \item{max}{\code{numeric}. If \code{classes != NULL} then
 maximum cell value in the layers. Default \code{100}}
-  \item{side}{\code{numeric}. Side for the sampling grids
-(\code{m}). If missing the function tries to find the a
-minimum number of grids that samples at least a non-NA
-indicator.}
+  \item{side}{\code{numeric}. Side of the sampling grid (\code{m}). If
+missing the function tries to find a grid size the samples
+at least a grid with a non-NA value of the indicator.}
   \item{smp_lsm}{\code{List}. Additional
 arguments in
 \code{\link{sample_lsm}}}
@@ -74,7 +69,7 @@ N. (2015). Agree on biodiversity metrics to
 track from space: Ecologists and space
 agencies must forge a global monitoring
 strategy. Nature, 523(7561), 403-406.}}
-\author{Wilson Lara Henao <wilarhen@temple.edu> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzales [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
 
 
 
@@ -89,7 +84,6 @@ strategy. Nature, 523(7561), 403-406.}}
 path. <- system.file('amazon.grd',package = 'ecochange')
 amazon <- suppressWarnings(brick(path.))
 
-\donttest{
 ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
 ## brick are computed:
 suppressWarnings(
@@ -113,5 +107,4 @@ suppressWarnings(
 
 plotebv(def_condent)
 
-}
 }

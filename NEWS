@@ -1,4 +1,14 @@
-New changes in ecochange V1.6
+New changes in ecochange V2.1
+
+changes in function 'echanges': "gdal_calc.py" binary is not
+implemented anymore. Logical functions from the raster package are used
+instead.
+
+New changes in ecochange V2.0
+
+Error message: "sh: gdal_calc.py: not found, Error in .local(.Object, ...) :" was fixed 
+
+New changes in ecochange V1.9
 
 changes in function 'echanges': procedures for masking rasters have
 been improved incorporating functionlity of 'gdal.calc_py'
