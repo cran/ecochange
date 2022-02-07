@@ -41,7 +41,7 @@ Landsat-based rescaling of MODIS vegetation
 continuous fields with lidar-based estimates
 of error. International Journal of Digital
 Earth, 6(5), 427-448.}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 

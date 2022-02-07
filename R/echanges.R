@@ -15,13 +15,13 @@ echanges <- structure(function#Ecosystem changes
                       ##Belward, A. S. (2016). High-resolution mapping
                       ##of global surface water and its long-term
                       ##changes. Nature, 540(7633), 418-422.}
-                      ## 
+                      ##
                       ##{Hansen, M. C., Potapov, P. V., Moore, R.,
                       ##Hancher, M., Turubanova, S. A., Tyukavina, A.,
                       ##... & Kommareddy, A. (2013). High-resolution
                       ##global maps of 21st-century forest cover
                       ##change. science, 342(6160), 850-853.}
-                      ## 
+                      ##
                       ## {Sexton, J. O., Song, X. P., Feng, M.,
                       ##Noojipady, P., Anand, A., Huang, C., ... &
                       ##Townshend, J. R. (2013). Global, 30-m
@@ -95,7 +95,7 @@ echanges <- structure(function#Ecosystem changes
         return(ps)
 
     unlink(file.path(tempdir(),'ecochange','change'), recursive = TRUE)
-    
+
         if(length(eco_range) > 2){
             warning("'eco_range': the vector has length > 2 and only its range will be used")
             eco_range  <- range(eco_range)
@@ -104,7 +104,7 @@ echanges <- structure(function#Ecosystem changes
     isLayer <- 'lyrs'%in%names(list(...))
     if(isLayer)
         isLayer <- is.null(list(...)$'lyrs')
-    
+
     if(inherits(ps, getOption('inh'))){
         ps. <- ps
         ps <- rsp2ebv(ps,mc.cores = mc.cores, ...)
@@ -117,8 +117,8 @@ echanges <- structure(function#Ecosystem changes
     ecopatrn <- gsub("\\d+", "", eco)
     if(!all(grepl(ecopatrn[1L], ecopatrn))){
         stop("Ambiguous layer names: provide arguments 'eco' and 'change'")}
-        
-    reg2rst <- function(exp){ 
+
+    reg2rst <- function(exp){
         exp. <- paste(exp, collapse = '|')
         exp <- names(ps)[grepl(exp., names(ps))]
         rst <- raster::subset(ps,exp)
@@ -128,10 +128,10 @@ echanges <- structure(function#Ecosystem changes
 
     if(dim(change)[3] > 1)
         stop("'change' must be a single layer")
-    
+
         if(!missing(sp_dist)){
             sp_dist <- reg2rst(sp_dist)}
-    
+
         if(!missing(sp_dist)){
             ## No missing sp_dist
         marg. <- c(list(FUN = function(x)
@@ -141,12 +141,12 @@ echanges <- structure(function#Ecosystem changes
             eco <- stack(do.call(getOption('fapp'), marg.))
         }
     if(dim(eco)[3] > 1){
-        print("'eco' has length > 1: matching names of 'eco' with values in 'change_vals'...")
+        print("'eco' has length > 1: matching alphanumerics in 'eco' with values in 'change'...")
         change_vals <- nm2yr(eco)
     }
     if(!getOption('isWin')){
         marg[['mc.cores']] <- mc.cores}
-    
+
         if(!spread){
             print("'Fast-computing inputs for landscape areas")
             marg. <- c(list(FUN = function(x,y)
@@ -159,7 +159,7 @@ echanges <- structure(function#Ecosystem changes
             w <- do.call(getOption('fapp'), marg.)
             w <- stack(w)
             return(w)
-        }        
+        }
 
     marg. <- c(list(FUN = function(x,y)
         msk_2_(x, change,
@@ -170,34 +170,27 @@ echanges <- structure(function#Ecosystem changes
               noData = noDataValue),
         x = raster::as.list(eco),
         y = change_vals), marg)
-    
+
     w <- stack(do.call(getOption('fapp'), marg.))
-    
+
     return(w)
 ### \code{RasterBrick}.
 } ,
 ex=function() {
-
-    ## Warnings from GDAL/PROJ are suppressed.
-
     ## Brick with structural Essential Biodiversity Variables covering the
     ## extent of a location in the northern Amazon basin (Colombia):
     path. <- system.file('amazon.grd',package = 'ecochange')
-    amazon <- suppressWarnings(brick(path.))
-    
+    amazon <- brick(path.)
+
     ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
     ## brick are computed:
-    suppressWarnings(
     def <- echanges(amazon, eco = 'TC',
                     change = 'lossyear',
                     eco_range = c(1,80),
                     get_unaffected = TRUE,
                     binary_output = FALSE,
                     mc.cores = 2)
-    )
-    
+
     ## Function 'plotebv' allows comparing rasters using a common scale bar:
-    suppressWarnings(
     plotebv(def)
-)
 })

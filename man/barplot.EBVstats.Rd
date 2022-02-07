@@ -11,35 +11,31 @@
 
 \value{Bar plot.}
 
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 
 
 \examples{
-## Warnings from GDAL/PROJ are suppressed.
-
 ## Brick with structural Essential Biodiversity Variables covering the
 ## extent of a location in the northern Amazon basin (Colombia):
 
 path. <- system.file('amazon.grd',package = 'ecochange')
-amazon <- suppressWarnings(brick(path.))
+amazon <- brick(path.)
 
 ## Tree-cover layers in the 'amazon' brick are both formatted and
 ## deforested:
 
-suppressWarnings(
 def <- echanges(amazon, eco = 'TC',
                 change = 'lossyear',
                 eco_range = c(1,80),
                 get_unaffected = TRUE,
                 binary_output = FALSE,
                 mc.cores = 2)
-)
 
 ## Deforestation Statistics:
 
-defstats <- suppressWarnings(EBVstats(def))
+defstats <- EBVstats(def)
 
 ## barplot method:
 

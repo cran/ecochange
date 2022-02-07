@@ -35,7 +35,7 @@ getWRS <- structure(function #Get WRS
 } , ex=function() {
     load(system.file('cchaira_roi.RData',package = 'ecochange'))
     ## \donttest{
-    ## wrs_cchaira <- suppressWarnings(getWRS(cchaira_roi))
+    ## wrs_cchaira <- getWRS(cchaira_roi)
     ##     plot(wrs_cchaira)
     ## }
 })

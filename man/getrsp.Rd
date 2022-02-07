@@ -8,6 +8,7 @@ Global Surface Water, Forest Change, and Continuous Tree Cover
 data. See \code{\link{listGP}}.}
 \usage{getrsp(roi = NULL, ..., 
     lyrs = NULL, path, 
+    rewrite.pass = FALSE, 
     verify.web = FALSE, 
     mc.cores = round(detectCores() * 
         0.6, 0))}
@@ -21,14 +22,17 @@ value. Default \code{NULL} makes the function to
 print a list of \code{GADM} units.}
   \item{\dots}{If \code{roi} is a \code{GADM} unit then additional
 arguments in \code{\link{getGADM}}.}
-  \item{lyrs}{\code{character}. Remote sensing
+  \item{lyrs}{\code{character}. Remote-sensing
 products. Default \code{NULL} makes the function to
-print a list of Downloadable ERSP, see
+print a list of Downloadable data, see
 \code{\link{listGP}}.}
   \item{path}{\code{character}. Path name indicating where the
-variables will be stored. Default uses a folder named as
-\code{'ecochange'} located in a current temporary
-directory.}
+variables are stored. If missing then a folder
+named as \code{'ecochange'} created in a current
+temporary directory is used.}
+  \item{rewrite.pass}{\code{logical}. Rewrite password. Only
+valid to download new NASA Earth data, see
+details section.}
   \item{verify.web}{\code{logical}. Verify in the web whether
 the \code{URL}s used to download the
 \code{rsp} are available. See
@@ -67,15 +71,12 @@ Landsat-based rescaling of MODIS vegetation
 continuous fields with lidar-based estimates
 of error. International Journal of Digital
 Earth, 6(5), 427-448.}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 
 
 \examples{
-
-## Warnings from GDAL/PROJ are suppressed.
-
 ## Polygon of the Colombian municipality of Cartagena del Chairá:
     load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
@@ -83,10 +84,8 @@ Earth, 6(5), 427-448.}}
 ## extent of the polygon is retrieved:
 
  \donttest{
- suppressWarnings(
  rsp_cchaira <- getrsp(cchaira_roi,
    lyrs = 'seasonality', mc.cores = 2, path = tempdir())
-)
- file.exists(rsp_cchaira) 
+ file.exists(rsp_cchaira)
  }
 }

@@ -1,9 +1,9 @@
 \name{plotebv}
 \alias{plotebv}
 \title{Plot EBV}
-\description{This function displays level plots for ecosystem remote sensing
-products using common scale-bars. The function is helpful to
-visualize patterns in biodiversity indicators.}
+\description{This function aims to display level plots for remote sensing
+products using common scale-bars via the implementation of
+the \code{rasterVis} library.}
 \usage{plotebv(ebv, col.regions = rev(viridis_pal(option = "D")(255)), 
     ...)}
 \arguments{
@@ -19,32 +19,26 @@ implemented.}
 
 \value{\code{levelplot}.}
 
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 
 
 \examples{
-    ## Warnings from GDAL/PROJ are suppressed.
+## Brick with structural Essential Biodiversity Variables covering the
+## extent of a location in the northern Amazon basin (Colombia):
+path. <- system.file('amazon.grd',package = 'ecochange')
+amazon <- brick(path.)
 
-    ## Brick with structural Essential Biodiversity Variables covering the
-    ## extent of a location in the northern Amazon basin (Colombia):
-    path. <- system.file('amazon.grd',package = 'ecochange')
-    amazon <- suppressWarnings(brick(path.))
-    
-    ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
-    ## brick are computed:
-    suppressWarnings(
-    def <- echanges(amazon, eco = 'TC',
-                    change = 'lossyear',
-                    eco_range = c(1,80),
-                    get_unaffected = TRUE,
-                    binary_output = FALSE,
-                    mc.cores = 2)
-    )
-    
-    ## Function 'plotebv' allows comparing rasters using a common scale bar:
-    suppressWarnings(
-    plotebv(def)
-)
+## Changes in layers of tree-canopy cover (TC) in the 'amazon'
+## brick are computed:
+def <- echanges(amazon, eco = 'TC',
+                change = 'lossyear',
+                eco_range = c(1,80),
+                get_unaffected = TRUE,
+                binary_output = FALSE,
+                mc.cores = 2)
+
+## Function 'plotebv' allows comparing rasters using a common scale bar:
+plotebv(def)
 }

@@ -1,5 +1,7 @@
 ## Internal utility functions used by ecochange
 
+
+
 gdal_calc_exists <- function(){
     gd <- suppressWarnings(tryCatch(
         system2('gdal_calc.py', stdout = TRUE,stderr = FALSE),
@@ -16,10 +18,10 @@ gdalwarp_exists <- function(){
         gd <- TRUE
     return(gd)}
 
-gdal_path <- function(){
-    gdal_setInstallation()
-    valid_install <- !is.null(getOption("gdalUtils_gdalPath"))
-    return(valid_install)}
+## gdal_path <- function(){
+##     gdal_setInstallation()
+##     valid_install <- !is.null(getOption("gdalUtils_gdalPath"))
+##     return(valid_install)}
 
 msk_sp_ <- function(treeTemp, lossTemp, tim = c(1,1)){
     lossTemp[!(lossTemp >= tim[1] & lossTemp <= tim[2])] <- NA
@@ -876,7 +878,7 @@ else
                   hasOsgeo4w = hasOsgeo4w,
                   gdal_calc_py = gdal_calc_exists(),
                   gdal_warp = gdalwarp_exists(),
-                  gdal_path = gdal_path(),
+                  ## gdal_path = gdal_path(),
                   fapp = 'mcmapply',
                   miss = ' Missing layer ',
                   trls = c('treecover2000','lossyear'),

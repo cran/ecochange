@@ -63,30 +63,26 @@ N. (2015). Agree on biodiversity metrics to
 track from space: Ecologists and space
 agencies must forge a global monitoring
 strategy. Nature, 523(7561), 403-406.}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 
 
 \examples{
-## Warnings from GDAL/PROJ are suppressed.
-
 ## RasterBrick of structural Essential Biodiversity Variables
 ## covering the extent of a location in the northern Amazon basin
 ## (Colombia) is imported:
 path. <- system.file('amazon.grd',package = 'ecochange')
-amazon <- suppressWarnings(brick(path.))
+amazon <- brick(path.)
 
 ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
 ## brick are computed:
-suppressWarnings(
     def <- echanges(amazon, eco = 'TC',
                     change = 'lossyear',
                     eco_range = c(1,80),
                     get_unaffected = TRUE,
                     binary_output = FALSE,
                     mc.cores = 2)
-)
 
 ## Function 'gaugeIndicator' is used to compute ecosystem areas
 ## (default):

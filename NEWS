@@ -1,3 +1,14 @@
+New changes in ecochange V2.5
+Function 'rsp2ebv': gdalwarp from gdalUtilities is implemented. Library gdalUtils is not used anymore
+
+New changes in ecochange V2.4
+Function 'getrsp': We added the argument 'rewrite.pass' to rewrite earth-data password
+Function 'rsp2ebv': file paths were normalized using normalizePath()
+
+New changes in ecochange V2.3
+Function 'rsp2ebv': Argument 'path' is expanded using path.expand()
+Function 'plotebv': Suggested depencence 'rasterVis' has been avoided.
+
 New changes in ecochange V2.1
 
 changes in function 'echanges': "gdal_calc.py" binary is not

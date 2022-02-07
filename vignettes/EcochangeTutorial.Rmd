@@ -1,0 +1,168 @@
+---
+title: "Introduction to the package ecochange"
+author: "Wilson Lara (wilarhen@gmail.com), Victor Gutierrez (victorhugo@temple.edu)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to the package ecochange}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## Introduction
+The R-package <span style="font-family:courier; font-size:1em;">ecochange</span> can assist users in monitoring ecosystem changes by computing biodiversity indicators related to structural essential biodiversity variables, including ecosystem extent, horizontal structure, and ecosystem fragmentation. 
+
+The package requires minimally the name of an administrative unit or a user-defined polygon and the name of a remote sensing product. 
+The names of administrative units come from Geographic Administrative Data Maps (GADM). Remote sensing products consist of 16 different data layers that can be downloaded using the package functionality from three global databases: Forest Cover (GFC; Hansen et al., 2013), Tree-canopy Cover (TC; Sexton et al., 2013), and Water Surface (GWS; Pekel et al., 2017). The package can also process other custom-based datasets.
+
+<span style="font-family:courier; font-size:1em;">ecochange</span> harmonizes all remote sensing products to the geometry of the polygon. Then it combines the datasets to produce a variety of spatial products, indicators, statistics and graphs. Most arguments are inherited by different functions to make the coding more efficient.
+
+## Installation
+Users can install the package and the dependencies running <span style="font-family:courier; font-size:1em;">install.packages()</span>. They can load it using either <span style="font-family:courier; font-size:1em;">require()</span> or <span style="font-family:courier; font-size:1em;">library()</span>. Users must be sure that all dependencies are correctly installed.
+
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+# install.packages('ecochange')
+require('ecochange')
+
+dependencies <- c("raster","sf","gdalUtilities","readr","rgdal","parallel","curl","ggplot2","graphics","rgeos","rvest","landscapemetrics","tibble","utils","xml2","dplyr","R.utils","httr","getPass","methods","rlang","forcats","lattice","rasterDT","data.table","viridis","stats","rasterVis")
+
+# Test that all dependencies are available. Values in the next list must be all TRUE
+sapply(dependencies, require, character.only = TRUE)
+```
+
+## Downloading spatial data
+The function <span style="font-family:courier; font-size:1em;">getrsp()</span> downloads a data tile for a selected RS product covering a polygon. Its first argument can either be the name of an administrative unit or a polygon.
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+# The getGADM() function provides the names of administrative units. By default, it shows level 2 administrative units in the country of Colombia but those settings can be changed through the parameters level and country
+getGADM()
+
+# List the products that can be downloaded with ecochange
+listGP()
+
+# Download a layer containing water occurrence for the municipality
+# of Chimichagua
+waterocc=getrsp("Chimichagua", lyrs=c("occurrence"))
+
+# the object is downloaded by default to a temporary folder.
+# Users can define a different path using the argument path()
+waterocc
+
+# Let's plot the object
+plot(raster(waterocc[1]))
+```
+
+## Downloading, resizing, reprojecting and harmonizing datasets
+The function <span style="font-family:courier; font-size:1em;">rsp2ebv()</span> automates the downloading, reprojection and cropping of the dataset of interest to a given polygon. It can inherit arguments in the previous <span style="font-family:courier; font-size:1em;">getrsp()</span>. The function will detect whether the file was already downloaded to avoid download it again.
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+wo=rsp2ebv('Chimichagua', lyrs = c('occurrence'), mc.cores = 6)
+plot(wo)
+
+# check that the projection is different to the file that was originally downloaded
+crs(raster(waterocc[1]))
+crs(wo)
+```
+
+The <span style="font-family:courier; font-size:1em;">rsp2ebv()</span> can also be implemented to download and harmonize several datasets simultaneously.
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+ebv <- rsp2ebv('Chimichagua', lyrs = c('treecover2000','lossyear'), mc.cores = 6)
+plot(ebv)
+```
+
+## Deriving ecological changes
+Function <span style="font-family:courier; font-size:1em;">echanges()</span> can produce <span style="font-family:courier; font-size:1em;">RasterStack</span> ecosystem-change representations by masking cell values in a layer of ecosystem changes over a target ecosystem variable.
+
+This function can process datasets previously harmonized with <span style="font-family:courier; font-size:1em;">rsp2ebv()</span>. It can also inherit arguments in <span style="font-family:courier; font-size:1em;">rsp2ebv()</span> and derive the data sections as an intermediate step.
+
+The function is designed to be generic so that it can adapt to broad types of datasets and purposes. By default, <span style="font-family:courier; font-size:1em;">echanges()</span>  considers the first layer as the target variable and the last layer as the change raster. If these layer positions are incorrect, the users must provide two additional arguments: <span style="font-family:courier; font-size:1em;">eco</span> and <span style="font-family:courier; font-size:1em;">change</span>. Such arguments provide regular expressions matching the names of the variables in the raster-data sections. For instance, we can use the arguments <span style="font-family:courier; font-size:1em;">eco</span> and <span style="font-family:courier; font-size:1em;">change</span> to provide the expressions <span style="font-family:courier; font-size:1em;">'tree'</span> and <span style="font-family:courier; font-size:1em;">'loss'</span> corresponding with the layers <span style="font-family:courier; font-size:1em;">'treecover2000'</span> and <span style="font-family:courier; font-size:1em;">'lossyear'</span>, respectively.
+
+Arguments <span style="font-family:courier; font-size:1em;">eco_range</span> and <span style="font-family:courier; font-size:1em;">change_vals</span> control the pixel values processed in the target variable and the change raster. 
+
+The output of <span style="font-family:courier; font-size:1em;">echanges()</span> is a <span style="font-family:courier; font-size:1em;">RasterStack</span> object with dimensionality defined by the values provided in <span style="font-family:courier; font-size:1em;">change_vals</span>. Here we obtain three layers corresponding with deforestations observed during the three years.
+
+For instance, let's calculate forest cover area for the years 2005, 2010, and 2020, assuming a definition of forest as those areas with canopy cover between 95 and 100%
+
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+forExt <- echanges(ebv, eco = 'tree', eco_range=c(95,100), echanges = 'loss', change_vals = c(5,10,20), binary_output=TRUE, mc.cores = 6)
+plotebv(forExt)
+```
+
+It is possible to produce instead, a map with cumulative deforested areas by setting the argument <span style="font-family:courier; font-size:1em;">get_unaffected=FALSE</span>.
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+defExt <- echanges(ebv, eco = 'tree', eco_range=c(95,100), echanges = 'loss', change_vals = c(5,10,19), binary_output=TRUE, mc.cores = 6,
+                   get_unaffected=FALSE)
+plotebv(defExt)
+```
+
+The function also allows to calculate, for instance, the distribution of tree cover among deforested pixels by changing the argument <span style="font-family:courier; font-size:1em;">binary_output = FALSE</span>.
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+defExtTC <- echanges(ebv, eco = 'tree', eco_range=c(95,100), echanges = 'loss', change_vals = c(5,10,19), binary_output=FALSE, mc.cores = 6, get_unaffected=FALSE)
+plotebv(defExtTC)
+```
+
+## Calculating biodiversity indicators and statistics
+
+The function <span style="font-family:courier; font-size:1em;">gaugeIndicator()</span> calculates  biodiversity indicators by processing <span style="font-family:courier; font-size:1em;">RasterStack</span> ecosystem-change representations from <span style="font-family:courier; font-size:1em;">echanges()</span>. It can also inherit arguments from <span style="font-family:courier; font-size:1em;">rsp2ebv()</span> and <span style="font-family:courier; font-size:1em;">echanges()</span> to derive the <span style="font-family:courier; font-size:1em;">RasterStack</span> ecosystem-change representations.
+
+The argument metric provides the name of a biodiversity indicator. By default, <span style="font-family:courier; font-size:1em;">metric = 'area_ha'</span> tells the function to compute ecosystem areas (hectare).
+
+Users can define any other biodiversity indicators inherited from the package landscapemetrics (Hesselbarth et al., 2019)
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+library(landscapemetrics)
+list_lsm()
+```
+
+The function output is a tibble of indicators ordered according to classes in the ecological variable. This output can be visualized using the in-package <span style="font-family:courier; font-size:1em;">plotind()</span>.
+
+Let's calculate the cummulative forest and deforested area in the three years analyzed above
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+forArea=gaugeIndicator(forExt, ncores=6)
+defArea=gaugeIndicator(defExt, ncores=6)
+forArea
+defArea
+plotind(forArea)
+plotind(defArea)
+```
+
+The function allows to calculate the area of forest loss per canopy cover classes
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+defAreaTC=gaugeIndicator(defExtTC, ncores=6)
+defAreaTC
+plotind(defAreaTC)
+```
+
+Users can also calculate statistics for each tree cover class using the <span style="font-family:courier; font-size:1em;">EBVstats()</span> function:
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+chgstats=EBVstats(defExtTC)
+chgstats
+barplot(chgstats)
+```
+
+## Sampling indicators across grids
+The function <span style="font-family:courier; font-size:1em;">sampleIndicator()</span> divides each of the scenes in a stack into fixed-size grids and produces a biodiversity indicator for each grid. This function helps users to visualize changes in the spatial distribution of the biodiversity indicators.
+
+Here we calculate changes in conditional entropy to measure ecosystem degradation in terms of changes of pixel adjacency and canopy-cover diversity. The function includes an argument <span style="font-family:courier; font-size:1em;">side</span> that defines the cell-size. Users can use this argument to define a customized grid size. Using the default settings for the side argument means that the algorithm will automatically produce an optimum grid size (m) that returns at least a numeric value for each grid in the scene. The function output is a <span style="font-family:courier; font-size:1em;">RasterStack</span> object with the same number of layers as the ecosystem-change map.
+
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+# Let's first calculate forest extent by all tree cover classes for 2019
+ech <- echanges(ebv, eco = 'tree', echanges = 'loss',
+                change_vals =19, mc.cores = 2)
+plot(ech)
+
+si <- sampleIndicator(ech, mc.cores = 6)
+si
+plotebv(si)
+```
+
+## Citing ecochange
+The package can be cited using the <span style="font-family:courier; font-size:1em;">citation()</span> function. Please cite ecochange appropriately in your work.
+```{r include = TRUE, message=F, warning=F, eval=FALSE}
+citation('ecochange')
+```
+
+## Data sources and references
+Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A. A., Tyukavina, A., … & Kommareddy, A. (2013). High-resolution global maps of 21st-century forest cover change. science, 342(6160), 850-853.
+
+Hesselbarth, M.H., Sciaini, M., With, K.A., Wiegand, K., & Nowosad, J., (2019). landscapemetrics: an open-source R tool to calculate landscape metrics. Ecography.
+
+Pekel, J. F., Belward, A., & Gorelick, N. (2017). Global Water Surface Dynamics: Toward a Near Real Time Monitoring Using Landsat and Sentinel Data. In AGU Fall Meeting Abstracts.
+
+Sexton, J. O., Song, X. P., Feng, M., Noojipady, P., Anand, A., Huang, C., … & Townshend, J. R. (2013). Global, 30-m resolution continuous fields of tree cover: Landsat-based rescaling of MODIS vegetation continuous fields with lidar-based estimates of error. International Journal of Digital Earth, 6(5), 427-448.

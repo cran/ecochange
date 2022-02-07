@@ -1,7 +1,7 @@
 plotebv <- structure(function #Plot EBV
-### This function displays level plots for ecosystem remote sensing
-### products using common scale-bars. The function is helpful to
-### visualize patterns in biodiversity indicators.
+### This function aims to display level plots for remote sensing
+### products using common scale-bars via the implementation of
+### the \code{rasterVis} library. 
 (
     ebv, ##<<\code{Raster*}. Raster Object.
     col.regions = rev(viridis_pal(option="D")(255)), ##<<\code{}. Color
@@ -15,10 +15,6 @@ plotebv <- structure(function #Plot EBV
     if(is.logical(ebv))
         return(plot(ebv))
     
-    ## if(is.null(col.regions)){
-    ##     pal.n <- max(ebv@'data'@'max')
-    ##     col.regions <- rev(viridis_pal(option="D")(pal.n))}
-
       if (requireNamespace("rasterVis", quietly = TRUE)) {
 
     plt <- rasterVis::levelplot(ebv,
@@ -45,28 +41,23 @@ plotebv <- structure(function #Plot EBV
          plt <- raster::plot(ebv, col = col.regions)
           }
     return(plt)
+        ## raster::plot(ebv, col = col.regions, ...)
 ### \code{levelplot}.
 } , ex=function() {
-    ## Warnings from GDAL/PROJ are suppressed.
-
     ## Brick with structural Essential Biodiversity Variables covering the
     ## extent of a location in the northern Amazon basin (Colombia):
     path. <- system.file('amazon.grd',package = 'ecochange')
-    amazon <- suppressWarnings(brick(path.))
+    amazon <- brick(path.)
     
     ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
     ## brick are computed:
-    suppressWarnings(
     def <- echanges(amazon, eco = 'TC',
                     change = 'lossyear',
                     eco_range = c(1,80),
                     get_unaffected = TRUE,
                     binary_output = FALSE,
                     mc.cores = 2)
-    )
     
     ## Function 'plotebv' allows comparing rasters using a common scale bar:
-    suppressWarnings(
     plotebv(def)
-)
 })

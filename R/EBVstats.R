@@ -31,29 +31,25 @@ EBVstats <- structure(function #EBV Stats
     return(sts)
 ### \code{tibble}.
 } , ex=function(){
-    ## Warnings from GDAL/PROJ are suppressed.
-
     ## Brick with structural Essential Biodiversity Variables covering the
     ## extent of a location in the northern Amazon basin (Colombia):
 
     path. <- system.file('amazon.grd',package = 'ecochange')
-    amazon <- suppressWarnings(brick(path.))
+    amazon <- brick(path.)
     
     ## Tree-cover layers in the 'amazon' brick are both formatted and
     ## deforested:
 
-    suppressWarnings(
     def <- echanges(amazon, eco = 'TC',
                     change = 'lossyear',
                     eco_range = c(1,80),
                     get_unaffected = TRUE,
                     binary_output = FALSE,
                     mc.cores = 2)
-    )
 
     ## Deforestation Statistics:
 
-    defstats <- suppressWarnings(EBVstats(def))
+    defstats <- EBVstats(def)
 
     ## barplot method:
 

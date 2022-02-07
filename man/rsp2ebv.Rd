@@ -17,15 +17,15 @@ or 2) the name of a \code{GADM} unit (see
 \code{\link{getGADM}}); or 3) a \code{NULL}
 value. Default \code{NULL} makes the function to
 print a list of \code{GADM} units.}
-  \item{\dots}{If \code{ps} is a \code{GADM} unit then additional
-arguments in \code{\link{getGADM}} can be specified here.}
-  \item{lyrs}{\code{character}. Names of the ecosystem
-earth-observation products. If \code{NULL} then a
-list of products is printed, see
-\code{\link{listGP}}.  Default \code{NULL}.}
+  \item{\dots}{Additional arguments in \code{\link{getGADM}} and
+\code{\link{getrsp}}.}
+  \item{lyrs}{\code{character}. Remote-sensing
+products. Default \code{NULL} makes the function to
+print a list of Downloadable data, see
+\code{\link{listGP}}.}
   \item{path}{\code{character}. Path name indicating where the
 variables are stored. If missing then a folder
-named as \code{'ecochange'} located in a current
+named as \code{'ecochange'} created in a current
 temporary directory is used.}
   \item{sr}{\code{character}. \code{PROJ.4} description of the target
 coordinate reference system. If missing then the target
@@ -74,42 +74,26 @@ N. (2015). Agree on biodiversity metrics to
 track from space: Ecologists and space
 agencies must forge a global monitoring
 strategy. Nature, 523(7561), 403-406.}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 
 
 \examples{
-## First, we'll check to make sure there is a valid GDAL
-## installation (from 'gdalUtils):
-
- \donttest{
- gdalUtils::gdal_setInstallation()
- valid_install <- !is.null(getOption("gdalUtils_gdalPath"))
- }
-
-## Warnings from GDAL/PROJ are suppressed.
-
 ## A Global Surface Water layer ('seasonality') covering the extent of a
 ## Colombian municipality Cartagena del Chairá is formated into an
 ## spatial EBV:
         load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
  \donttest{
- suppressWarnings(
  rsp_cchaira <- getrsp(cchaira_roi,
    lyrs = 'seasonality', mc.cores = 2, path = tempdir())
-)
 
- file.exists(rsp_cchaira)
+  file.exists(rsp_cchaira)
 
- suppressWarnings(
  season_cchaira <- rsp2ebv(cchaira_roi,
                                lyrs = 'seasonality', path = tempdir())
- )
 
- suppressWarnings(
  plotebv(season_cchaira)
- )
  }
 }

@@ -104,33 +104,26 @@ Landsat-based rescaling of MODIS vegetation
 continuous fields with lidar-based estimates
 of error. International Journal of Digital
 Earth, 6(5), 427-448.}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [aut], Maria C. Londono [aut]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 
 
 \examples{
+## Brick with structural Essential Biodiversity Variables covering the
+## extent of a location in the northern Amazon basin (Colombia):
+path. <- system.file('amazon.grd',package = 'ecochange')
+amazon <- brick(path.)
 
-    ## Warnings from GDAL/PROJ are suppressed.
+## Changes in layers of tree-canopy cover (TC) in the 'amazon'
+## brick are computed:
+def <- echanges(amazon, eco = 'TC',
+                change = 'lossyear',
+                eco_range = c(1,80),
+                get_unaffected = TRUE,
+                binary_output = FALSE,
+                mc.cores = 2)
 
-    ## Brick with structural Essential Biodiversity Variables covering the
-    ## extent of a location in the northern Amazon basin (Colombia):
-    path. <- system.file('amazon.grd',package = 'ecochange')
-    amazon <- suppressWarnings(brick(path.))
-    
-    ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
-    ## brick are computed:
-    suppressWarnings(
-    def <- echanges(amazon, eco = 'TC',
-                    change = 'lossyear',
-                    eco_range = c(1,80),
-                    get_unaffected = TRUE,
-                    binary_output = FALSE,
-                    mc.cores = 2)
-    )
-    
-    ## Function 'plotebv' allows comparing rasters using a common scale bar:
-    suppressWarnings(
-    plotebv(def)
-)
+## Function 'plotebv' allows comparing rasters using a common scale bar:
+plotebv(def)
 }

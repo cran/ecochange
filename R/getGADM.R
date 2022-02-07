@@ -13,8 +13,8 @@ getGADM <- structure(function #Get Geographic Adminitrative Unit
     level = 2, ##<<\code{numeric}. A number between zero and two,
                ##indicating any of the levels of administrative
                ##subdivisions in \code{GADM} (\code{0=country},
-               ##\code{1=first level of subdivision}, and
-               ##\code{2=second level of subdivision}).
+               ##\code{1=first administrative subdivision}, and
+               ##\code{2=second administrative subdivision}).
     country = 'COL', ##<<\code{character}. \code{ISO} code specifying
                      ##a country. Default \code{'COL'}
     path = tempdir() ##<<\code{character}. Path name indicating where
@@ -32,7 +32,7 @@ getGADM <- structure(function #Get Geographic Adminitrative Unit
     if(is.null(unit.nm))
         return(ds)
     chm <- pmatch(unit.nm[1], ds)
-    unit.nm[1] <- ds[chm] 
+    unit.nm[1] <- ds[chm]
     adm <- subset(adm, get(lv.col)%in%unit.nm[1])
     if(length(adm) == 0)
         stop("'unit.nm' not found, change 'level'/'country'")
@@ -43,13 +43,13 @@ a higher-level subdivision is required: unit.nm = c('unit', 'h.l.unit')")
     if(length(unit.nm) > 1){
         ds <- data.frame(adm)[,'NAME_1']
         chm <- pmatch(unit.nm[2], ds)
-        unit.nm[2] <- ds[chm] 
+        unit.nm[2] <- ds[chm]
         adm <- subset(adm, get('NAME_1')%in%unit.nm[2])}
     return(adm)
 ### \code{SpatialPolygonsDataFrame} or \code{character} vector of
 ### \code{GADM} units..
 } , ex=function() {
-## Printing municipalities of Colombia:    
+## Printing municipalities of Colombia:
 
     ## \donttest{
     ##     muni <- getGADM()

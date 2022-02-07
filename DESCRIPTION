@@ -2,8 +2,8 @@ Package: ecochange
 Type: Package
 Title: Integrating Ecosystem Remote Sensing Products to Derive EBV
         Indicators
-Version: 2.2
-Date: 2021-08-25
+Version: 2.5
+Date: 2022-02-05
 Authors@R: 
     c(person(given = "Wilson",
              family = "Lara Henao",
@@ -14,25 +14,24 @@ Authors@R:
              role = "aut"),
       person(given = "Ivan",
              family = "Gonzalez",
-             role = "aut"),
+             role = "ctb"),
       person(given = "Maria C.",
              family = "Londono",
-             role = "aut"))
+             role = "ctb"))
 Maintainer: Wilson Lara Henao <wilarhen@gmail.com>
-Description: Essential Biodiversity Variables (EBV) are state variables with dimensions on time, space, and biological organization that document biodiversity change. Freely available ecosystem remote sensing products (ERSP) are downloaded and integrated with data for national or regional domains to derive indicators related to structural EBV, including horizontal ecosystem extents, fragmentation, and information-theory indices. To process ERSP, users must provide at least a region of interest (polygon or geographic administrative data map). Downloadable ERSP include Global Surface Water (Peckel et al., 2016) <doi:10.1038/nature20584>, Forest Change (Hansen et al., 2013) <doi:10.1126/science.1244693>, and Continuous Tree Cover data (Sexton et al., 2013) <doi:10.1080/17538947.2013.786146>. The package relies on GDAL binaries. To instal GDAL in different operative systems, see the system-dependencies vignette.
+Description: Essential Biodiversity Variables (EBV) are state variables with dimensions on time, space, and biological organization that document biodiversity change. Freely available ecosystem remote sensing products (ERSP) are downloaded and integrated with data for national or regional domains to derive indicators related to structural EBV, including horizontal ecosystem extents, fragmentation, and information-theory indices. To process ERSP, users must provide a polygon or geographic administrative data map. Downloadable ERSP include Global Surface Water (Peckel et al., 2016) <doi:10.1038/nature20584>, Forest Change (Hansen et al., 2013) <doi:10.1126/science.1244693>, and Continuous Tree Cover data (Sexton et al., 2013) <doi:10.1080/17538947.2013.786146>. 
 License: GPL-3
-Depends: R (>= 3.5.0), raster, rgeos, stats, ggplot2, sf, gdalUtils
+Depends: R (>= 3.5.0), raster, sf
 Imports:
-        readr,rgdal,parallel,curl,gdalUtilities,graphics,rvest,landscapemetrics,sp,tibble,utils,xml2,dplyr,R.utils,httr,getPass,methods,rlang,forcats,lattice,rasterDT,data.table,viridis
+        readr,rgdal,parallel,curl,gdalUtilities,ggplot2,graphics,rgeos,rvest,landscapemetrics,tibble,utils,xml2,dplyr,R.utils,httr,getPass,methods,rlang,forcats,lattice,rasterDT,data.table,viridis,stats
 Suggests: knitr, rmarkdown, rasterVis
-SystemRequirements: GDAL binaries
 VignetteBuilder: knitr
 Encoding: latin1
 NeedsCompilation: no
-Packaged: 2021-08-25 22:59:00 UTC; wilar
+Packaged: 2022-02-07 22:04:19 UTC; wilar
 Author: Wilson Lara Henao [aut, cre],
   Victor Gutierrez-Velez [aut],
-  Ivan Gonzalez [aut],
-  Maria C. Londono [aut]
+  Ivan Gonzalez [ctb],
+  Maria C. Londono [ctb]
 Repository: CRAN
-Date/Publication: 2021-09-08 13:10:02 UTC
+Date/Publication: 2022-02-07 22:30:02 UTC

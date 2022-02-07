@@ -80,9 +80,13 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
     recl.m <- recMatrix(min:max, classes)
     ps <- reclassify(ps, recl.m)}
     fnrs <- function(x){
-        pjr <- projectRaster(ps, crs = crs(ps),
-                             res = x, method = 'ngb')
+        pjr <- suppressWarnings(projectRaster(ps, crs = crs(ps),
+                             res = x, method = 'ngb'))
         return(pjr)}
+    ## fnrs <- function(x){
+    ##     pjr <- projectRaster(ps, crs = crs(ps),
+    ##                          res = x, method = 'ngb')
+    ##     return(pjr)}
     if(missing(side)){
         sdc <- c(10^-c(1:3),5*(10^-c(2:3)))
         dff <- diff(extent(ps)[1:2])
@@ -110,7 +114,7 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
     args <- Map(function(w,z)
         fn_smp_lsm(w, z, metric, smp_lsm), ps, r2pol)
     marg. <- c(list(FUN = function(x)
-        do.call('sample_lsm', x),
+        suppressWarnings(do.call('sample_lsm', x)),
         x = args), marg)
     myMetric <- do.call(getOption('fapp'), marg.)
     if(any(is.character(myMetric))){
@@ -129,24 +133,20 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
 ### \code{Raster*}.
 } , ex=function() {
 
-    ## Warnings from GDAL/PROJ are suppressed.
-
     ## RasterBrick of structural Essential Biodiversity Variables
     ## covering the extent of a location in the northern Amazon basin
     ## (Colombia) is imported:
     path. <- system.file('amazon.grd',package = 'ecochange')
-    amazon <- suppressWarnings(brick(path.))
+    amazon <- brick(path.)
     
     ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
     ## brick are computed:
-    suppressWarnings(
     def <- echanges(amazon, eco = 'TC',
                     change = 'lossyear',
                     eco_range = c(1,80),
                     get_unaffected = TRUE,
                     binary_output = FALSE,
                     mc.cores = 2)
-    )
 
 
     plotebv(amazon)
@@ -154,9 +154,7 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
     ## Function 'sampleIndicator' is implemented to sample a metric of
     ## conditional entropy (default):
 
-    suppressWarnings(
         def_condent <- sampleIndicator(def, side = 400, mc.cores = 2)
-    )
 
     plotebv(def_condent)
 
