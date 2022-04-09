@@ -73,7 +73,11 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
         if(isLayer)
             return(ps)
     }
-    
+
+    if('echanges'%in%class(ps))
+        ps <- stack(unclass(ps))
+    ## class(ps) <- 'list'
+    ## ps <- stack(ps)
     
     nm. <- names(ps)
     if(!is.null(classes)){
@@ -83,10 +87,6 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
         pjr <- suppressWarnings(projectRaster(ps, crs = crs(ps),
                              res = x, method = 'ngb'))
         return(pjr)}
-    ## fnrs <- function(x){
-    ##     pjr <- projectRaster(ps, crs = crs(ps),
-    ##                          res = x, method = 'ngb')
-    ##     return(pjr)}
     if(missing(side)){
         sdc <- c(10^-c(1:3),5*(10^-c(2:3)))
         dff <- diff(extent(ps)[1:2])
@@ -126,11 +126,14 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
         return(rstt)}
     rspr <- Map(function(x,y)
         rasterizeMetric(x,y,z=pr, val = 'value'), myMetric,r2pol)
-    rspr <- stack(rspr)
-    rspr <- round(rspr,2)
+    ## rspr <- stack(rspr)
+    ## rspr <- round(rspr,2)
     names(rspr) <- nm.
+      class(rspr) <- append('echanges',class(rspr))
+
+    
     return(rspr)
-### \code{Raster*}.
+### Class \code{echanges}
 } , ex=function() {
 
     ## RasterBrick of structural Essential Biodiversity Variables
@@ -149,13 +152,13 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
                     mc.cores = 2)
 
 
-    plotebv(amazon)
+    plot.echanges(amazon)
 
     ## Function 'sampleIndicator' is implemented to sample a metric of
     ## conditional entropy (default):
 
         def_condent <- sampleIndicator(def, side = 400, mc.cores = 2)
 
-    plotebv(def_condent)
+    plot.echanges(def_condent, cex = 1.5)
 
 })

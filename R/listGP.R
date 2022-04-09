@@ -42,7 +42,8 @@ listGP <- structure(function #List of global products
     load(rasNm)
     dt <- get(gsub('.RData','',fls))
     dt <- dt[,colnames(dt)[c(layer, Algorithm, author, funs, api.code)]]
-    dt <- suppressMessages(readr::type_convert(as_tibble(dt)))
+    ## dt <- suppressMessages(readr::type_convert(as_tibble(dt)))
+    dt <- suppressMessages(utils::type.convert(as_tibble(dt),as.is =TRUE))
     return(dt)
 ###\code{tibble}.
 } , ex=function() {

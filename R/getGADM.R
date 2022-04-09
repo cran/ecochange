@@ -22,6 +22,9 @@ getGADM <- structure(function #Get Geographic Adminitrative Unit
 ) {
     ## if(missing(path))
     ## path <- tempdir()
+    if(!is.null(unit.nm))
+    if(is.na(unit.nm))
+        return(NA)
     adm <- getData('GADM', path = path,
                    country=country,
                    level=level)
@@ -52,7 +55,7 @@ a higher-level subdivision is required: unit.nm = c('unit', 'h.l.unit')")
 ## Printing municipalities of Colombia:
 
     ## \donttest{
-    ##     muni <- getGADM()
+    ##     muni <- getGADM(NA)
     ##     head(muni)
     ## }
 

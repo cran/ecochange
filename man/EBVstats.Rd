@@ -2,12 +2,14 @@
 \alias{EBVstats}
 \title{EBV Stats}
 \description{This function is a wrapper of \code{cellStats} used to compute
-statistics of essential biodiversity variables.}
+statistics for spatial indicators in the EBV class ecosystem
+structure. To derive the spatial indicators see functions
+\code{\link{echanges}} and \code{\link{sampleIndicator}} }
 \usage{EBVstats(ccp, stats, 
     ...)}
 \arguments{
-  \item{ccp}{\code{RasterStack} or \code{NULL}. If \code{NULL} then
-\code{NULL} is returned.}
+  \item{ccp}{\code{echanges}, or \code{RasterStack} or
+\code{NULL}. If \code{NULL} then \code{NULL} is returned.}
   \item{stats}{\code{character}. vector of \code{stats} defined in
 \code{\link{cellStats}}. If missing then six summary
 statistics, including \code{'mean'}, \code{'sd'},
@@ -23,15 +25,14 @@ statistics, including \code{'mean'}, \code{'sd'},
 
 
 \examples{
-## Brick with structural Essential Biodiversity Variables covering the
-## extent of a location in the northern Amazon basin (Colombia):
-
+## RasterBrick of structural Essential Biodiversity Variables
+## covering the extent of a location in the northern Amazon basin
+## (Colombia) is imported:
 path. <- system.file('amazon.grd',package = 'ecochange')
 amazon <- brick(path.)
 
-## Tree-cover layers in the 'amazon' brick are both formatted and
-## deforested:
-
+## Changes in layers of tree-canopy cover (TC) are computed by
+## processing the 'amazon' brick:
 def <- echanges(amazon, eco = 'TC',
                 change = 'lossyear',
                 eco_range = c(1,80),
@@ -39,11 +40,15 @@ def <- echanges(amazon, eco = 'TC',
                 binary_output = FALSE,
                 mc.cores = 2)
 
-## Deforestation Statistics:
+## Function 'EBVstats' is used to compute ecosystem statistics
+st_amazon <- EBVstats(def)
 
-defstats <- EBVstats(def)
-
-## barplot method:
-
-barplot(defstats)
+## A plot of the 'st_amazon' object
+plot.EBVstats(st_amazon,
+               cex = 1.5,
+               xlab = 'Year',
+               ylab = 'Canopy cover (\%)',
+               main = 'Ecosystem changes',
+               sub = 'Northern Amazon',
+               fill = 'Layer')
 }

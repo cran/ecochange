@@ -39,20 +39,10 @@ uses around 60 percent of
 the cores.}
 }
 \details{This function implements
-\code{'gdalUtils'} so it assumes the user
-has a working GDAL installation on their system. From
-the documentation: "If the
-\code{'gdalUtils_gdalPath'} option has
-been set (usually by
-\code{'gdal_setInstallation'}), the GDAL
-found in that \code{path} will be used. If
-nothing is found,
-\code{'gdal_setInstallation'} will be
-executed to attempt to find a working
-GDAL that has the right drivers as
-specified with the \code{'of'} (output
-format) parameter", see example below.}
-\value{\code{RasterStack} or \code{list}.}
+\code{'sf::gdal_utils'} so it assumes the
+user's machine has a valid GDAL
+installation.}
+\value{Class \code{echanges}.}
 \references{{Jetz, W., McGeoch, M. A.,
 Guralnick, R., Ferrier, S., Beck, J.,
 Costello, M. J., ... & Meyer,
@@ -89,11 +79,11 @@ strategy. Nature, 523(7561), 403-406.}}
  rsp_cchaira <- getrsp(cchaira_roi,
    lyrs = 'seasonality', mc.cores = 2, path = tempdir())
 
-  file.exists(rsp_cchaira)
+ file.exists(rsp_cchaira)
 
  season_cchaira <- rsp2ebv(cchaira_roi,
                                lyrs = 'seasonality', path = tempdir())
 
- plotebv(season_cchaira)
+ plot.echanges(season_cchaira)
  }
 }

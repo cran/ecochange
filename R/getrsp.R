@@ -87,14 +87,39 @@ getrsp <- structure(function #Get remote sensing product
         roi <- st_transform(roi, crs = getOption('longlat'))
         roi <- as(roi, "Spatial")
     }
-    if(is.null(lyrs))return(listGP()$'layer')
-   if(any(grepl('TC_', lyrs)))
-        lyrs <- rnm.lyrs0(lyrs)
-    urt. <- suppressMessages(
-        unlist(get_EOURL(roi, lyrs, path = path, verify.web = verify.web),
-               use.names = FALSE))# <-
-    lsRoi <- list2env(list(roi = roi))
-    if(is.null(urt.)){
+        if(is.null(lyrs)){
+            return(listGP()$'layer')}
+        lyrs. <- lyrs
+        if(any(grepl('TC_', lyrs))){
+            lyrs <- rnm.lyrs0(lyrs)}
+
+        suggested <- c('curl', 'xml2','rvest')
+        sugg_logs <- sapply(suggested,
+                            function(x) requireNamespace(x,quietly = TRUE))
+        if(verify.web&!all(sugg_logs)){
+            print(paste0(paste(suggested[!sugg_logs], collapse = ', '),
+                         " needed for this function to verify urls in the web"))
+            verify.web <- FALSE
+        }
+        urt. <- suppressMessages(
+            unlist(get_EOURL(roi, lyrs, path = path, verify.web = verify.web),
+                   use.names = FALSE))# <-
+        lsRoi <- list2env(list(roi = roi))
+
+        ps. <- paste(lyrs., collapse = '|')
+        objs <- as.data.frame(file.info(list.files(path = path, full.names = TRUE)))
+        objs <- objs[grepl(ps.,rownames(objs)),]
+        torem <- (round(objs$'size' * 1E-6, 3) == 0)
+        ## if(grepl('Rtmp', path)&any(torem)){
+        if(any(torem)){
+            allpaths <- file.path(path,basename(rownames(objs)))
+            rmpaths <- allpaths[torem]
+            print('Previous corrupted files were removed:')
+            print(rmpaths)
+            rem <- file.remove(rmpaths)
+        }# see also line 176
+
+        if(is.null(urt.)){
         ps <- paste(lyrs, collapse = '|')
         indir <- grep(ps,dir(path))
         if(length(indir) == 0){
@@ -131,127 +156,65 @@ fl <- normalizePath(file.path(path, basename(urt.)),winslash = '/',
     fl.. <- fl[usgs]
     flh.. <- fl[!usgs]
     fprll <- getOption('fapp')
-    print(paste0('The new data will be stored in ', path,':'))
+    ## print(paste0('The new data will be stored in ', path,':'))
+## cat(paste0('Downloading files on ', path,':'))
+    dmsg <- paste0('Downloading files on ', path,'\n')
+        cat(dmsg)
     doc1 <- NULL
     if(!getOption('isWin')){
         marg[['mc.cores']] <- mc.cores}
+
     if(length(urt..)!=0){
         marg. <- c(list(FUN = function(x,y)
+            ## fgetpss(x,y, path = path),
             tryCatch(fgetpss(x,y, path = path),
                      error = function(e){
                          print(e)}),
             x = urt..,
             y = fl..),marg)
-        doc1 <- do.call(fprll, marg.)}
+        doc1 <- do.call(fprll, marg.)
+        objs <- as.data.frame(file.info(list.files(path = path, full.names = TRUE)))
+        objs <- objs[grepl(ps.,rownames(objs)),]
+        torem <- (round(objs$'size' * 1E-6, 3) == 0)
+        rmpaths <- NULL
+        ## if(grepl('Rtmp', path)&any(torem)){
+        if(any(torem)){
+            allpaths <- file.path(path,basename(rownames(objs)))
+            rmpaths <- allpaths[torem]
+            ## print('Corrupted data:')
+            ## print(rmpaths)
+            rem <- file.remove(rmpaths)
+            ## print("Corrupted files were disregarded. Set 'rewrite.pass = TRUE' and provide a correct password")
+            cat(paste0(length(rmpaths), " corrupt files were disregarded \n"))
+            cat("Hint: set 'rewrite.pass = TRUE', and use a correct password \n")
+        }# see also line 176
+## doc1 <- doc1[!doc1%in%rmpaths]
+
+    }
     doc2 <- NULL
     if(length(urth..)!=0){
         marg. <- c(list(FUN = function(x,y)
+            ## fget(x,y, path = path),
             tryCatch(fget(x,y, path = path),
                      error = function(e){
                          print(e)}),
             x = urth..,
             y = flh..),marg)
         doc2 <- do.call(fprll, marg.)}
-    pth <- file.path(path, dir(path))
-    docs <- unlist(c(doc1, doc2))
-docs <- normalizePath(file.path(path,basename(c(docs, urt2))),winslash = '/',
-                      mustWork = FALSE)
-    names(docs) <- NULL
-    class(docs) <- append(class(docs),class.)
-    attributes(docs) <- c(attributes(docs), env = lsRoi)
-    return(docs)
+        pth <- file.path(path, dir(path))
+        docs <- unlist(c(doc1, doc2))
 
-   ##  if(rewrite.pass)
-   ##      options('pw' = NULL)
-   ##  old <- options()
-   ##  on.exit(options(old), add = TRUE)
-   ##  class. <- 'getrsp'
-   ##  if(missing(path)){
-   ##      # ecodir <- file.path(tempdir(),'ecochange')
-   ##      ecodir <- normalizePath(file.path(tempdir(),'ecochange'),mustWork = FALSE)
-   ##      if(!file.exists(ecodir))
-   ##      dir.create(ecodir)
-   ##      path  <- ecodir
-   ##  }else{normalizePath(path)}
-   ##  if(inherits(roi, getOption('inh')[3:4])){
-   ##      roi. <- roi
-   ##      roi <- getGADM(roi,..., path = path)
-   ##      if(is.null(roi.))
-   ##          return(roi)}
-   ##  if(!compareCRS(crs(roi), getOption('longlat')))
-   ##      ## roi <- spTransform(roi, getOption('longlat'))
-   ##      roi <- spTransform(roi, CRSobj = getOption('longlat'))
-   ##  if(is.null(lyrs))return(listGP()$'layer')
-   ## if(any(grepl('TC_', lyrs)))
-   ##      lyrs <- rnm.lyrs0(lyrs)
-   ##  urt. <- suppressMessages(
-   ##      unlist(get_EOURL(roi, lyrs, path = path, verify.web = verify.web),
-   ##             use.names = FALSE))# <-
-   ##  lsRoi <- list2env(list(roi = roi))
-   ##  if(is.null(urt.)){
-   ##      ps <- paste(lyrs, collapse = '|')
-   ##      indir <- grep(ps,dir(path))
-   ##      if(length(indir) == 0){
-   ##          stop("'lyrs' can not be retrieved")}
-   ##      else{
-   ##              flcls <- file.path(path, dir(path)[indir])
-   ##              class(flcls) <- append(class(flcls),class.)
-   ##              ## print("'lyrs' already stored in path:")
-   ##              ## print(flcls)
-   ##              attributes(flcls) <- c(attributes(flcls), env = lsRoi)
-   ##              return(flcls)}
-   ##  }
-   ##  urt1 <- urt.[!basename(urt.)%in%dir(path)]
-   ##  urt2 <- urt.[basename(urt.)%in%dir(path)]
-   ##  ## if(length(urt2) != 0){
-   ##  ##     print("'lyrs' already retrieved:")
-   ##  ##     print(file.path(path,basename(urt2)))}
-   ##  if(length(urt1) == 0){
-   ##      flcls <- normalizePath(file.path(path, basename(urt.)),mustWork = FALSE)
-   ##      attributes(flcls) <- c(attributes(flcls), env = lsRoi)
-   ##      class(flcls) <- append(class(flcls), class.)
-   ## return(flcls)}
-   ##  if(length(urt1) != 0){
-   ##      urt. <- urt1}
-   ##  fl <- normalizePath(file.path(path, basename(urt.)),mustWork = FALSE)
-   ##  usgs <- grepl('usgs.gov', urt.)
-   ##  if(any(usgs))
-   ##      if(is.null(getOption('pw')))
-   ##          options(pw = flg())
+        if(any(torem)){
+        ## if(grepl('Rtmp', path)&any(torem)){
+            docs <- docs[!docs%in%rmpaths]
+        }
+        docs <- normalizePath(file.path(path,basename(c(docs, urt2))),winslash = '/',
+                              mustWork = FALSE)
+        names(docs) <- NULL
 
-   ##  urt.. <- urt.[usgs]
-   ##  urth.. <- urt.[!usgs]
-   ##  fl.. <- fl[usgs]
-   ##  flh.. <- fl[!usgs]
-   ##  fprll <- getOption('fapp')
-   ##  print(paste0('The new data will be stored in ', path,':'))
-   ##  doc1 <- NULL
-   ##  if(!getOption('isWin')){
-   ##      marg[['mc.cores']] <- mc.cores}
-   ##  if(length(urt..)!=0){
-   ##      marg. <- c(list(FUN = function(x,y)
-   ##          tryCatch(fgetpss(x,y, path = path),
-   ##                   error = function(e){
-   ##                       print(e)}),
-   ##          x = urt..,
-   ##          y = fl..),marg)
-   ##      doc1 <- do.call(fprll, marg.)}
-   ##  doc2 <- NULL
-   ##  if(length(urth..)!=0){
-   ##      marg. <- c(list(FUN = function(x,y)
-   ##          tryCatch(fget(x,y, path = path),
-   ##                   error = function(e){
-   ##                       print(e)}),
-   ##          x = urth..,
-   ##          y = flh..),marg)
-   ##      doc2 <- do.call(fprll, marg.)}
-   ##  pth <- file.path(path, dir(path))
-   ##  docs <- unlist(c(doc1, doc2))
-   ##  docs <- normalizePath(file.path(path,basename(c(docs, urt2))),mustWork = FALSE)
-   ##  names(docs) <- NULL
-   ##  class(docs) <- append(class(docs),class.)
-   ##  attributes(docs) <- c(attributes(docs), env = lsRoi)
-   ##  return(docs)
+        class(docs) <- append(class(docs),class.)
+        attributes(docs) <- c(attributes(docs), env = lsRoi)
+        return(docs)
 ### Path names of the remote sensing products just retrieved, or
 ### character vectors suggesting GADM units/Global Products that can be
 ### used to download ERSP (see \code{NULL} defaults in arguments

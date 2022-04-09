@@ -26,9 +26,17 @@ getWRS <- structure(function #Get WRS
         fg <- fget(getOption('wrs'), file.path(path,bs), path = path)}
     lstar <- unzip(file.path(path, bs), exdir = path)
     patt. <- gsub('_0.zip','',bs)
-    glshp <- readOGR(path, patt., verbose = FALSE)
-    tif <- lstar[grepl(patt., lstar, ignore.case = TRUE)]
-    slc <- crop(glshp, roi)
+glshp <- st_read(dsn = path, layer = patt., quiet = TRUE)
+roi. <- st_as_sf(roi)
+## st_agr(glshp)  <- 'constant'
+## st_agr(roi.)  <- 'constant'
+glshp <- st_set_agr(glshp, 'constant')
+roi. <- st_set_agr(roi., 'constant')
+    slc <- st_intersection(glshp[,'PR'], roi.)[,1L]
+
+    ## glshp <- sf::as_Spatial(st_read(dsn = path, layer = patt., quiet = TRUE))
+    ## tif <- lstar[grepl(patt., lstar, ignore.case = TRUE)]
+    ## slc <- crop(glshp, roi)
     file.remove(file.path(lstar))
     return(slc)
     ###\code{SpatialPolygonsDataFrame}, or set of \code{GADM} units.

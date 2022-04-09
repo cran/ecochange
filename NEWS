@@ -1,3 +1,19 @@
+New changes in ecochange V2.8
+
+The package has reduced the number of depends and imports, see package
+documentation.
+Functions 'ploebv' and 'plotind' have been replaced by two new plot
+methods: 'plot.echanges' and 'plot.Indicator'
+
+
+New changes in ecochange V2.6
+
+Function 'rsp2ebv': sf::gdal_utils is implemented. Library gdalUtilities is not used anymore.
+Functions 'plotebv' and 'plotind': Import 'viridis' was moved to suggests.
+Function 'getrsp': Imports 'curl', 'xml2', and 'rves' were moved to suggests.
+Function 'getWRS': rgdal::readOGR was replaced by sf::st_read.
+Function 'tabuleRaster': gdaUtilities::gdalinfo was replaced by sf::gdal_utils.
+
 New changes in ecochange V2.5
 Function 'rsp2ebv': gdalwarp from gdalUtilities is implemented. Library gdalUtils is not used anymore
 

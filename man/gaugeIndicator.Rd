@@ -43,7 +43,7 @@ implementation of the function
 than ecosystem extents are calculated
 implementing \code{\link{calculate_lsm}}.
 }
-\value{\code{tibble}.}
+\value{Class \code{Indicator}.}
 \references{{Hesselbarth, M. H., Sciaini, M.,
 With, K. A., Wiegand, K., & Nowosad,
 J. (2019). landscapemetrics: an open source R
@@ -57,6 +57,13 @@ observation as a tool for tracking progress
 towards the Aichi Biodiversity Targets. Remote
 sensing in ecology and conservation, 1(1),
 19-28.}
+
+{Pereira, H.M., Ferrier, S., Walters,
+M., Geller, G.N., Jongman, R.H.G., Scholes,
+R.J., Bruford, M.W., Brummitt, N., Butchart,
+S.H.M., Cardoso, A.C. and Coops, N.C.,
+2013. Essential biodiversity
+variables. Science, 339(6117), pp.277-278}.
 
 {Skidmore, A. K., & Pettorelli,
 N. (2015). Agree on biodiversity metrics to
@@ -77,17 +84,18 @@ amazon <- brick(path.)
 
 ## Changes in layers of tree-canopy cover (TC) in the 'amazon'
 ## brick are computed:
-    def <- echanges(amazon, eco = 'TC',
-                    change = 'lossyear',
-                    eco_range = c(1,80),
-                    get_unaffected = TRUE,
-                    binary_output = FALSE,
-                    mc.cores = 2)
+def <- echanges(amazon, eco = 'TC',
+                change = 'lossyear',
+                eco_range = c(1,80),
+                get_unaffected = TRUE,
+                binary_output = FALSE,
+                mc.cores = 2)
 
 ## Function 'gaugeIndicator' is used to compute ecosystem areas
 ## (default):
 am_areas <- gaugeIndicator(def,
                            mc.cores = 2)
 
+plot.Indicator(am_areas)
 
 }

@@ -3,19 +3,9 @@ rsp2ebv <- structure(function#Integrate remote sensing products
 ###produces raster-data sections with the cell values enclosed in a
 ###region of interest.
                            ##details<< This function implements
-                           ##\code{'gdalUtils'} so it assumes the user
-                           ##has a working GDAL installation on their system. From
-                           ##the documentation: "If the
-                           ##\code{'gdalUtils_gdalPath'} option has
-                           ##been set (usually by
-                           ##\code{'gdal_setInstallation'}), the GDAL
-                           ##found in that path will be used. If
-                           ##nothing is found,
-                           ##\code{'gdal_setInstallation'} will be
-                           ##executed to attempt to find a working
-                           ##GDAL that has the right drivers as
-                           ##specified with the \code{'of'} (output
-                           ##format) parameter", see example below.
+                           ##\code{'sf::gdal_utils'} so it assumes the
+                           ##user's machine has a valid GDAL
+                           ##installation.
 
                       ##references<< {Jetz, W., McGeoch, M. A.,
                       ##Guralnick, R., Ferrier, S., Beck, J.,
@@ -115,8 +105,33 @@ rsp2ebv <- structure(function#Integrate remote sensing products
         ps <- st_transform(ps, crs = crs(x))
         ps <- as(ps, "Spatial")})}
     et <- ftr(ps,rst)
-    trs. <- Map(function(x,y)
-        raster::intersect(extent(x),extent(y)),rst, et)
+
+    fext2sf <- function(x){
+        maing <- 'SpatialPolygons'
+        ep. <- as(extent(x),maing)
+        crs(ep.) <- crs(x)
+        ep. <- st_as_sf(ep.)}
+    et. <- lapply(et, fext2sf)
+    rst. <- lapply(rst, fext2sf)
+    pred <- Map(function(x,y)
+        st_intersection(x,y), rst., et.)
+    mpred <- Map(function(x)
+        st_bbox(x), pred)
+    nmord <- names(mpred[[1L]])[c(c(1,3),c(2,4))]
+    exts <- Map(function(x)
+        extent(x[nmord]), mpred)
+    NAext_to_NULL <- function(x)
+    {
+        x. <- as.vector(x)
+        if(all(is.na(x.)))
+            x <- NULL
+        return(x)
+    }
+    trs. <- lapply(exts, function(x)NAext_to_NULL(x))
+
+    ## trs. <- Map(function(x,y)
+    ##     raster::intersect(extent(x),extent(y)),rst, et)
+
     trs <- names(Filter(function(x)
         !is.null(x),trs.))
     rst <- raster::subset(rst,names(rst)%in%trs)
@@ -126,14 +141,29 @@ rsp2ebv <- structure(function#Integrate remote sensing products
     l2u <- long2UTM(extent(ps)[1L])
     sr <- sub('utm.z',l2u, getOption('utm1'))
     }
-    fext <- function(ps, tmp, sr){
-        pr <- lapply(tmp, function(x)
-            projectExtent(x, sr))
-        ux <- lapply(pr,'extent')}
-    exts <- fext(ps,cr, sr)
+    ## return(list(ps = ps, cr = cr, sr = sr))
+
+    ## fext <- function(ps, tmp, sr){
+    ##     pr <- lapply(tmp, function(x)
+    ##         projectExtent(x, sr))
+    ##     ux <- lapply(pr,'extent')}
+    ## exts <- fext(ps,cr, sr)
+
+    fext <- function(x, sr){
+        ex_ <- extent(x)
+        exd <- st_bbox(
+            st_transform(st_as_sfc(st_bbox(x)), crs = sr))
+        exord <- extent(exd[names(exd)[c(c(1,3),c(2,4))]])
+        return(exord)}
+
+    exts <- Map(function(x)
+        fext(x, sr = sr), cr)
+
+    
     uxt <- Reduce(raster::union,exts)
-    pre <- projectExtent(cr[[1L]], crs = sr)
-    pre <- setExtent(pre, uxt, keepres=TRUE)
+    ## return(list(cr = cr, sr = sr, uxt = uxt))
+    ## pre <- projectExtent(cr[[1L]], crs = sr)
+    ## pre <- setExtent(pre, uxt, keepres=TRUE)
     nex <- as.vector(uxt)
     te. <- nex[c(1,3,2,4)]
     flnm <- 'ebv'
@@ -153,66 +183,43 @@ rsp2ebv <- structure(function#Integrate remote sensing products
         normalizePath(x, winslash = '/', mustWork = FALSE))
     ## return(list(gdf = gdf, nwp. = nwp.,nwp = nwp,sps = sps, cr = cr, sr = sr, ofr = ofr, nmdst = nmdst, te. = te.))
 
-    marg. <- c(list(FUN = function(x,y,z,w)
-        gdalUtilities::gdalwarp(srcfile = x,
-                                dstfile = y, s_srs = proj4string(z),
-                                t_srs = sr, te = te., tr = ofr,
-                                overwrite=TRUE,
-                                crop_to_cutline = TRUE,
-                                cutline = w,
-                                dstnodata = nmdst,
-                                nomd = TRUE),
-        x = gdf, y = nwp., z = cr, w = sps), marg)
+marg. <- c(list(FUN = function(x,y,z,w)
+    sf::gdal_utils(util = 'warp',
+                   source = x,
+                   destination = y,
+                   options = c("-s_srs", st_crs(proj4string(z))$wkt,
+                               "-t_srs", st_crs(sr)$wkt,
+                               "-te", te.,
+                               "-tr", ofr,
+                               "-overwrite",
+                               "-crop_to_cutline",
+                               "-cutline",w,
+                               "-dstnodata", nmdst,
+                               "-nomd")),
+                   x = gdf, y = nwp., z = cr, w = sps), marg)
     pr <- unlist(do.call(getOption('fapp'), marg.), use.names = FALSE)
-    
-    ## marg. <- c(list(FUN = function(x,y,z,w)
-    ##     gdalUtils::gdalwarp(srcfile = x,
-    ##                         dstfile = y, s_srs = crs(z),
-    ##                         t_srs = sr, te = te., tr = ofr,
-    ##                         crop_to_cutline = TRUE,
-    ##                         cutline = w,
-    ##                         output_Raster = TRUE,
-    ##                         overwrite=TRUE,
-    ##                         dstnodata = nmdst,
-    ##                         nomd = TRUE),
-    ##     x = gdf, y = nwp., z = cr, w = sps), marg)
-    ## pr <- stack(do.call(getOption('fapp'), marg.))
 
 fmos <- function(x){
     dst <- file.path(nwp,paste0(x,'.tif'))
-    gdf. <- pr[grepl(x, pr)]
+    gdf. <- nwp.[grepl(x, nwp.)]
         if(length(gdf.) == 1){
             mr <- raster(gdf.)
         }else{
-            mr <- gdalUtilities::gdalwarp(srcfile = gdf.,
-                                          dstfile = dst,
-                                          crop_to_cutline = TRUE,
-                                          overwrite = TRUE)
-            mr <- raster(mr)
+            mr <- sf::gdal_utils(util = 'warp',
+                                 source = gdf.,
+                                 destination = dst,
+                                 options = c("-overwrite"
+                                             ## "-crop_to_cutline"))
+                                             ))
+            mr <- raster(dst)
         }
     return(mr)
 }
 
-    
-    ## fmos <- function(sll){
-    ##     crm <- 'Formatting image'
-    ##     dst <- file.path(nwp,paste0(sll,'.tif'))
-    ##     gdf. <- nwp.[grepl(sll, nwp.)]
-    ##     if(length(gdf.) == 1){
-    ##         mr <- raster(gdf.)}
-    ##     else{
-    ##             mr <- gdalUtils::mosaic_rasters(
-    ##                                  gdalfile=gdf.,
-    ##                                  dst_dataset=dst,
-    ##                                  output_Raster = TRUE)}
-    ##     return(mr)}
-
     marg. <- c(list(FUN = function(x)
         fmos(x), x = lyrs), marg)
-    
     temple <- do.call(getOption('fapp'), marg.)
 
-## return(temple)
         
     if(with_zip){
         file.remove(tor)}
@@ -223,12 +230,13 @@ fmos <- function(x){
     torem <- file.path(path,dr[grepl(rexp2rem,dr)])
     torem1 <- file.path(tempdir(),dr1[grepl(rexp2rem,dr1)])
     file.remove(c(torem,torem1))
-    ## temple <- stack(temple)
-   temple <- brick(temple)
+   ## temple <- brick(temple)
+
+      class(temple) <- append('echanges',class(temple))
+
     return(temple)
 
-
-### \code{RasterStack} or \code{list}.
+### Class \code{echanges}.
 } , ex=function() {
     ## A Global Surface Water layer ('seasonality') covering the extent of a
     ## Colombian municipality Cartagena del Chairá is formated into an
@@ -244,6 +252,6 @@ fmos <- function(x){
     ## season_cchaira <- rsp2ebv(cchaira_roi,
     ##                               lyrs = 'seasonality', path = tempdir())
 
-    ## plotebv(season_cchaira)
+    ## plot.echanges(season_cchaira)
     ## }
 })

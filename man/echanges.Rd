@@ -76,7 +76,7 @@ of the CPU capacity.}
 \code{\link{rsp2ebv}}.}
 }
 
-\value{\code{RasterBrick}.}
+\value{Class \code{echanges}.}
 \references{{Jetz, W., McGeoch, M. A.,
 Guralnick, R., Ferrier, S., Beck, J.,
 Costello, M. J., ... & Meyer,
@@ -85,16 +85,22 @@ for mapping and monitoring species
 populations. Nature Ecology & Evolution, 3(4),
 539-551.}
 
-{Pekel, J. F., Cottam, A., Gorelick, N., &
-Belward, A. S. (2016). High-resolution mapping
-of global surface water and its long-term
-changes. Nature, 540(7633), 418-422.}
-
 {Hansen, M. C., Potapov, P. V., Moore, R.,
 Hancher, M., Turubanova, S. A., Tyukavina, A.,
 ... & Kommareddy, A. (2013). High-resolution
 global maps of 21st-century forest cover
 change. science, 342(6160), 850-853.}
+
+{Pekel, J. F., Cottam, A., Gorelick, N., &
+Belward, A. S. (2016). High-resolution mapping
+of global surface water and its long-term
+changes. Nature, 540(7633), 418-422.}
+
+{Pereira, H.M., Ferrier, S., Walters,
+M., Geller, G.N., Jongman, R.H.G., Scholes,
+R.J., Bruford, M.W., Brummitt, N., Butchart,
+S.H.M., Cardoso, A.C. and Coops, N.C.,
+2013. Essential biodiversity
 
 {Sexton, J. O., Song, X. P., Feng, M.,
 Noojipady, P., Anand, A., Huang, C., ... &
@@ -103,7 +109,8 @@ resolution continuous fields of tree cover:
 Landsat-based rescaling of MODIS vegetation
 continuous fields with lidar-based estimates
 of error. International Journal of Digital
-Earth, 6(5), 427-448.}}
+Earth, 6(5), 427-448.}
+variables. Science, 339(6117), pp.277-278}.}
 \author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
@@ -124,6 +131,6 @@ def <- echanges(amazon, eco = 'TC',
                 binary_output = FALSE,
                 mc.cores = 2)
 
-## Function 'plotebv' allows comparing rasters using a common scale bar:
-plotebv(def)
+## Method 'plot.echanges' allows comparing rasters using a common scale bar:
+plot.echanges(def)
 }

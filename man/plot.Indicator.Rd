@@ -1,17 +1,16 @@
-\name{plotind}
-\alias{plotind}
-\title{Plot indicator}
-\description{A plot of \code{\link{gaugeIndicator}} is printed.}
-\usage{plotind(x, labs = list(x = "layer", 
-    y = unique(as.character(x$metric)), 
-    fill = "class"))}
+\name{plot.Indicator}
+\alias{plot.Indicator}
+\title{Visualize Indicator objects}
+\description{Plots for objects from \code{\link{gaugeIndicator}} are produced.}
+\usage{\method{plot}{Indicator}(x, y, 
+    ...)}
 \arguments{
   \item{x}{\code{\link{tibble}}. Data set of indicators such as that
 produced by \code{\link{gaugeIndicator}}.}
-  \item{labs}{Further
-arguments
-in
-\code{\link{labs}}.}
+  \item{y}{\code{\link{character}}. Color scale. If missing then
+\code{grDevices::terrain.colors(n)}, where \code{n} is the
+number of colors, is implemented.}
+  \item{\dots}{Arguments to be passed to plot methods.}
 }
 
 
@@ -28,8 +27,8 @@ in
 path. <- system.file('amazon.grd',package = 'ecochange')
 amazon <- brick(path.)
 
-## Changes in layers of tree-canopy cover (TC) in the 'amazon'
-## brick are computed:
+## Changes in layers of tree-canopy cover (TC) are computed by
+## processing the 'amazon' brick:
 def <- echanges(amazon, eco = 'TC',
                 change = 'lossyear',
                 eco_range = c(1,80),
@@ -38,11 +37,17 @@ def <- echanges(amazon, eco = 'TC',
                 mc.cores = 2)
 
 ## Function 'gaugeIndicator' is used to compute ecosystem areas
-## (default metric of the function):
+## (default metric = 'area_ha'):
 am_areas <- gaugeIndicator(def,
                          mc.cores = 2)
 
-## Plot of the output from 'gaugeIndicator'
-plotind(am_areas)
+## A plot of the 'am_areas' object
+plot.Indicator(am_areas,
+               cex = 1.5,
+               xlab = 'Year',
+               ylab = 'Area (ha)',
+               main = 'Cartagena del Chairá',
+               sub = 'Ecosystem changes',
+               fill = 'Forest cover (\%)')
 
 }

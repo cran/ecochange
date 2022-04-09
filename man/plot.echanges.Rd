@@ -1,20 +1,17 @@
-\name{plotebv}
-\alias{plotebv}
-\title{Plot EBV}
+\name{plot.echanges}
+\alias{plot.echanges}
+\title{Visualize ecosystem changes}
 \description{This function aims to display level plots for remote sensing
-products using common scale-bars via the implementation of
-the \code{rasterVis} library.}
-\usage{plotebv(ebv, col.regions = rev(viridis_pal(option = "D")(255)), 
-    ...)}
+products using common scale-bars via the implementation of the
+suggested \code{rasterVis}. If this is not installed then method
+\code{plot} of \code{raster} package is used.}
+\usage{\method{plot}{echanges}(x, y, ...)}
 \arguments{
-  \item{ebv}{\code{Raster*}. Raster Object.}
-  \item{col.regions}{. Color
-palette. If
-null then
-\code{viridis_pal(option
-= 'D')} is
-implemented.}
-  \item{\dots}{. Further arguments in \code{panel.levelplot()}}
+  \item{x}{\code{Raster*}. Raster Object.}
+  \item{y}{. Color palette. If missing or the suggest
+'viridis' is not installed then
+\code{\link{terrain.colors}} is used.}
+  \item{\dots}{. Additional arguments in \code{panel.levelplot}.}
 }
 
 \value{\code{levelplot}.}
@@ -39,6 +36,5 @@ def <- echanges(amazon, eco = 'TC',
                 binary_output = FALSE,
                 mc.cores = 2)
 
-## Function 'plotebv' allows comparing rasters using a common scale bar:
-plotebv(def)
+plot.echanges(def)
 }

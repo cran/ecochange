@@ -28,7 +28,7 @@ the unit will be stored. Default stores the data in a temporary directory.}
 \value{\code{SpatialPolygonsDataFrame} or \code{character} vector of
 \code{GADM} units..}
 \references{\href{https://gadm.org/}{https://gadm.org/}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan cre Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 
@@ -37,7 +37,7 @@ the unit will be stored. Default stores the data in a temporary directory.}
 ## Printing municipalities of Colombia:
 
      \donttest{
-         muni <- getGADM()
+         muni <- getGADM(NA)
          head(muni)
      }
 

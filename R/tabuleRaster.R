@@ -30,7 +30,9 @@ tabuleRaster <- structure(function # Fast tabulation of pixel values
             }
             layer <- layerPath
         }
-        gdalLog <- capture.output(gdalUtilities::gdalinfo(datasetname = layer, hist = TRUE))
+        ## gdalLog <- capture.output(gdalUtilities::gdalinfo(datasetname = layer, hist = TRUE))
+        gdalLog <- capture.output(sf::gdal_utils(source = layer, options = c('-hist')))
+     ## return(gdalLog)   
         (nbands <- grep('Band [[:digit:]]{1,} Block', gdalLog))
         ansList <- list()
         for(n in 1:length(nbands)){ # n <- 1
@@ -71,7 +73,8 @@ tabuleRaster <- structure(function # Fast tabulation of pixel values
         res. <- Reduce('*',raster::res(layer))
         freqTable <-  rasterDT::freqDT(layer, useNA = useNA)
         if(length(freqTable$'freq') == 0)
-            freqTable  <- data.table(ID = NA, freq = NA)
+            ## freqTable  <- data.table(ID = NA, freq = NA)
+            freqTable  <- data.frame(ID = NA, freq = NA)
         if (all(class(freqTable) == 'list')){
             result <- lapply(freqTable, function(x){
                 data.frame(class = x$ID, class = NA, metric = 'area_ha',

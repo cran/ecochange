@@ -11,16 +11,22 @@ echanges <- structure(function#Ecosystem changes
                       ##populations. Nature Ecology & Evolution, 3(4),
                       ##539-551.}
                       ##
-                      ##{Pekel, J. F., Cottam, A., Gorelick, N., &
-                      ##Belward, A. S. (2016). High-resolution mapping
-                      ##of global surface water and its long-term
-                      ##changes. Nature, 540(7633), 418-422.}
-                      ##
                       ##{Hansen, M. C., Potapov, P. V., Moore, R.,
                       ##Hancher, M., Turubanova, S. A., Tyukavina, A.,
                       ##... & Kommareddy, A. (2013). High-resolution
                       ##global maps of 21st-century forest cover
                       ##change. science, 342(6160), 850-853.}
+                      ##
+                      ##{Pekel, J. F., Cottam, A., Gorelick, N., &
+                      ##Belward, A. S. (2016). High-resolution mapping
+                      ##of global surface water and its long-term
+                      ##changes. Nature, 540(7633), 418-422.}
+                      ##
+                      ##{Pereira, H.M., Ferrier, S., Walters,
+                      ##M., Geller, G.N., Jongman, R.H.G., Scholes,
+                      ##R.J., Bruford, M.W., Brummitt, N., Butchart,
+                      ##S.H.M., Cardoso, A.C. and Coops, N.C.,
+                      ##2013. Essential biodiversity
                       ##
                       ## {Sexton, J. O., Song, X. P., Feng, M.,
                       ##Noojipady, P., Anand, A., Huang, C., ... &
@@ -30,6 +36,7 @@ echanges <- structure(function#Ecosystem changes
                       ##continuous fields with lidar-based estimates
                       ##of error. International Journal of Digital
                       ##Earth, 6(5), 427-448.}
+                      ##variables. Science, 339(6117), pp.277-278}.
 (
     ps, ##<<\code{RasterStack} or
         ##\code{SpatialPolygonsDataFrame}. Stack of spatial data,
@@ -114,6 +121,9 @@ echanges <- structure(function#Ecosystem changes
             return(ps)
     }
 
+    if('echanges'%in%class(ps))
+    ps <- stack(unclass(ps))
+           
     ecopatrn <- gsub("\\d+", "", eco)
     if(!all(grepl(ecopatrn[1L], ecopatrn))){
         stop("Ambiguous layer names: provide arguments 'eco' and 'change'")}
@@ -171,10 +181,13 @@ echanges <- structure(function#Ecosystem changes
         x = raster::as.list(eco),
         y = change_vals), marg)
 
-    w <- stack(do.call(getOption('fapp'), marg.))
+    ## w <- stack(do.call(getOption('fapp'), marg.))
+    w <- do.call(getOption('fapp'), marg.)
+    names(w) <- lapply(w, 'names')
+    class(w) <- append('echanges',class(w))
 
     return(w)
-### \code{RasterBrick}.
+### Class \code{echanges}.
 } ,
 ex=function() {
     ## Brick with structural Essential Biodiversity Variables covering the
@@ -191,6 +204,6 @@ ex=function() {
                     binary_output = FALSE,
                     mc.cores = 2)
 
-    ## Function 'plotebv' allows comparing rasters using a common scale bar:
-    plotebv(def)
+    ## Method 'plot.echanges' allows comparing rasters using a common scale bar:
+    plot.echanges(def)
 })

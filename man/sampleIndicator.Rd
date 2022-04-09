@@ -49,7 +49,7 @@ uses 60 percent of the
 cores.}
 }
 
-\value{\code{Raster*}.}
+\value{Class \code{echanges}}
 \references{{Hesselbarth, M. H., Sciaini,
 M., With, K. A., Wiegand, K., & Nowosad,
 J. (2019). landscapemetrics: an open source R
@@ -92,13 +92,13 @@ def <- echanges(amazon, eco = 'TC',
                 mc.cores = 2)
 
 
-plotebv(amazon)
+plot.echanges(amazon)
 
 ## Function 'sampleIndicator' is implemented to sample a metric of
 ## conditional entropy (default):
 
     def_condent <- sampleIndicator(def, side = 400, mc.cores = 2)
 
-plotebv(def_condent)
+plot.echanges(def_condent, cex = 1.5)
 
 }
