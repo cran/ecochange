@@ -378,7 +378,8 @@ version: ", version)
 .onLoad <- function(libname, pkgname){
     op <- options()
     op.FC <- list(gfc = "https://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.6.html",
-                  wrs = "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip",
+                  ## wrs = "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip",
+                    wrs = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip",
                   apis = c(gsw = "http://storage.googleapis.com/global-surface-water/downloads2",
                            gfc = "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8",
                            daac = "https://e4ftl01.cr.usgs.gov/MEASURES/"),

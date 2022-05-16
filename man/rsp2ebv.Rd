@@ -71,7 +71,7 @@ strategy. Nature, 523(7561), 403-406.}}
 
 \examples{
 ## A Global Surface Water layer ('seasonality') covering the extent of a
-## Colombian municipality Cartagena del Chairá is formated into an
+## Colombian municipality Cartagena del Chaira is formated into an
 ## spatial EBV:
         load(system.file('cchaira_roi.RData',package = 'ecochange'))
 

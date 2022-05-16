@@ -1,81 +1,90 @@
 plot.Indicator <- structure(function#Visualize Indicator objects
 ###Plots for objects from \code{\link{gaugeIndicator}} are produced.
-                            ## details<<
 (
     x, ##<<\code{\link{tibble}}. Data set of indicators such as that
        ##produced by \code{\link{gaugeIndicator}}.
-    y, ##<<\code{\link{character}}. Color scale. If missing then
-       ##\code{grDevices::terrain.colors(n)}, where \code{n} is the
-       ##number of colors, is implemented.
-   ... ##<<Arguments to be passed to plot methods.  
+    y, ##<<\code{character}. A color palette. If this is missing or
+       ##the suggest \code{viridis} is not installed then
+       ##\code{\link{terrain.colors}} is implemented.
+    ... ##<<Graphical arguments: \itemize{\item{\code{type}: what type
+        ##of plot should be drawn: \code{"s"} for stacked bar plots
+        ##(default), or \code{"b"} for box plots},\item{\code{cex}:
+        ##adjustment of sizes for most text values},
+        ##\item{\code{xlab}, and \code{ylab}: titles for the \code{x}
+        ##and \code{y} axes},\item{\code{main}: a text of the main
+        ##title}, \item{\code{sub}: a text for the sub title},
+        ##\item{\code{labels}: a string or numeric sequence for the
+        ##x-axis labels}, \item{\code{fill}: a text for the legend
+        ##title}}
 ){
 
-data <- x
-xx <- factor(rownames(data), levels = rownames(data))
-fill. <- factor(data$'layer', levels = rev(levels(factor(data$'layer'))))
-ang. <- 0
+    data <- x
+    ell <- list(...)
 
-if(length(unique(data$'layer')) != 1){
-    xx <- factor(data$'layer', levels = unique(data$'layer'))
-    ang. <- 90}
+isclass <- any(!is.na(data$'class'))
+isbox <- FALSE
+if(any(grepl('type', names(ell)))){
+    isbox <- ell$'type'%in%'b'}
+tofac <- function(x, rev = TRUE){
+    tf <- factor(x, levels = unique(x))
+    if(rev)
+    tf <- factor(x, levels = rev(levels(factor(x))))
+    return(tf)}
+xx <- tofac(data$'layer', rev = FALSE)
 fill. <- xx
-fill.. <- length(xx)
-if(any(!is.na(data$'class'))){
-    fill. <- factor(
-        data$'class', levels = rev(levels(factor(data$'class'))))
-    if(length(unique(data$'layer')) == 1)
-        xx <- factor(data$'class', levels = unique(data$'class'))
-fill.. <- max(as.numeric(as.character(fill.)))}
+if(isclass){
+    fill. <- tofac(data$'class')}
+if(isbox){
+    fill. <- tofac(data$'layer', FALSE)}
+ang. <- 0
+if(max(nchar(levels(xx))) > 2){
+    ang. <- 90
+}
+fill.. <- length(levels(fill.))
+dep <- 'viridis'
+if(missing(y)){
+    y <- terrain.colors(fill..)
+    if(requireNamespace(dep, quietly = TRUE)&dep%in% (.packages()))
+        y <- do.call(dep,list(n = fill..))
+}
 ls2pl <- list()
 ls2pl$'p' <- ggplot2::ggplot(data = data,
                      aes(x = xx,
                          y = .data$value, fill = fill.))
 ls2pl$'q' <- ggplot2::geom_bar(stat = "identity",
-                       position = "stack")#,
-ell <- list(...)
-typl <- any(grepl('type', names(ell))) 
-if(typl){
-    if(ell$'type'%in%'b')
-    fill.. <- length(levels(xx))}
-dep <- 'viridis'
-if(missing(y)){
-    y <- terrain.colors(fill..)
-    if(requireNamespace(dep, quietly = TRUE)&dep%in% (.packages()))
-        ## y <- viridis(fill..)}
-        y <- do.call(dep,list(n = fill..))}
+                               position = "stack")
+if(isbox){
+    ls2pl$'q' <- geom_boxplot()}
 ls2pl$'cl'  <-  scale_fill_manual(values = y)
-if(typl)
-    if(ell$'type'%in%'b'){
-                data$'layer' <- factor(data$'layer', levels = unique(data$'layer'))
-
-        ls2pl$'p' <- ggplot2::ggplot(data = data,
-                                     aes(x = .data$layer,
-                                         y = .data$value,
-                                         fill = .data$layer))
-        ls2pl$'q' <- geom_boxplot()
-ls2pl$'cl'  <-  scale_fill_manual(values = y)}
 xyl <- c(x = 'xlab', y = 'ylab', title = 'main', subtitle = 'sub')
 xyl.. <- paste0('^', xyl,'$')
 inl <- grepl(paste(xyl.., collapse = '|'), names(ell))
 names(ell)[inl] <- names(xyl)[xyl%in%names(ell)[inl]] 
-lst <- list(x = 'Layer', y = unique(as.character(x$'metric')), fill = 'class')
+lst <- list(x = 'Layer', y = unique(as.character(data$'metric')), fill = 'class')
 labs  <-  modifyList(lst, ell)
 ls2pl$'r' <- do.call('labs', labs)
-## ls2pl$'l' <- do.call('labs', labs)
-
+if('labels'%in%names(ell)){
+    if(max(nchar(ell$'labels')) <= 2)
+        ang. <- 0
+    ls2pl$'l' <- scale_x_discrete(breaks = levels(xx),
+                                  labels = ell$'labels')} 
 cex <- 1
 if('cex'%in%names(ell))
     cex <- ell$'cex'
 width_scale = 12
 ls2pl$'th' <- ggplot2::theme(legend.position="right",
-                     aspect.ratio = 1/1, text = element_text(size = cex*width_scale),
-                     axis.text.x = element_text(angle = ang., vjust = 0.5, hjust=1),
-                     legend.key.size = grid::unit(width_scale/50, "inch"),
-legend.box.margin = margin(rep(width_scale/2,4)),
+                             aspect.ratio = 1/1,
+                             text = element_text(
+                                 size = cex*width_scale),
+                             axis.text.x = element_text(
+                                 angle = ang.,
+                                 vjust = 0.5, hjust=1),
+                             legend.key.size = grid::unit(
+                                                         width_scale/50, "inch"),
+                             legend.box.margin = margin(
+                                 rep(width_scale/2,4)),
 )
-
 Reduce('+', ls2pl)
-    
 } , ex=function(){
     ## RasterBrick of structural Essential Biodiversity Variables
     ## covering the extent of a location in the northern Amazon basin
@@ -103,7 +112,7 @@ Reduce('+', ls2pl)
                    xlab = 'Year',
                    ylab = 'Area (ha)',
                    main = 'Ecosystem changes',
-                   sub = 'Municipality: Cartagena del Chaira',
+                   sub = 'Northern amazon',
                    fill = 'Forest cover (%)')
 
 })

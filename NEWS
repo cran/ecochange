@@ -1,3 +1,15 @@
+New changes in ecochange V2.9
+
+-A broken URL was replaced. Previous
+ "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip""
+was changed by
+"https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip"
+-Additional arguments were included in two plot methods: 'plot.Indicator' and 'plot.echanges',
+ see documentation of the package.
+-'rgdal' is not implemented anymore. 'sp' is used instead
+-An issue with 'proj4string' was fixed: 'proj4string' is now imported from 'sp'
+
+
 New changes in ecochange V2.8
 
 The package has reduced the number of depends and imports, see package

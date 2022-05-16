@@ -1,11 +1,8 @@
 ## ----include = TRUE, message=F, warning=F, eval=FALSE-------------------------
 #  # install.packages('ecochange')
+#  
 #  require('ecochange')
-#  
-#  dependencies <- c("raster", "sf","rgdal","parallel","ggplot2","landscapemetrics","tibble","utils","httr","getPass","methods","rlang","lattice","rasterDT","stats","rasterVis", "viridis")
-#  
-#  # Test that all dependencies are available. Values in the next list must be all TRUE
-#  sapply(dependencies, require, character.only = TRUE)
+#  require('viridis')
 
 ## ----include = TRUE, message=F, warning=F, eval=FALSE-------------------------
 #  # The getGADM() function provides the names of administrative units. By default, it shows level 2 administrative units in the country of Colombia but those settings can be changed through the parameters level and country

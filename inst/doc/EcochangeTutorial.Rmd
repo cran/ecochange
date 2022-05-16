@@ -30,16 +30,13 @@ The names of administrative units come from Geographic Administrative Data Maps 
 <span style="font-family:courier; font-size:1.1em;">ecochange</span> integrates all remote sensing products to the geometry of the polygon. Then it combines the datasets to produce a variety of spatial products, indicators, statistics and graphs. Most arguments are inherited by different functions to make the coding more efficient.
 
 ## Installation
-Users can install the package and the dependencies running <span style="font-family:courier; font-size:1.1em;">install.packages()</span>. They can load it using either <span style="font-family:courier; font-size:1.1em;">require()</span> or <span style="font-family:courier; font-size:1.1em;">library()</span>. Users must be sure that all dependencies are correctly installed.
+Users can install the package and the dependencies running <span style="font-family:courier; font-size:1.1em;">install.packages()</span>. They can load it using either <span style="font-family:courier; font-size:1.1em;">require()</span> or <span style="font-family:courier; font-size:1.1em;">library()</span>. We recommend users install and load the package <span style="font-family:courier; font-size:1.1em;">viridis</span>. this package improves the color palettes of the plots.
 
 ```{r include = TRUE, message=F, warning=F, eval=FALSE}
 # install.packages('ecochange')
+
 require('ecochange')
-
-dependencies <- c("raster", "sf","rgdal","parallel","ggplot2","landscapemetrics","tibble","utils","httr","getPass","methods","rlang","lattice","rasterDT","stats","rasterVis", "viridis")
-
-# Test that all dependencies are available. Values in the next list must be all TRUE
-sapply(dependencies, require, character.only = TRUE)
+require('viridis')
 ```
 
 ## Downloading spatial data

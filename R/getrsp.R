@@ -166,7 +166,6 @@ fl <- normalizePath(file.path(path, basename(urt.)),winslash = '/',
 
     if(length(urt..)!=0){
         marg. <- c(list(FUN = function(x,y)
-            ## fgetpss(x,y, path = path),
             tryCatch(fgetpss(x,y, path = path),
                      error = function(e){
                          print(e)}),
@@ -177,16 +176,13 @@ fl <- normalizePath(file.path(path, basename(urt.)),winslash = '/',
         objs <- objs[grepl(ps.,rownames(objs)),]
         torem <- (round(objs$'size' * 1E-6, 3) == 0)
         rmpaths <- NULL
-        ## if(grepl('Rtmp', path)&any(torem)){
         if(any(torem)){
             allpaths <- file.path(path,basename(rownames(objs)))
             rmpaths <- allpaths[torem]
-            ## print('Corrupted data:')
-            ## print(rmpaths)
             rem <- file.remove(rmpaths)
-            ## print("Corrupted files were disregarded. Set 'rewrite.pass = TRUE' and provide a correct password")
-            cat(paste0(length(rmpaths), " corrupt files were disregarded \n"))
+            cat(paste0("Warning: ",length(rmpaths), " corrupted files were disregarded \n"))
             cat("Hint: set 'rewrite.pass = TRUE', and use a correct password \n")
+            cat("Hint: you can register in 'https://urs.earthdata.nasa.gov' \n")
         }# see also line 176
 ## doc1 <- doc1[!doc1%in%rmpaths]
 
@@ -194,7 +190,6 @@ fl <- normalizePath(file.path(path, basename(urt.)),winslash = '/',
     doc2 <- NULL
     if(length(urth..)!=0){
         marg. <- c(list(FUN = function(x,y)
-            ## fget(x,y, path = path),
             tryCatch(fget(x,y, path = path),
                      error = function(e){
                          print(e)}),
@@ -205,7 +200,6 @@ fl <- normalizePath(file.path(path, basename(urt.)),winslash = '/',
         docs <- unlist(c(doc1, doc2))
 
         if(any(torem)){
-        ## if(grepl('Rtmp', path)&any(torem)){
             docs <- docs[!docs%in%rmpaths]
         }
         docs <- normalizePath(file.path(path,basename(c(docs, urt2))),winslash = '/',
@@ -220,7 +214,7 @@ fl <- normalizePath(file.path(path, basename(urt.)),winslash = '/',
 ### used to download ERSP (see \code{NULL} defaults in arguments
 ### \code{'roi'} and \code{'lyrs'}).
 } , ex=function() {
-    ## Polygon of the Colombian municipality of Cartagena del Chairá:
+    ## Polygon of the Colombian municipality of Cartagena del Chaira:
         load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
     ## A Global Surface Water layer ('seasonality') which covers the

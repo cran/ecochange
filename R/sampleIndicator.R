@@ -72,12 +72,13 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
             return(ps)
         if(isLayer)
             return(ps)
-    }
+ }
 
-    if('echanges'%in%class(ps))
-        ps <- stack(unclass(ps))
-    ## class(ps) <- 'list'
-    ## ps <- stack(ps)
+    ps_ <- NULL
+    if('echanges'%in%class(ps)){
+        ps_ <- Filter(function(x)is.na(minValue(x)), ps)
+        ps <- Filter(function(x)!is.na(minValue(x)), ps) 
+        ps <- stack(unclass(ps))}
     
     nm. <- names(ps)
     if(!is.null(classes)){
@@ -126,10 +127,23 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
         return(rstt)}
     rspr <- Map(function(x,y)
         rasterizeMetric(x,y,z=pr, val = 'value'), myMetric,r2pol)
+
     ## rspr <- stack(rspr)
     ## rspr <- round(rspr,2)
     names(rspr) <- nm.
-      class(rspr) <- append('echanges',class(rspr))
+
+    if(length(ps_) != 0){
+        rspr <- stack(rspr)
+        nm_ <- names(ps_)
+        ps_ <- raster(rspr, layer = 0)
+        names(ps_) <- nm_
+        ps_[] <- NA
+        rspr <- c(ps_, raster::as.list(rspr))
+        names(rspr) <- sapply(rspr, names)
+    }
+
+
+    class(rspr) <- append('echanges',class(rspr))
 
     
     return(rspr)

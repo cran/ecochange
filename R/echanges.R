@@ -1,7 +1,7 @@
 echanges <- structure(function#Ecosystem changes
 ###This function produces ecosystem-change maps by masking cell values
 ###in a layer of ecosystem changes over a target set of ecosystem
-###variables. The function allows focusing the ecosystem-change
+###variables. The function also allows focusing the ecosystem-change
 ###analysis on a species distribution range.
                       ##references<< {Jetz, W., McGeoch, M. A.,
                       ##Guralnick, R., Ferrier, S., Beck, J.,
@@ -151,7 +151,7 @@ echanges <- structure(function#Ecosystem changes
             eco <- stack(do.call(getOption('fapp'), marg.))
         }
     if(dim(eco)[3] > 1){
-        print("'eco' has length > 1: matching alphanumerics in 'eco' with values in 'change'...")
+        cat("'eco' has length > 1: matching alphanumerics in 'eco' with values in 'change'...\n")
         change_vals <- nm2yr(eco)
     }
     if(!getOption('isWin')){

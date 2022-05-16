@@ -7,10 +7,19 @@
 \arguments{
   \item{x}{\code{\link{tibble}}. Data set of indicators such as that
 produced by \code{\link{gaugeIndicator}}.}
-  \item{y}{\code{\link{character}}. Color scale. If missing then
-\code{grDevices::terrain.colors(n)}, where \code{n} is the
-number of colors, is implemented.}
-  \item{\dots}{Arguments to be passed to plot methods.}
+  \item{y}{\code{character}. A color palette. If this is missing or
+the suggest \code{viridis} is not installed then
+\code{\link{terrain.colors}} is implemented.}
+  \item{\dots}{Graphical arguments: \itemize{\item{\code{type}: what type
+of plot should be drawn: \code{"s"} for stacked bar plots
+(default), or \code{"b"} for box plots},\item{\code{cex}:
+adjustment of sizes for most text values},
+\item{\code{xlab}, and \code{ylab}: titles for the \code{x}
+and \code{y} axes},\item{\code{main}: a text of the main
+title}, \item{\code{sub}: a text for the sub title},
+\item{\code{labels}: a string or numeric sequence for the
+x-axis labels}, \item{\code{fill}: a text for the legend
+title}}}
 }
 
 
@@ -46,8 +55,8 @@ plot.Indicator(am_areas,
                cex = 1.5,
                xlab = 'Year',
                ylab = 'Area (ha)',
-               main = 'Cartagena del Chairá',
-               sub = 'Ecosystem changes',
+               main = 'Ecosystem changes',
+               sub = 'Northern amazon',
                fill = 'Forest cover (\%)')
 
 }

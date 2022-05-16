@@ -3,7 +3,8 @@ importFrom("ggplot2","aes","coord_flip","element_blank",
            "element_text","facet_wrap","geom_bar","geom_errorbar",
            "geom_boxplot","geom_line","geom_segment","geom_point",
            "ggplot","labs","margin","position_dodge",
-           "scale_fill_manual","theme","theme_bw","xlab","ylab")
+           "scale_fill_manual","scale_x_discrete","theme","theme_bw",
+           "xlab","ylab")
 importFrom("grDevices","rgb","terrain.colors")
 importFrom("httr","GET","authenticate","timeout","write_disk")
 importFrom("landscapemetrics","calculate_lsm","sample_lsm")
@@ -14,19 +15,22 @@ importFrom("rasterVis","levelplot")
 importFrom("raster","area","blockSize","brick","canProcessInMemory",
            "clamp","compareRaster","crs","compareCRS","cellStats",
            "drawExtent","extent","getData","getValues", "mask",
-           "nlayers","pbCreate","pbClose","pbStep","plotRGB",
-           "proj4string","projectExtent","projectRaster","setValues",
-           "raster","rasterToPolygons","rasterize","reclassify","res",
-           "setExtent","stack","subset","rasterTmpFile","values",
-           "Which","writeStart","writeRaster","writeValues",
-           "writeStop")
+           "minValue", "nlayers","pbCreate","pbClose","pbStep",
+           ## "plotRGB", "proj4string","projectExtent","projectRaster",
+           "plotRGB","projectExtent","projectRaster",
+           "setValues", "raster","rasterToPolygons","rasterize",
+           "reclassify","res", "setExtent","stack","subset",
+           "rasterTmpFile","values", "Which","writeStart",
+           "writeRaster","writeValues", "writeStop")
 importFrom("rasterDT","freqDT")
-importFrom("rgdal","readGDAL")
+## importFrom("rgdal","readGDAL")
+importFrom("sp","proj4string")
 importFrom("rlang",".data")
 importFrom("sf","gdal_utils","st_sf","st_as_sf","st_as_sfc","st_bbox",
            "st_crs","st_intersects","st_intersection","st_make_grid",
            "st_read","st_set_agr","st_transform")
-importFrom("stats","aggregate","formula","median","na.omit","time","ts")
+importFrom("stats","aggregate","formula","median","na.omit","time",
+           "ts")
 importFrom("tibble", "as_tibble","tibble") 
 importFrom("utils", "download.file","capture.output","modifyList",
            "read.table","type.convert","unzip","untar")
@@ -37,4 +41,4 @@ S3method(plot,EBVstats)
 S3method(plot,echanges) 
 S3method(plot,Indicator) 
 importMethodsFrom("raster","as.list","crs<-","names<-","merge","plot",
-                  "trim")
+                  "[<-", "trim")

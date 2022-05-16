@@ -7,7 +7,14 @@ plot.EBVstats <- structure(function#Visualize EBVstats objects
     y, ##<<\code{\link{character}}. Color scale. If missing then
        ##\code{grDevices::terrain.colors(n)}, where \code{n} is the
        ##number of layers, is implemented.
-   ... ##<<Arguments to be passed to some plot methods.  
+    ... ##<<Graphical arguments: \itemize{\item{\code{cex}:
+        ##adjustment of sizes for most text values},
+        ##\item{\code{xlab}, and \code{ylab}: titles for the \code{x}
+        ##and \code{y} axes},\item{\code{main}: a text of the main
+        ##title}, \item{\code{sub}: a text for the sub title},
+        ##\item{\code{labels}: a string or numeric sequence for the
+        ##x-axis labels}, \item{\code{fill}: a text for the legend
+        ##title}}
 ){
 
 data <- x
@@ -20,12 +27,6 @@ if(length(unique(data$'layer')) != 1){
     ang. <- 90}
 fill. <- xx
 fill.. <- length(xx)
-## if(any(!is.na(data$'class'))){
-##     fill. <- factor(
-##         data$'class', levels = rev(levels(factor(data$'class'))))
-##     if(length(unique(data$'layer')) == 1)
-##         xx <- factor(data$'class', levels = unique(data$'class'))
-## fill.. <- max(as.numeric(as.character(fill.)))}
 ls2pl <- list()
 
 
@@ -52,14 +53,6 @@ if(missing(y)){
         ## y <- viridis(fill..)}
         y <- do.call(dep,list(n = fill..))}
 ls2pl$'cl'  <-  scale_fill_manual(values = y)
-## if(typl)
-##     if(ell$'type'%in%'b'){
-##         ls2pl$'p' <- ggplot2::ggplot(data = data,
-##                                      aes(x = .data$layer,
-##                                          y = .data$value,
-##                                          fill = .data$layer))
-##         ls2pl$'q' <- geom_boxplot()
-## ls2pl$'cl'  <-  scale_fill_manual(values = y)}
 xyl <- c(x = 'xlab', y = 'ylab', title = 'main', subtitle = 'sub')
 xyl.. <- paste0('^', xyl,'$')
 inl <- grepl(paste(xyl.., collapse = '|'), names(ell))
@@ -67,7 +60,11 @@ names(ell)[inl] <- names(xyl)[xyl%in%names(ell)[inl]]
 lst <- list(x = 'Layer', y = 'Value', fill = 'class')
 labs  <-  modifyList(lst, ell)
 ls2pl$'r' <- do.call('labs', labs)
-
+if('labels'%in%names(ell)){
+    if(max(nchar(ell$'labels')) <= 2)
+        ang. <- 0
+    ls2pl$'l' <- scale_x_discrete(breaks = levels(xx),
+                                  labels = ell$'labels')} 
 cex <- 1
 if('cex'%in%names(ell))
     cex <- ell$'cex'

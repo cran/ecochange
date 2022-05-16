@@ -77,7 +77,7 @@ Earth, 6(5), 427-448.}}
 
 
 \examples{
-## Polygon of the Colombian municipality of Cartagena del Chairá:
+## Polygon of the Colombian municipality of Cartagena del Chaira:
     load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
 ## A Global Surface Water layer ('seasonality') which covers the

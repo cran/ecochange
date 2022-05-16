@@ -340,14 +340,11 @@ pre {
 </div>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
-<p>Users can install the package and the dependencies running <span style="font-family:courier; font-size:1.1em;">install.packages()</span>. They can load it using either <span style="font-family:courier; font-size:1.1em;">require()</span> or <span style="font-family:courier; font-size:1.1em;">library()</span>. Users must be sure that all dependencies are correctly installed.</p>
+<p>Users can install the package and the dependencies running <span style="font-family:courier; font-size:1.1em;">install.packages()</span>. They can load it using either <span style="font-family:courier; font-size:1.1em;">require()</span> or <span style="font-family:courier; font-size:1.1em;">library()</span>. We recommend users install and load the package <span style="font-family:courier; font-size:1.1em;">viridis</span>. this package improves the color palettes of the plots.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># install.packages(&#39;ecochange&#39;)</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">require</span>(<span class="st">&#39;ecochange&#39;</span>)</a>
-<a class="sourceLine" id="cb1-3" title="3"></a>
-<a class="sourceLine" id="cb1-4" title="4">dependencies &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;raster&quot;</span>, <span class="st">&quot;sf&quot;</span>,<span class="st">&quot;rgdal&quot;</span>,<span class="st">&quot;parallel&quot;</span>,<span class="st">&quot;ggplot2&quot;</span>,<span class="st">&quot;landscapemetrics&quot;</span>,<span class="st">&quot;tibble&quot;</span>,<span class="st">&quot;utils&quot;</span>,<span class="st">&quot;httr&quot;</span>,<span class="st">&quot;getPass&quot;</span>,<span class="st">&quot;methods&quot;</span>,<span class="st">&quot;rlang&quot;</span>,<span class="st">&quot;lattice&quot;</span>,<span class="st">&quot;rasterDT&quot;</span>,<span class="st">&quot;stats&quot;</span>,<span class="st">&quot;rasterVis&quot;</span>, <span class="st">&quot;viridis&quot;</span>)</a>
-<a class="sourceLine" id="cb1-5" title="5"></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="co"># Test that all dependencies are available. Values in the next list must be all TRUE</span></a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="kw">sapply</span>(dependencies, require, <span class="dt">character.only =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">require</span>(<span class="st">&#39;ecochange&#39;</span>)</a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="kw">require</span>(<span class="st">&#39;viridis&#39;</span>)</a></code></pre></div>
 </div>
 <div id="downloading-spatial-data" class="section level2">
 <h2>Downloading spatial data</h2>

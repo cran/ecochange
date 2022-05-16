@@ -69,11 +69,8 @@ rsp2ebv <- structure(function#Integrate remote sensing products
         path  <- ecodir}
     if(!missing(path))
         path <- normalizePath(path.expand(path), winslash = '/',mustWork = FALSE)
-    ## if(!getOption('gdal_path')){
-    ##     print('invalid GDAL install')
-    ##     return(FALSE)
-    ## }
-    if(inherits(ps, getOption('inh')[c(1,3:4)])){
+    if(inherits(ps, getOption('inh')[c(1,3:4)])&
+       !inherits(ps, 'getrsp')){
         ps. <- ps
         ps <- getrsp(ps, ...,lyrs = lyrs, path = path, mc.cores = mc.cores)
         if(is.null(ps.))
@@ -239,7 +236,7 @@ fmos <- function(x){
 ### Class \code{echanges}.
 } , ex=function() {
     ## A Global Surface Water layer ('seasonality') covering the extent of a
-    ## Colombian municipality Cartagena del Chairá is formated into an
+    ## Colombian municipality Cartagena del Chaira is formated into an
     ## spatial EBV:
             load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
