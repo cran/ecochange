@@ -75,15 +75,13 @@ strategy. Nature, 523(7561), 403-406.}}
 ## spatial EBV:
         load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
- \donttest{
- rsp_cchaira <- getrsp(cchaira_roi,
-   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
+## \\donttest{
+## rsp_cchaira <- getrsp(cchaira_roi,
+##   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
 
- file.exists(rsp_cchaira)
+## file.exists(rsp_cchaira)
 
- season_cchaira <- rsp2ebv(cchaira_roi,
-                               lyrs = 'seasonality', path = tempdir())
-
- plot.echanges(season_cchaira)
- }
+## season_cchaira <- rsp2ebv(cchaira_roi,
+##                               lyrs = 'seasonality', path = tempdir())
+## }
 }

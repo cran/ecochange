@@ -1,3 +1,14 @@
+New changes in ecochange V2.9.1
+
+- Function 'rsp2ebv': Errors in the example from the incorrect removal
+  of temporary files were fixed by implementing an internal function
+  that removes unnecessary files more efficiently.
+
+- A citation file was included. Users can now cite the
+  scientific publication of the package by running
+  citation('ecochange').
+
+
 New changes in ecochange V2.9
 
 -A broken URL was replaced. Previous
@@ -9,6 +20,10 @@ was changed by
 -'rgdal' is not implemented anymore. 'sp' is used instead
 -An issue with 'proj4string' was fixed: 'proj4string' is now imported from 'sp'
 
+-Methods 'plot.Indicator' and 'plot.echanges': New arguments to
+improve the diagnostic plots were created, see package documentation
+Function 'getWRS': a broken link necessary to download Landsat paths
+and rows was fixed
 
 New changes in ecochange V2.8
 

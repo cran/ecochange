@@ -19,13 +19,13 @@ contains less than 256 unique values?}
 
 \value{\code{data.frame}.}
 
-\author{Ivan Gonzalez [aut], Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut],  Maria C. Londono [ctb]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 
 
 \examples{
- \donttest{
- tabuleRaster(raster(volcano), n256 = FALSE)
- }
+## \\donttest{
+## tabuleRaster(raster(volcano), n256 = FALSE)
+## }
 }

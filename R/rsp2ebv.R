@@ -126,9 +126,6 @@ rsp2ebv <- structure(function#Integrate remote sensing products
     }
     trs. <- lapply(exts, function(x)NAext_to_NULL(x))
 
-    ## trs. <- Map(function(x,y)
-    ##     raster::intersect(extent(x),extent(y)),rst, et)
-
     trs <- names(Filter(function(x)
         !is.null(x),trs.))
     rst <- raster::subset(rst,names(rst)%in%trs)
@@ -138,13 +135,6 @@ rsp2ebv <- structure(function#Integrate remote sensing products
     l2u <- long2UTM(extent(ps)[1L])
     sr <- sub('utm.z',l2u, getOption('utm1'))
     }
-    ## return(list(ps = ps, cr = cr, sr = sr))
-
-    ## fext <- function(ps, tmp, sr){
-    ##     pr <- lapply(tmp, function(x)
-    ##         projectExtent(x, sr))
-    ##     ux <- lapply(pr,'extent')}
-    ## exts <- fext(ps,cr, sr)
 
     fext <- function(x, sr){
         ex_ <- extent(x)
@@ -158,9 +148,6 @@ rsp2ebv <- structure(function#Integrate remote sensing products
 
     
     uxt <- Reduce(raster::union,exts)
-    ## return(list(cr = cr, sr = sr, uxt = uxt))
-    ## pre <- projectExtent(cr[[1L]], crs = sr)
-    ## pre <- setExtent(pre, uxt, keepres=TRUE)
     nex <- as.vector(uxt)
     te. <- nex[c(1,3,2,4)]
     flnm <- 'ebv'
@@ -220,17 +207,8 @@ fmos <- function(x){
         
     if(with_zip){
         file.remove(tor)}
-    dr <- dir(path)
-    dr1 <- dir(tempdir())
-
-    rexp2rem <- '.vrt|.txt|.dbf|.prj|.shp|.shx'
-    torem <- file.path(path,dr[grepl(rexp2rem,dr)])
-    torem1 <- file.path(tempdir(),dr1[grepl(rexp2rem,dr1)])
-    file.remove(c(torem,torem1))
-   ## temple <- brick(temple)
-
-      class(temple) <- append('echanges',class(temple))
-
+    rem_pol(path)
+    class(temple) <- append('echanges',class(temple))
     return(temple)
 
 ### Class \code{echanges}.
@@ -248,7 +226,5 @@ fmos <- function(x){
 
     ## season_cchaira <- rsp2ebv(cchaira_roi,
     ##                               lyrs = 'seasonality', path = tempdir())
-
-    ## plot.echanges(season_cchaira)
     ## }
 })

@@ -3,7 +3,7 @@
 \title{Ecosystem changes}
 \description{This function produces ecosystem-change maps by masking cell values
 in a layer of ecosystem changes over a target set of ecosystem
-variables. The function allows focusing the ecosystem-change
+variables. The function also allows focusing the ecosystem-change
 analysis on a species distribution range.}
 \usage{echanges(ps, eco = names(ps[[1:(nlayers(ps) - 
     1)]]), change = names(ps[[(nlayers(ps))]]), 

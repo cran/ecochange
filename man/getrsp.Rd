@@ -83,9 +83,9 @@ Earth, 6(5), 427-448.}}
 ## A Global Surface Water layer ('seasonality') which covers the
 ## extent of the polygon is retrieved:
 
- \donttest{
- rsp_cchaira <- getrsp(cchaira_roi,
-   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
- file.exists(rsp_cchaira)
- }
+## \\donttest{
+## rsp_cchaira <- getrsp(cchaira_roi,
+##   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
+## file.exists(rsp_cchaira)
+## }
 }

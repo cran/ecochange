@@ -29,8 +29,8 @@ the \code{WRS} data are processed.}
 
 \examples{
 load(system.file('cchaira_roi.RData',package = 'ecochange'))
- \donttest{
- wrs_cchaira <- getWRS(cchaira_roi)
-     plot(wrs_cchaira)
- }
+## \\donttest{
+## wrs_cchaira <- getWRS(cchaira_roi)
+##     plot(wrs_cchaira)
+## }
 }

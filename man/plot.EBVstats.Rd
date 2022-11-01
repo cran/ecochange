@@ -9,12 +9,19 @@ produced by \code{\link{EBVstats}}.}
   \item{y}{\code{\link{character}}. Color scale. If missing then
 \code{grDevices::terrain.colors(n)}, where \code{n} is the
 number of layers, is implemented.}
-  \item{\dots}{Arguments to be passed to some plot methods.}
+  \item{\dots}{Graphical arguments: \itemize{\item{\code{cex}:
+adjustment of sizes for most text values},
+\item{\code{xlab}, and \code{ylab}: titles for the \code{x}
+and \code{y} axes},\item{\code{main}: a text of the main
+title}, \item{\code{sub}: a text for the sub title},
+\item{\code{labels}: a string or numeric sequence for the
+x-axis labels}, \item{\code{fill}: a text for the legend
+title}}}
 }
 
 
 
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan cre Gonzalez [ctb], Maria C. Londono [ctb]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
 
 
 

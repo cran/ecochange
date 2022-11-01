@@ -66,11 +66,6 @@ fget <- function(x,y, overwrite = TRUE, path){
     return(fp)}
     ## print(file.path(path,basename(x)))}
 
-
-## fget <- function(x,y, overwrite = TRUE, path){
-##     GET(x,write_disk(y, overwrite = overwrite), timeout(1E4))
-##     print(file.path(path,basename(x)))}
-
 fgetpss <- function(x,y,cr = getOption('pw'), overwrite = TRUE, path){
     h <- curl::new_handle(CONNECTTIMEOUT = 1E4)
     hd <- structure(list(handle = h, url = x), class = "handle")
@@ -79,11 +74,6 @@ fgetpss <- function(x,y,cr = getOption('pw'), overwrite = TRUE, path){
     fp <- file.path(path,basename(x))
     return(fp)}
     ## print(file.path(path,basename(x)))}
-
-## fgetpss <- function(x,y,cr = getOption('pw'), overwrite = TRUE, path){
-##     GET(x,authenticate(cr[['nm']], cr[['pw']]),
-##         write_disk(y, overwrite = overwrite), timeout(1E4))
-##     print(file.path(path,basename(x)))}
 
 flg <- function(nms = list('usgs.gov-username','usgs-password')){
 pw <- lapply(nms, function(x) getPass(msg = x))
@@ -201,6 +191,16 @@ dfc1[,1:ncol(dfc1)] <- lapply(dfc1[,1:ncol(dfc1)], 'as.numeric')
 dfc1 <- as.matrix(dfc1)
 return(dfc1)}
 
+rem_pol <- function(path,
+                    path_alt = tempdir(),
+                    rexp2rem = '.vrt|.txt|.dbf|.prj|.shp|.shx'){
+dr <- dir(path)
+dr1 <- dir(path_alt)
+torem <- file.path(path,dr[grepl(rexp2rem,dr)])
+torem1 <- file.path(tempdir(),dr1[grepl(rexp2rem,dr1)])
+tor <- unique(c(torem, torem1))
+file.remove(tor)}
+
 rnm.lyrs0 <- function(lyrs){
     num <- grepl('[0-9]', lyrs)
 infi <- c('TC_','.01.01')
@@ -224,28 +224,6 @@ scaleYr <- function(year){
     return(year)}
 sc <- sapply(yr., function(x) scaleYr(x))
 return(sc)}
-
-## selTile. <- function(pol){
-## ## selTile <- function(pol){
-## ## Select 10x10 degree tile using polygon
-##     ep <- extent(pol)
-## ex <- c(-180, 180, -90, 90)
-## ext <- extent(ex)
-## pl <- as(ext, 'SpatialPolygons')
-## crs(pl) <- crs(pol)
-## pl <- st_as_sf(pl) ## new line just added
-##     grd <- sf::st_make_grid(pl, cellsize = 10, what = 'polygons',
-##                             square = TRUE)
-## bbx <- Map(function(x)
-##     c(st_bbox(grd[x])), 1:length(grd))
-## nmord <- names(bbx[[1L]])[c(c(1,3),c(2,4))]
-## xnp <- Map(function(x)
-##     x[nmord], bbx)
-## exts <- Map(function(x)
-##     extent(x), xnp)
-## ints <- Filter(function(x)
-##     !is.null(raster::intersect(ep, x)), exts)
-## return(ints)}
 
 selTile <- function(pol){
 ## Select 10x10 degree tile using polygon
