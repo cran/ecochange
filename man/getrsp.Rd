@@ -14,12 +14,12 @@ data. See \code{\link{listGP}}.}
         0.6, 0))}
 \arguments{
   \item{roi}{\code{SpatialPolygonsDataFrame}; or
-\code{character}; or \code{NULL}. Region of
-interest. This can be either 1) a polygon geometry;
-or 2) the name of a \code{GADM} unit (see
-\code{\link{getGADM}}); or 3) a \code{NULL}
-value. Default \code{NULL} makes the function to
-print a list of \code{GADM} units.}
+\code{sf}; or \code{character};
+or \code{NULL}. Region of interest. This can be
+either 1) a polygon geometry; or 2) the name of a
+\code{GADM} unit (see \code{\link{getGADM}}); or 3)
+a \code{NULL} value. Default \code{NULL} makes the
+function to print a list of \code{GADM} units.}
   \item{\dots}{If \code{roi} is a \code{GADM} unit then additional
 arguments in \code{\link{getGADM}}.}
   \item{lyrs}{\code{character}. Remote-sensing
@@ -83,9 +83,9 @@ Earth, 6(5), 427-448.}}
 ## A Global Surface Water layer ('seasonality') which covers the
 ## extent of the polygon is retrieved:
 
-## \\donttest{
-## rsp_cchaira <- getrsp(cchaira_roi,
-##   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
-## file.exists(rsp_cchaira)
-## }
+ \donttest{
+ rsp_cchaira <- getrsp(cchaira_roi,
+   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
+ file.exists(rsp_cchaira)
+ }
 }

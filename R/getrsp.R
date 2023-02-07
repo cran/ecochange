@@ -34,12 +34,12 @@ getrsp <- structure(function #Get remote sensing product
 
 (
     roi = NULL, ##<<\code{SpatialPolygonsDataFrame}; or
-                ##\code{character}; or \code{NULL}. Region of
-                ##interest. This can be either 1) a polygon geometry;
-                ##or 2) the name of a \code{GADM} unit (see
-                ##\code{\link{getGADM}}); or 3) a \code{NULL}
-                ##value. Default \code{NULL} makes the function to
-                ##print a list of \code{GADM} units.
+                ##\code{sf}; or \code{character};
+                ##or \code{NULL}. Region of interest. This can be
+                ##either 1) a polygon geometry; or 2) the name of a
+                ##\code{GADM} unit (see \code{\link{getGADM}}); or 3)
+                ##a \code{NULL} value. Default \code{NULL} makes the
+                ##function to print a list of \code{GADM} units.
     ..., ##<<If \code{roi} is a \code{GADM} unit then additional
          ##arguments in \code{\link{getGADM}}.
     lyrs = NULL, ##<<\code{character}. Remote-sensing
@@ -82,6 +82,10 @@ getrsp <- structure(function #Get remote sensing product
         roi <- getGADM(roi,..., path = path)
         if(is.null(roi.))
             return(roi)}
+
+        if(inherits(roi, 'sf'))
+            roi <- as(roi, "Spatial")
+        
     if(!compareCRS(crs(roi), getOption('longlat'))){
         roi <- st_as_sf(roi)
         roi <- st_transform(roi, crs = getOption('longlat'))
@@ -110,14 +114,13 @@ getrsp <- structure(function #Get remote sensing product
         objs <- as.data.frame(file.info(list.files(path = path, full.names = TRUE)))
         objs <- objs[grepl(ps.,rownames(objs)),]
         torem <- (round(objs$'size' * 1E-6, 3) == 0)
-        ## if(grepl('Rtmp', path)&any(torem)){
         if(any(torem)){
             allpaths <- file.path(path,basename(rownames(objs)))
             rmpaths <- allpaths[torem]
             print('Previous corrupted files were removed:')
             print(rmpaths)
             rem <- file.remove(rmpaths)
-        }# see also line 176
+        }
 
         if(is.null(urt.)){
         ps <- paste(lyrs, collapse = '|')
@@ -156,8 +159,7 @@ fl <- normalizePath(file.path(path, basename(urt.)),winslash = '/',
     fl.. <- fl[usgs]
     flh.. <- fl[!usgs]
     fprll <- getOption('fapp')
-    ## print(paste0('The new data will be stored in ', path,':'))
-## cat(paste0('Downloading files on ', path,':'))
+        ## cat(paste0('Downloading files on ', path,':'))
     dmsg <- paste0('Downloading files on ', path,'\n')
         cat(dmsg)
     doc1 <- NULL
@@ -201,6 +203,8 @@ fl <- normalizePath(file.path(path, basename(urt.)),winslash = '/',
 
         if(any(torem)){
             docs <- docs[!docs%in%rmpaths]
+                        options('pw' = NULL)
+
         }
         docs <- normalizePath(file.path(path,basename(c(docs, urt2))),winslash = '/',
                               mustWork = FALSE)

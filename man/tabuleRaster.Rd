@@ -25,7 +25,7 @@ contains less than 256 unique values?}
 
 
 \examples{
-## \\donttest{
-## tabuleRaster(raster(volcano), n256 = FALSE)
-## }
+ \donttest{
+ tabuleRaster(raster(volcano), n256 = FALSE)
+ }
 }

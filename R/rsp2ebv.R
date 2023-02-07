@@ -33,12 +33,12 @@ rsp2ebv <- structure(function#Integrate remote sensing products
 
 (
     ps = NULL, ##<<\code{SpatialPolygonsDataFrame}; or
-                ##\code{character}; or \code{NULL}. Region of
-                ##interest. This can be whether 1) a polygon geometry;
-                ##or 2) the name of a \code{GADM} unit (see
-                ##\code{\link{getGADM}}); or 3) a \code{NULL}
-                ##value. Default \code{NULL} makes the function to
-                ##print a list of \code{GADM} units.
+               ##\code{sf}; or \code{character};
+               ##or \code{NULL}. Region of interest. This can be
+               ##whether 1) a polygon geometry; or 2) the name of a
+               ##\code{GADM} unit (see \code{\link{getGADM}}); or 3) a
+               ##\code{NULL} value. Default \code{NULL} makes the
+               ##function to print a list of \code{GADM} units.
     ..., ##<<Additional arguments in \code{\link{getGADM}} and
          ##\code{\link{getrsp}}.
     lyrs = NULL, ##<<\code{character}. Remote-sensing
@@ -69,7 +69,8 @@ rsp2ebv <- structure(function#Integrate remote sensing products
         path  <- ecodir}
     if(!missing(path))
         path <- normalizePath(path.expand(path), winslash = '/',mustWork = FALSE)
-    if(inherits(ps, getOption('inh')[c(1,3:4)])&
+    ## if(inherits(ps, getOption('inh')[c(1,3:4)])&
+    if(inherits(ps, getOption('inh')[c(1,3:4,6)])&
        !inherits(ps, 'getrsp')){
         ps. <- ps
         ps <- getrsp(ps, ...,lyrs = lyrs, path = path, mc.cores = mc.cores)
@@ -207,7 +208,7 @@ fmos <- function(x){
         
     if(with_zip){
         file.remove(tor)}
-    rem_pol(path)
+    rem_temp_pol()
     class(temple) <- append('echanges',class(temple))
     return(temple)
 

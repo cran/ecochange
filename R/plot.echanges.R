@@ -26,15 +26,20 @@ plot.echanges <- structure(function #Visualize ecosystem changes
 
     type <- 'p'
     indots <- list(...)
+
     if('type'%in%names(indots))
         type  <- indots$'type'
+
         
     if(!type%in%'b'){
     if('echanges'%in%class(x)){
         ebv <- stack(unclass(x))
     }else{ebv <- x}
+    
     mx.. <- max(mapply(function(x)
-        x@data@max, raster::as.list(ebv)))
+        ## x@data@max, raster::as.list(ebv)))
+        max(x[], na.rm = TRUE), raster::as.list(ebv)))
+    
     if(is.logical(ebv))
         return(plot(ebv))
         dep <- 'viridis'

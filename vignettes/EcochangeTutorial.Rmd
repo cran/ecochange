@@ -22,7 +22,7 @@ pre {
 </style>
 
 ## Introduction
-The R-package <span style="font-family:courier; font-size:1.1em;">ecochange</span> can assist users in monitoring ecosystem changes by computing indicators related to essential biodiversity variables in the class ecosystem structure (Pereira et al., 2013), including ecosystem extent, horizontal structure, and ecosystem fragmentation. 
+The R-package <span style="font-family:courier; font-size:1.1em;">ecochange</span> (Lara et al., 2022) can assist users in monitoring ecosystem changes by computing indicators related to essential biodiversity variables in the class ecosystem structure (Pereira et al., 2013), including ecosystem extent, horizontal structure, and ecosystem fragmentation. 
 
 The package requires minimally the name of an administrative unit or a user-defined polygon and the name of a remote sensing product. 
 The names of administrative units come from Geographic Administrative Data Maps (GADM). Remote sensing products consist of 16 different data layers that can be downloaded using the package functionality from three global databases: Forest Cover (GFC; Hansen et al., 2013), Tree-canopy Cover (TC; Sexton et al., 2013), and Water Surface (GWS; Pekel et al., 2017). The package can also process other custom-based datasets.
@@ -221,15 +221,32 @@ citation('ecochange')
 ```
 
 ## Data sources and references
-Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A. A., Tyukavina, A., … & Kommareddy, A. (2013). High-resolution global maps of 21st-century forest cover change. science, 342(6160), 850-853.
 
-Hesselbarth, M.H., Sciaini, M., With, K.A., Wiegand, K., & Nowosad, J., (2019). landscapemetrics: an open-source R tool to calculate landscape metrics. Ecography.
+Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova,
+S. A. A., Tyukavina, A., … & Kommareddy, A. (2013). High-resolution
+global maps of 21st-century forest cover change. science, 342(6160),
+850-853.
 
-Pekel, J. F., Belward, A., & Gorelick, N. (2017). Global Water Surface Dynamics: Toward a Near Real Time Monitoring Using Landsat and Sentinel Data. In AGU Fall Meeting Abstracts.
+Hesselbarth, M.H., Sciaini, M., With, K.A., Wiegand, K., & Nowosad,
+J., (2019). landscapemetrics: an open-source R tool to calculate
+landscape metrics. Ecography.
+
+Lara, W., Londoño, M. C., Gonzalez, I., & Gutierrez‐Velez,
+V. H. (2022). ecochange: An R‐package to derive ecosystem change
+indicators from freely available earth observation products. Methods
+in Ecology and Evolution, 13(11), 2379-2388.
+
+Pekel, J. F., Belward, A., & Gorelick, N. (2017). Global Water Surface
+Dynamics: Toward a Near Real Time Monitoring Using Landsat and
+Sentinel Data. In AGU Fall Meeting Abstracts.
 
 Pereira, H.M., Ferrier, S., Walters, M., Geller, G.N., Jongman,
 R.H.G., Scholes, R.J., Bruford, M.W., Brummitt, N., Butchart, S.H.M.,
 Cardoso, A.C. and Coops, N.C., 2013. Essential biodiversity
 variables. Science, 339(6117), pp.277-278.
 
-Sexton, J. O., Song, X. P., Feng, M., Noojipady, P., Anand, A., Huang, C., … & Townshend, J. R. (2013). Global, 30-m resolution continuous fields of tree cover: Landsat-based rescaling of MODIS vegetation continuous fields with lidar-based estimates of error. International Journal of Digital Earth, 6(5), 427-448.
+Sexton, J. O., Song, X. P., Feng, M., Noojipady, P., Anand, A., Huang,
+C., … & Townshend, J. R. (2013). Global, 30-m resolution continuous
+fields of tree cover: Landsat-based rescaling of MODIS vegetation
+continuous fields with lidar-based estimates of error. International
+Journal of Digital Earth, 6(5), 427-448.

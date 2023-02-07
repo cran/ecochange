@@ -11,12 +11,12 @@ region of interest.}
         0.6, 0))}
 \arguments{
   \item{ps}{\code{SpatialPolygonsDataFrame}; or
-\code{character}; or \code{NULL}. Region of
-interest. This can be whether 1) a polygon geometry;
-or 2) the name of a \code{GADM} unit (see
-\code{\link{getGADM}}); or 3) a \code{NULL}
-value. Default \code{NULL} makes the function to
-print a list of \code{GADM} units.}
+\code{sf}; or \code{character};
+or \code{NULL}. Region of interest. This can be
+whether 1) a polygon geometry; or 2) the name of a
+\code{GADM} unit (see \code{\link{getGADM}}); or 3) a
+\code{NULL} value. Default \code{NULL} makes the
+function to print a list of \code{GADM} units.}
   \item{\dots}{Additional arguments in \code{\link{getGADM}} and
 \code{\link{getrsp}}.}
   \item{lyrs}{\code{character}. Remote-sensing
@@ -75,13 +75,13 @@ strategy. Nature, 523(7561), 403-406.}}
 ## spatial EBV:
         load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
-## \\donttest{
-## rsp_cchaira <- getrsp(cchaira_roi,
-##   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
+ \donttest{
+ rsp_cchaira <- getrsp(cchaira_roi,
+   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
 
-## file.exists(rsp_cchaira)
+ file.exists(rsp_cchaira)
 
-## season_cchaira <- rsp2ebv(cchaira_roi,
-##                               lyrs = 'seasonality', path = tempdir())
-## }
+ season_cchaira <- rsp2ebv(cchaira_roi,
+                               lyrs = 'seasonality', path = tempdir())
+ }
 }

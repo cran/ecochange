@@ -1,3 +1,23 @@
+New changes in ecochange V2.9.3
+
+- Updated versions of global products: Global Forest Cover version 1.9
+  (2021), and Global Surface Water version 1.4 (2021)
+
+New changes in ecochange V2.9.2
+
+- Function 'getGADM': The internal algorithm now implements 'gadm'
+ (geodata) to substitute routines previously controlled by the
+ promptly extinct 'getData' (raster).  More user-friendly
+ warning/error messages.
+
+- Function 'plot.echanges': Improved computation of extremes to define
+  color palettes.
+
+- Function 'rsp2ebv': preexisting .shp files stored in paths other
+  than tempdir() are not erased anymore.
+
+- Function 'getrsp': 'sf' class is supported.
+
 New changes in ecochange V2.9.1
 
 - Function 'rsp2ebv': Errors in the example from the incorrect removal

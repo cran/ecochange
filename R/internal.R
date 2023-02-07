@@ -1,15 +1,5 @@
 ## Internal utility functions used by ecochange
 
-## crwrs <- function(rst, yr., mn.){
-##     yr.. <- names(rst)[grepl(yr., names(rst))]
-##     lyrsel <- rst[yr..]
-##     lyrsel <- lapply(lyrsel, function(x)
-##         crop(x, round(extent(mn.))))
-##     names(lyrsel)[1:2]  <- c('x','y')
-##     mrg <- do.call('merge', lyrsel)
-##     mrg <- mask(mrg, mn.)
-##     return(mrg)}
-
 decomp0 <- function(zfe, ext = '.tar',td = tempdir(),
                    int.patt = '[[:digit:]|N|S|E|W].tif'){
     zfe <- basename(zfe)
@@ -64,7 +54,6 @@ fget <- function(x,y, overwrite = TRUE, path){
     GET(x, write_disk(y, overwrite = overwrite),handle = hd)
     fp <- file.path(path,basename(x))
     return(fp)}
-    ## print(file.path(path,basename(x)))}
 
 fgetpss <- function(x,y,cr = getOption('pw'), overwrite = TRUE, path){
     h <- curl::new_handle(CONNECTTIMEOUT = 1E4)
@@ -73,7 +62,6 @@ fgetpss <- function(x,y,cr = getOption('pw'), overwrite = TRUE, path){
         write_disk(y, overwrite = overwrite), handle = hd)
     fp <- file.path(path,basename(x))
     return(fp)}
-    ## print(file.path(path,basename(x)))}
 
 flg <- function(nms = list('usgs.gov-username','usgs-password')){
 pw <- lapply(nms, function(x) getPass(msg = x))
@@ -82,7 +70,8 @@ lse <- list2env(pw)}
 
 get_EOURL <- function(adm, lyrs, funs., path, verify.web = FALSE){
     if(missing(funs.))
-    funs. <- c('gwsBase','gfcBase','gfccBase')
+    ## funs. <- c('gwsBase','gfcBase','gfccBase')
+    funs. <- c('gwsB','gfcB','gfccB')
     if(verify.web){#<--- web verification
         dts <- verifyInWebs(getOption('webs'), lyrs)}
     else{dts <- verifyInList(lyrs)}
@@ -95,14 +84,33 @@ get_EOURL <- function(adm, lyrs, funs., path, verify.web = FALSE){
     allf <- allf[order(names(allf))]
     return(allf)}
 
-gfcBase <- function(adm, lyrs,path = tempdir()){
-    wb <- getOption('apis')['gfc']
-    eds <- urlE(adm, TRUE) #<-
+gfcB <- function(adm,
+                 lyrs,
+                 path = tempdir(),
+                 vrs = 'v1.9',
+                 year = '2021',
+                 request = 'earthenginepartners-hansen'
+                 ){
+    api <- getOption('apis')['gapi']
+    degree <- urlE(adm, TRUE) #<-
+    subdir <- paste0('GFC-',year,'-',vrs)
     unlist(lapply(lyrs, function(f)
-  paste0(wb,'/','Hansen_GFC-2020-v1.8_',f,'_',eds,'.tif')))}
+        paste0(api,
+               '/',request,'/',subdir,'/Hansen_',subdir,'_',f,'_',degree,'.tif')))}
 
-gfccBase <- function(adm, lyrs, path = tempdir()){
-    wb <- getOption('apis')['daac']
+## gfcBase <- function(adm, lyrs,path = tempdir()){
+##     wb <- getOption('apis')['gfc']
+##     eds <- urlE(adm, TRUE) #<-
+##     unlist(lapply(lyrs, function(f)
+##   paste0(wb,'/','Hansen_GFC-2021-v1.9_',f,'_',eds,'.tif')))}
+
+gfccB <- function(adm, lyrs, path = tempdir(),
+                  vrs = 'GFCC30TC.003',
+                  year = NULL,
+                  request = 'MEASURES'){
+    ## usapi <- "https://e4ftl01.cr.usgs.gov"
+    usapi <- getOption('apis')['usapi']
+    wb <- paste0(usapi,'/', request, '/')
     pr <- getWRS(adm, path) #<-
     prd <- unique(as.character(pr$PR))
     pth <- paste0('p',substr(prd, 1,3),'r',substr(prd, 4,6))
@@ -111,17 +119,43 @@ gfccBase <- function(adm, lyrs, path = tempdir()){
     webs.. <- sapply(lyrs, function(x)
         sub('.01.01','',x))
     unlist(Map(function(x,y)
-        paste0(wb,'GFCC30TC.003','/',x,'/','GFCC30TC','_',pth,
-           '_','TC_',y,'.zip'), lyrs, webs..))}
+        paste0(wb,vrs,'/',x,'/','GFCC30TC','_',pth,
+               '_','TC_',y,'.zip'), lyrs, webs..))}
 
-gwsBase <- function(adm, lyrs, path = tempdir()){
-    wb <- getOption('apis')['gsw']
-eds <- urlE(adm, FALSE) #<-
+## gfccBase <- function(adm, lyrs, path = tempdir()){
+##     wb <- getOption('apis')['daac']
+##     pr <- getWRS(adm, path) #<-
+##     prd <- unique(as.character(pr$PR))
+##     pth <- paste0('p',substr(prd, 1,3),'r',substr(prd, 4,6))
+##     if(any(grepl('TC_', lyrs))){
+##         lyrs <- rnm.lyrs0(lyrs)}
+##     webs.. <- sapply(lyrs, function(x)
+##         sub('.01.01','',x))
+##     unlist(Map(function(x,y)
+##         paste0(wb,'GFCC30TC.003','/',x,'/','GFCC30TC','_',pth,
+##            '_','TC_',y,'.zip'), lyrs, webs..))}
+
+gwsB <- function(adm,
+                 lyrs,
+                 path = tempdir(),
+                 vrs = 'v1_4',
+                 year = '2021',
+                 request = 'global-surface-water'){
+    api <- getOption('apis')['gapi']
+    eds <- urlE(adm, FALSE) #<-
+    rc1 <- paste0('downloads',year)
     unlist(lapply(lyrs, function(f)
-    paste0(wb,'/',f,'/',f,'_',eds,'_v1_1.tif')))}
+        paste0(api,
+               '/',request,'/',rc1,'/',f,'/',f,'_',eds,vrs,'_',year,'.tif')))}
+
+## gwsBase <- function(adm, lyrs, path = tempdir()){
+##     wb <- getOption('apis')['gsw']
+## eds <- urlE(adm, FALSE) #<-
+##     unlist(lapply(lyrs, function(f)
+##     paste0(wb,'/',f,'/',f,'_',eds,'_v1_1.tif')))}
 
 isWin <- Sys.info()['sysname']%in%'Windows'
-hasOsgeo4w <- 'OSGeo4W64'%in%list.files('C:/')
+## hasOsgeo4w <- 'OSGeo4W64'%in%list.files('C:/')
 
 long2UTM <- function(long) {
     (floor((long + 180)/6) %% 60) + 1}
@@ -145,7 +179,6 @@ msk_2_ <- function(treeTemp,lossTemp, remnant = TRUE, keep = TRUE,perc = c(1,100
         lga <- paste0('treeTemp*',lga)}
     out <- eval(parse(text = lga))
     if(!all(is.na(noData)))
-    ## out[out%in%noData] <- NA
     out[out==noData] <- NA
     names(out) <- paste0('eco_',max(tim))
     return(out)
@@ -155,7 +188,6 @@ msk_sp_ <- function(treeTemp, lossTemp, tim = c(1,1)){
     lossTemp[!(lossTemp >= tim[1] & lossTemp <= tim[2])] <- NA
     out <- treeTemp*lossTemp
     names(out) <- names(treeTemp)
-    ## out <- eval(parse(text = out))
     return(out)
 }
 
@@ -191,15 +223,12 @@ dfc1[,1:ncol(dfc1)] <- lapply(dfc1[,1:ncol(dfc1)], 'as.numeric')
 dfc1 <- as.matrix(dfc1)
 return(dfc1)}
 
-rem_pol <- function(path,
-                    path_alt = tempdir(),
-                    rexp2rem = '.vrt|.txt|.dbf|.prj|.shp|.shx'){
-dr <- dir(path)
+rem_temp_pol <- function(
+                     path_alt = tempdir(),
+                    rexp2rem = '.vrt|.txt|.dbf|.prj|.shp|.shx|.cpg'){
 dr1 <- dir(path_alt)
-torem <- file.path(path,dr[grepl(rexp2rem,dr)])
 torem1 <- file.path(tempdir(),dr1[grepl(rexp2rem,dr1)])
-tor <- unique(c(torem, torem1))
-file.remove(tor)}
+file.remove(torem1)}
 
 rnm.lyrs0 <- function(lyrs){
     num <- grepl('[0-9]', lyrs)
@@ -306,7 +335,9 @@ return(spl)}
 
 verifyInWebs <- function(url.ls = getOption('webs'), layers){
         if(!curl::has_internet())
-        return("no_internet")
+            return("no_internet")
+        cat('Verifying in webs ...\n')
+        layers <- rnm.lyrs0(layers)
         fn. <- function(urlw, layers){
             attr.nodes <- c('a', 'input')
             attr.names <- c('href')
@@ -336,43 +367,62 @@ verifyInWebs <- function(url.ls = getOption('webs'), layers){
     return(gwattr)}
 #<==================================================================
 
+ecochange_figlet <- function(){
+msg <- cat(
+"                      
+      _/_/      _/_/_/   
+   _/_/_/_/  _/          
+  _/        _/           
+   _/_/_/    _/_/_/      \n")
+
+vrs <- paste0('ecochange version ',packageVersion("ecochange"),'\n')
+cat(vrs)
+}
+
 .onAttach <- function(lib, pkg)
 {
-    ## unlockBinding("ecochange", asNamespace("ecochange"))
-    version <- read.dcf(file.path(lib, pkg, "DESCRIPTION"), "Version")
-    if(interactive())
-    { # > figlet ecochange
-        packageStartupMessage(
-            "ecochange
-version: ", version)
-    }
-    else
-    { packageStartupMessage(
-          "Package 'ecochange' version ", version) }
-    packageStartupMessage("Type 'citation(\"ecochange\")' for citing this R package in publications.")
-    invisible()
+  # startup message
+  msg <- ecochange_figlet()
+  if(!interactive())
+    msg[1] <- paste("Package 'ecochange' version ", packageVersion("ecochange"))
+  packageStartupMessage(msg)
+  invisible()
 }
+
+## .onAttach <- function(lib, pkg)
+## {
+##     ## unlockBinding("ecochange", asNamespace("ecochange"))
+##     version <- read.dcf(file.path(lib, pkg, "DESCRIPTION"), "Version")
+##     if(interactive())
+##     { # > figlet ecochange
+##         packageStartupMessage(
+##             "ecochange
+## version: ", version)
+##     }
+##     else
+##     { packageStartupMessage(
+##           "Package 'ecochange' version ", version) }
+##     packageStartupMessage("Type 'citation(\"ecochange\")' for citing this R package in publications.")
+##     invisible()
+## }
 
 .onLoad <- function(libname, pkgname){
     op <- options()
     op.FC <- list(gfc = "https://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.6.html",
-                  ## wrs = "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip",
                     wrs = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip",
-                  apis = c(gsw = "http://storage.googleapis.com/global-surface-water/downloads2",
-                           gfc = "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8",
-                           daac = "https://e4ftl01.cr.usgs.gov/MEASURES/"),
+                  apis = c(gapi = "https://storage.googleapis.com",
+                           usapi = "https://e4ftl01.cr.usgs.gov"),
+                           ## gsw = "http://storage.googleapis.com/global-surface-water/downloads2",
+                           ## gfc = "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2021-v1.9",
+                           ## daac = "https://e4ftl01.cr.usgs.gov/MEASURES/"),
                   webs = c(gsw = "https://global-surface-water.appspot.com/download",
-                           gfc = "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/download.html",
+                           gfc = "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2021-v1.9/download.html",
                            gfcc = "https://e4ftl01.cr.usgs.gov/MEASURES/GFCC30TC.003"),
-                  inh = c('SpatialPolygonsDataFrame','Extent','character','NULL','logical'),
+                  inh = c('SpatialPolygonsDataFrame','Extent','character','NULL','logical','sf'),
                   utm = "+proj=utm +zone=utm.z +ellps=GRS80 +datum=NAD83 +units=m +no_defs",
                   utm1 = "+proj=utm +zone=utm.z +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0",
                   longlat = '+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs',
                   isWin = isWin,
-                  hasOsgeo4w = hasOsgeo4w,
-                  ## gdal_calc_py = gdal_calc_exists(),
-                  ## gdal_warp = gdalwarp_exists(),
-                  ## gdal_path = gdal_path(),
                   fapp = 'mcmapply',
                   miss = ' Missing layer ',
                   trls = c('treecover2000','lossyear'),
