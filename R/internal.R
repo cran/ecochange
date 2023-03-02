@@ -381,13 +381,28 @@ cat(vrs)
 
 .onAttach <- function(lib, pkg)
 {
-  # startup message
-  msg <- ecochange_figlet()
-  if(!interactive())
-    msg[1] <- paste("Package 'ecochange' version ", packageVersion("ecochange"))
-  packageStartupMessage(msg)
-  invisible()
+    version <- read.dcf(file.path(lib, pkg, "DESCRIPTION"), "Version")
+    if(interactive())
+    { # > figlet ecochange
+        msg <- ecochange_figlet()
+        packageStartupMessage(msg)
+    }
+    else
+    { packageStartupMessage(
+          "Package 'ecochange' version ", version) }
+    packageStartupMessage("Type 'citation(\"ecochange\")' for citing this R package in publications.")
+    invisible()
 }
+
+## .onAttach <- function(lib, pkg)
+## {
+##   # startup message
+##   msg <- ecochange_figlet()
+##   if(!interactive())
+##     msg[1] <- paste("Package 'ecochange' version ", packageVersion("ecochange"))
+##   packageStartupMessage(msg)
+##   invisible()
+## }
 
 ## .onAttach <- function(lib, pkg)
 ## {

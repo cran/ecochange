@@ -1,13 +1,13 @@
-b307a5b6043ff4ea6071da4cd293a5bc *DESCRIPTION
+d47ff29d9b3c482856c7868ec1f852e7 *DESCRIPTION
 59a662d9ac9e227013c519c8ff2b7ac9 *NAMESPACE
-2ba81a4966593a84d4f17941f1481a0b *NEWS
+a857d1d58b3396b58fb23cda1d596372 *NEWS
 c9accffadf94e9123237c61a6edd5780 *R/EBVstats.R
 6d8773c5d971ae0de0b8e2e2cce35078 *R/echanges.R
 cb08913b1afe54a89a10b04a2f45beff *R/gaugeIndicator.R
 4e814aa5a33b992c4e32e0e6ac1b534b *R/getGADM.R
 7b804436d2ddda1fad58ef062ee7d793 *R/getWRS.R
 e7c37059a3eee88766f011104223935b *R/getrsp.R
-f0f9bc9a0867e6ff3c96e296057ba12f *R/internal.R
+413c45584fb38767e2f0d578aa2b6e18 *R/internal.R
 1af3dbf9fc9648cbf42f56ec612f7582 *R/listGP.R
 8d82722c9e4b5578a091ea2b026bda6c *R/plot.EBVstats.R
 77148cde444b552680806f6a445f8922 *R/plot.Indicator.R
@@ -22,7 +22,7 @@ f6a8422fb7609d96502832d8e1a72fcc *R/tabuleRaster.R
 7988de87cf5d813eef5a5d72c13cfd4b *inst/cchaira_roi.RData
 294e9941bf3bad9d5de3eda5846dd41c *inst/doc/EcochangeTutorial.R
 d5fe6d1a1a1f87e2d7004f2c2b24d025 *inst/doc/EcochangeTutorial.Rmd
-b2271e5a34d304ae7761895257ce6245 *inst/doc/EcochangeTutorial.html
+dfb8f0f082a710380247cea2f7484e83 *inst/doc/EcochangeTutorial.html
 055a0f6c4b9acf4f316c5e951a0da801 *inst/global_products.RData
 bf8c9672423cc3a848f737f5c7c6268f *man/EBVstats.Rd
 fb772d9f8f33b6163ff588be8d0bae4a *man/echanges.Rd

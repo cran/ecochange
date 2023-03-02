@@ -1,3 +1,7 @@
+New changes in ecochange V2.9.3.1
+
+-fixed issue: the package can suppress its startup message.
+
 New changes in ecochange V2.9.3
 
 - Updated versions of global products: Global Forest Cover version 1.9
