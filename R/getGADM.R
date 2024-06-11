@@ -1,6 +1,6 @@
 getGADM <- structure(function #Get Geographic Adminitrative Unit
-### This function is a wrapper of \code{\link{gadm}} that helps users
-### to retrieve Geographic Administrative Data Maps (\code{GADM}).
+### This function can retrieve Geographic Administrative Data Maps
+### (\code{GADM}).
                      ##references<<\href{https://gadm.org/}{https://gadm.org/}
 (
     unit.nm = NULL, ##<<\code{character} or \code{NULL}. Name of
@@ -15,7 +15,10 @@ getGADM <- structure(function #Get Geographic Adminitrative Unit
                ##\code{1=first administrative subdivision}, and
                ##\code{2=second administrative subdivision}).
     country = 'COL', ##<<\code{character}. \code{ISO} code specifying
-                     ##a country. Default \code{'COL'}
+                     ##a country. Default \code{'COL'}.
+    ext = 'json',    ##<<\code{character}. File
+                     ## extension of the retrieved data file. Default
+                     ## \code{'json'}.
     path = tempdir() ##<<\code{character}. Path name indicating where
                      ##the unit will be stored. Default stores the
                      ##data in a temporary directory.
@@ -23,10 +26,12 @@ getGADM <- structure(function #Get Geographic Adminitrative Unit
     if(!is.null(unit.nm))
         if(is.na(unit.nm[1L]))
             return(NA)
-    adm <- gadm(
+    ## adm <- gadm(
+    adm <- gadm.(
         path = path,
         country=country,
-        level=level)
+        level=level,
+        ext = ext)
     if(level == 0){
         adm <- as(adm, 'Spatial')
         return(adm)

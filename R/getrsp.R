@@ -106,7 +106,8 @@ getrsp <- structure(function #Get remote sensing product
             verify.web <- FALSE
         }
         urt. <- suppressMessages(
-            unlist(get_EOURL(roi, lyrs, path = path, verify.web = verify.web),
+            ## unlist(get_EOURL(roi, lyrs, path = path, verify.web = verify.web),
+            unlist(get_EOURL(roi, rnm.lyrs0(lyrs), path = path, verify.web = verify.web),
                    use.names = FALSE))# <-
         lsRoi <- list2env(list(roi = roi))
 

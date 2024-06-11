@@ -1,11 +1,11 @@
 \name{getGADM}
 \alias{getGADM}
 \title{Get Geographic Adminitrative Unit}
-\description{This function is a wrapper of \code{\link{gadm}} that helps users
-to retrieve Geographic Administrative Data Maps (\code{GADM}).}
+\description{This function can retrieve Geographic Administrative Data Maps
+(\code{GADM}).}
 \usage{getGADM(unit.nm = NULL, 
     level = 2, country = "COL", 
-    path = tempdir())}
+    ext = "json", path = tempdir())}
 \arguments{
   \item{unit.nm}{\code{character} or \code{NULL}. Name of
 Geographic Administrative Data Map (e.g.,
@@ -18,7 +18,10 @@ indicating any of the levels of administrative
 subdivisions (\code{0=country},
 \code{1=first administrative subdivision}, and \code{2=second administrative subdivision}).}
   \item{country}{\code{character}. \code{ISO} code specifying
-a \code{country}. Default \code{'COL'}}
+a \code{country}. Default \code{'COL'}.}
+  \item{ext}{\code{character}. File
+extension of the retrieved data file. Default
+\code{'json'}.}
   \item{path}{\code{character}. Path name indicating where
 the unit will be stored. Default stores the
 data in a temporary directory.}
@@ -27,7 +30,7 @@ data in a temporary directory.}
 \value{\code{SpatialPolygonsDataFrame} or \code{character} vector of
 \code{GADM} units..}
 \references{\href{https://gadm.org/}{https://gadm.org/}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
+\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre] (<https://orcid.org/0000-0003-3527-1380>), Victor Gutierrez-Velez [aut] (<https://orcid.org/0000-0003-1338-2020>), Ivan Gonzalez [ctb] (<https://orcid.org/0000-0002-0313-398X>), Maria C. Londono [ctb] (<https://orcid.org/0000-0002-2317-5503>)}
 
 
 

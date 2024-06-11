@@ -82,13 +82,16 @@ rsp2ebv <- structure(function#Integrate remote sensing products
     if(is.null(lyrs))return(listGP()$'layer')
     if(any(grepl('.01.01', lyrs))){
         lyrs <- rnm.lyrs0(lyrs)}
-    int.patt  <- '[[:digit:]|N|S|E|W].tif'
+    ## int.patt  <- '[[:digit:]|N|S|E|W].tif'
+    int.patt  <- "\\d+\\."
     zfe <- normalizePath(file.path(path, dir(path)), winslash = '/', mustWork = FALSE)
     dec <- zfe
     with_zip <- any(grepl(paste(lyrs, collapse = "|"), zfe)&grepl('.zip', zfe))
+## return(list(zfe = zfe, td = path, int.patt = int.patt))
     if(with_zip){
         dec <- decompMap0(zfe, td = path, int.patt = int.patt)
-        tor <- attr(dec,'inzip')}
+        tor <- attr(dec,'inzip')
+    }
     dec <- sort(dec[grepl(paste(lyrs, collapse = "|"), dec)])
     rst <- Map(function(x)
         tryCatch(raster(x),error = function(e){

@@ -6,7 +6,6 @@ importFrom("ggplot2","aes","coord_flip","element_blank",
            "scale_fill_manual","scale_x_discrete","theme","theme_bw",
            "xlab","ylab")
 importFrom("grDevices","rgb","terrain.colors")
-importFrom("geodata","gadm")
 importFrom("httr","GET","authenticate","timeout","write_disk")
 importFrom("landscapemetrics","calculate_lsm","sample_lsm")
 importFrom("lattice","panel.grid","panel.levelplot")

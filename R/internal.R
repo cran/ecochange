@@ -1,5 +1,45 @@
 ## Internal utility functions used by ecochange
 
+gadmB <- function(
+country = 'COL',
+level = 0,
+vrs = '4.1',
+request = 'gadm',
+ext = 'json'
+){
+    api <- getOption('apis')['geodata']
+    country <- toupper(country)
+    subdir <- paste0('gadm', vrs,'/',ext)
+    if(level != 0 && ext %in% c('json', 'shp'))
+        ext  <- paste0(ext,'.zip')
+       vrs_nodot <- sub('\\.','', vrs)
+       level. <- paste0(country,'_', level,'.', ext)
+       if(grepl('shp', ext))
+           level. <- paste0(country,'_', ext)
+       if(grepl('gpkg', ext))
+           level. <- paste0(country,'.', ext)
+    ## file  <- paste0('gadm',vrs_nodot,'_', country,'_', level,'.', ext)
+    file  <- paste0('gadm',vrs_nodot,'_', level.)
+    url <-  paste0(api,'/', request,
+                   '/',subdir,'/',file)
+return(url)
+}
+
+gadm. <- function(country, level, path, ext = 'json'){ 
+url <- gadmB(country = country, level = level, ext = ext)
+bs <- basename(url)
+if(!bs %in% list.files(path))
+    fget(url, file.path(path,bs), path = path)
+dec <- file.path(path, bs)
+if(grepl('.zip', bs))
+dec <- decompMap0(file.path(path, bs), td = path, int.patt = ext)
+## adm <- sf::st_read(dec, quiet = TRUE)}
+adm <- tryCatch(sf::st_read(dec, quiet = TRUE),
+                error = function(e){
+                    message('Error:', e)
+                    })}
+
+
 decomp0 <- function(zfe, ext = '.tar',td = tempdir(),
                    int.patt = '[[:digit:]|N|S|E|W].tif'){
     zfe <- basename(zfe)
@@ -87,8 +127,8 @@ get_EOURL <- function(adm, lyrs, funs., path, verify.web = FALSE){
 gfcB <- function(adm,
                  lyrs,
                  path = tempdir(),
-                 vrs = 'v1.9',
-                 year = '2021',
+                 vrs = 'v1.11',
+                 year = '2023',
                  request = 'earthenginepartners-hansen'
                  ){
     api <- getOption('apis')['gapi']
@@ -153,6 +193,7 @@ gwsB <- function(adm,
 ## eds <- urlE(adm, FALSE) #<-
 ##     unlist(lapply(lyrs, function(f)
 ##     paste0(wb,'/',f,'/',f,'_',eds,'_v1_1.tif')))}
+
 
 isWin <- Sys.info()['sysname']%in%'Windows'
 ## hasOsgeo4w <- 'OSGeo4W64'%in%list.files('C:/')
@@ -426,7 +467,8 @@ cat(vrs)
     op.FC <- list(gfc = "https://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.6.html",
                     wrs = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip",
                   apis = c(gapi = "https://storage.googleapis.com",
-                           usapi = "https://e4ftl01.cr.usgs.gov"),
+                           usapi = "https://e4ftl01.cr.usgs.gov",
+                           geodata = "https://geodata.ucdavis.edu"),
                            ## gsw = "http://storage.googleapis.com/global-surface-water/downloads2",
                            ## gfc = "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2021-v1.9",
                            ## daac = "https://e4ftl01.cr.usgs.gov/MEASURES/"),

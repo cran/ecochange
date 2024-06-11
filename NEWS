@@ -1,3 +1,10 @@
+New changes in ecochange V2.9.3.2
+
+-The 'gadm' function (geodata) is no longer used in this package.
+
+- Updated version of global product: Global Forest Cover version 1.11
+  (2023).
+
 New changes in ecochange V2.9.3.1
 
 -fixed issue: the package can suppress its startup message.
