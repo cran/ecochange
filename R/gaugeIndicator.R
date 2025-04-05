@@ -11,7 +11,7 @@ gaugeIndicator <- structure(function #Gauge Biodiversity Indicator
                             ##implementation of the function
                             ##\code{\link{tabuleRaster}}.  Indicators other
                             ##than ecosystem extents are calculated
-                            ##implementing \code{\link{calculate_lsm}}.
+                            ##implementing \code{\link[landscapemetrics]{calculate_lsm}}.
                             ##
                             ##references<< {Hesselbarth, M. H., Sciaini, M.,
                             ##With, K. A., Wiegand, K., & Nowosad,
@@ -53,10 +53,10 @@ gaugeIndicator <- structure(function #Gauge Biodiversity Indicator
     ##indicator. Default \code{'area_ha'} computes
     ##ecosystem areas (ha) at class level. See the
     ##argument \code{'metric'} in
-    ##\code{\link{list_lsm}} to implement other
+    ##\code{\link[landscapemetrics]{list_lsm}} to implement other
     ##metrics.
     smp_lsm = list(), ##<<\code{list}. List of arguments in
-    ##\code{\link{calculate_lsm}}. This argument is
+    ##\code{\link[landscapemetrics]{calculate_lsm}}. This argument is
     ##ignored when \code{metric = 'area_ha'}.
     mc.cores = round(detectCores()*0.6,0) ##<<\code{numeric}. The
     ##number of cores. Default

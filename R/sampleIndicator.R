@@ -40,7 +40,7 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
                         ##entropy (\code{'condent'}), perimeter-area
                         ##fractal dimension (\code{'pafrac'}), among
                         ##others, see package
-                        ##\code{\link{list_lsm}}. Default
+                        ##\code{\link[landscapemetrics]{list_lsm}}. Default
                         ##\code{'condent'}.
     classes = 5, ##<<\code{numeric}; or \code{NULL}. Number of evenly
                  ##spaced classes used to reclassify the
@@ -55,7 +55,7 @@ sampleIndicator <- structure(function #Sample Biodiversity indicator
           ##at least a grid with a non-NA value of the indicator.
     smp_lsm = list(level = 'landscape'), ##<<\code{List}. Additional
                                          ##arguments in
-                                         ##\code{\link{sample_lsm}}
+                                         ##\code{\link[landscapemetrics]{sample_lsm}}
     mc.cores = round(detectCores()*0.6,0) ##<<\code{numeric}. The
                                           ##number of cores. Default
                                           ##uses 60 percent of the

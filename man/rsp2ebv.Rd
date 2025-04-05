@@ -64,7 +64,10 @@ N. (2015). Agree on biodiversity metrics to
 track from space: Ecologists and space
 agencies must forge a global monitoring
 strategy. Nature, 523(7561), 403-406.}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
+\author{Wilson Lara Henao [aut, cre] (<https://orcid.org/0000-0003-3527-1380>),
+Victor Gutierrez-Velez [aut] (<https://orcid.org/0000-0003-1338-2020>),
+Ivan Gonzalez [ctb] (<https://orcid.org/0000-0002-0313-398X>),
+Maria C. Londono [ctb] (<https://orcid.org/0000-0002-2317-5503>)}
 
 
 
@@ -75,13 +78,13 @@ strategy. Nature, 523(7561), 403-406.}}
 ## spatial EBV:
         load(system.file('cchaira_roi.RData',package = 'ecochange'))
 
- \donttest{
- rsp_cchaira <- getrsp(cchaira_roi,
-   lyrs = 'seasonality', mc.cores = 2, path = tempdir())
+\donttest{
+rsp_cchaira <- getrsp(cchaira_roi,
+  lyrs = 'seasonality', mc.cores = 2, path = tempdir())
 
- file.exists(rsp_cchaira)
+file.exists(rsp_cchaira)
 
- season_cchaira <- rsp2ebv(cchaira_roi,
-                               lyrs = 'seasonality', path = tempdir())
- }
+season_cchaira <- rsp2ebv(cchaira_roi,
+                              lyrs = 'seasonality', path = tempdir())
+}
 }

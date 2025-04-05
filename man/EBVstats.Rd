@@ -1,7 +1,7 @@
 \name{EBVstats}
 \alias{EBVstats}
 \title{EBV Stats}
-\description{This function is a wrapper of \code{cellStats} used to compute
+\description{This function is a wrapper of \code{\link[raster]{cellStats}} used to compute
 statistics for spatial indicators in the EBV class ecosystem
 structure. To derive the spatial indicators see functions
 \code{\link{echanges}} and \code{\link{sampleIndicator}} }
@@ -11,15 +11,18 @@ structure. To derive the spatial indicators see functions
   \item{ccp}{\code{echanges}, or \code{RasterStack} or
 \code{NULL}. If \code{NULL} then \code{NULL} is returned.}
   \item{stats}{\code{character}. vector of \code{stats} defined in
-\code{\link{cellStats}}. If missing then six summary
+\code{\link[raster]{cellStats}}. If missing then six summary
 statistics, including \code{'mean'}, \code{'sd'},
 \code{'min'}, \code{'max'}, are computed.}
-  \item{\dots}{Additional arguments in \code{cellStats}}
+  \item{\dots}{Additional arguments in \code{\link[raster]{cellStats}}.}
 }
 
 \value{\code{tibble}.}
 
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
+\author{Wilson Lara Henao [aut, cre] (<https://orcid.org/0000-0003-3527-1380>),
+Victor Gutierrez-Velez [aut] (<https://orcid.org/0000-0003-1338-2020>),
+Ivan Gonzalez [ctb] (<https://orcid.org/0000-0002-0313-398X>),
+Maria C. Londono [ctb] (<https://orcid.org/0000-0002-2317-5503>)}
 
 
 

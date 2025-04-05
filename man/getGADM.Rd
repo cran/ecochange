@@ -16,7 +16,8 @@ administrative subdivisions is printed.}
   \item{level}{\code{numeric}. A number between zero and two,
 indicating any of the levels of administrative
 subdivisions (\code{0=country},
-\code{1=first administrative subdivision}, and \code{2=second administrative subdivision}).}
+\code{1=first administrative subdivision}, and
+\code{2=second administrative subdivision}).}
   \item{country}{\code{character}. \code{ISO} code specifying
 a \code{country}. Default \code{'COL'}.}
   \item{ext}{\code{character}. File
@@ -30,7 +31,10 @@ data in a temporary directory.}
 \value{\code{SpatialPolygonsDataFrame} or \code{character} vector of
 \code{GADM} units..}
 \references{\href{https://gadm.org/}{https://gadm.org/}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre] (<https://orcid.org/0000-0003-3527-1380>), Victor Gutierrez-Velez [aut] (<https://orcid.org/0000-0003-1338-2020>), Ivan Gonzalez [ctb] (<https://orcid.org/0000-0002-0313-398X>), Maria C. Londono [ctb] (<https://orcid.org/0000-0002-2317-5503>)}
+\author{Wilson Lara Henao [aut, cre] (<https://orcid.org/0000-0003-3527-1380>),
+Victor Gutierrez-Velez [aut] (<https://orcid.org/0000-0003-1338-2020>),
+Ivan Gonzalez [ctb] (<https://orcid.org/0000-0002-0313-398X>),
+Maria C. Londono [ctb] (<https://orcid.org/0000-0002-2317-5503>)}
 
 
 
@@ -38,9 +42,9 @@ data in a temporary directory.}
 \examples{
 ## Printing municipalities of Colombia:
 
-     \donttest{
-         muni <- getGADM(NA)
-         head(muni)
-     }
+    ## \\donttest{
+    ##     muni <- getGADM(NA)
+    ##     head(muni)
+    ## }
 
 }

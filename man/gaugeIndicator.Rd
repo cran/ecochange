@@ -24,10 +24,10 @@ arguments in \code{\link{echanges}} or
 indicator. Default \code{'area_ha'} computes
 ecosystem areas (ha) at class level. See the
 argument \code{'metric'} in
-\code{\link{list_lsm}} to implement other
+\code{\link[landscapemetrics]{list_lsm}} to implement other
 metrics.}
   \item{smp_lsm}{\code{list}. List of arguments in
-\code{\link{calculate_lsm}}. This argument is
+\code{\link[landscapemetrics]{calculate_lsm}}. This argument is
 ignored when \code{metric = 'area_ha'}.}
   \item{mc.cores}{\code{numeric}. The
 number of cores. Default
@@ -41,7 +41,7 @@ ecosystem extents is optimized via the
 implementation of the function
 \code{\link{tabuleRaster}}.  Indicators other
 than ecosystem extents are calculated
-implementing \code{\link{calculate_lsm}}.
+implementing \code{\link[landscapemetrics]{calculate_lsm}}.
 }
 \value{Class \code{Indicator}.}
 \references{{Hesselbarth, M. H., Sciaini, M.,
@@ -70,7 +70,10 @@ N. (2015). Agree on biodiversity metrics to
 track from space: Ecologists and space
 agencies must forge a global monitoring
 strategy. Nature, 523(7561), 403-406.}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
+\author{Wilson Lara Henao [aut, cre] (<https://orcid.org/0000-0003-3527-1380>),
+Victor Gutierrez-Velez [aut] (<https://orcid.org/0000-0003-1338-2020>),
+Ivan Gonzalez [ctb] (<https://orcid.org/0000-0002-0313-398X>),
+Maria C. Londono [ctb] (<https://orcid.org/0000-0002-2317-5503>)}
 
 
 

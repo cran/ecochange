@@ -4,7 +4,7 @@
 \description{Plots for objects from \code{\link{EBVstats}} are printed.}
 \usage{\method{plot}{EBVstats}(x, y, ...)}
 \arguments{
-  \item{x}{\code{\link{tibble}}. Data set of statistics such as that
+  \item{x}{\code{\link[tibble]{tibble}}. Data set of statistics such as that
 produced by \code{\link{EBVstats}}.}
   \item{y}{\code{\link{character}}. Color scale. If missing then
 \code{grDevices::terrain.colors(n)}, where \code{n} is the
@@ -21,7 +21,10 @@ title}}}
 
 
 
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
+\author{Wilson Lara Henao [aut, cre] (<https://orcid.org/0000-0003-3527-1380>),
+Victor Gutierrez-Velez [aut] (<https://orcid.org/0000-0003-1338-2020>),
+Ivan Gonzalez [ctb] (<https://orcid.org/0000-0002-0313-398X>),
+Maria C. Londono [ctb] (<https://orcid.org/0000-0002-2317-5503>)}
 
 
 

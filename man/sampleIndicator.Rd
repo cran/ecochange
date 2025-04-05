@@ -27,7 +27,7 @@ cohesion (\code{'cohesion'}), conditional
 entropy (\code{'condent'}), perimeter-area
 fractal dimension (\code{'pafrac'}), among
 others, see package
-\code{\link{list_lsm}}. Default
+\code{\link[landscapemetrics]{list_lsm}}. Default
 \code{'condent'}.}
   \item{classes}{\code{numeric}; or \code{NULL}. Number of evenly
 spaced \code{classes} used to reclassify the
@@ -42,7 +42,7 @@ missing the function tries to find a grid size the samples
 at least a grid with a non-NA value of the indicator.}
   \item{smp_lsm}{\code{List}. Additional
 arguments in
-\code{\link{sample_lsm}}}
+\code{\link[landscapemetrics]{sample_lsm}}}
   \item{mc.cores}{\code{numeric}. The
 number of cores. Default
 uses 60 percent of the
@@ -69,7 +69,10 @@ N. (2015). Agree on biodiversity metrics to
 track from space: Ecologists and space
 agencies must forge a global monitoring
 strategy. Nature, 523(7561), 403-406.}}
-\author{Wilson Lara Henao <wilarhen@gmail.com> [aut, cre], Victor Gutierrez-Velez [aut], Ivan Gonzalez [ctb], Maria C. Londono [ctb]}
+\author{Wilson Lara Henao [aut, cre] (<https://orcid.org/0000-0003-3527-1380>),
+Victor Gutierrez-Velez [aut] (<https://orcid.org/0000-0003-1338-2020>),
+Ivan Gonzalez [ctb] (<https://orcid.org/0000-0002-0313-398X>),
+Maria C. Londono [ctb] (<https://orcid.org/0000-0002-2317-5503>)}
 
 
 

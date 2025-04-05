@@ -2,8 +2,8 @@ Package: ecochange
 Type: Package
 Title: Integrating Ecosystem Remote Sensing Products to Derive EBV
         Indicators
-Version: 2.9.3.2
-Date: 2024-06-10
+Version: 2.9.3.3
+Date: 2025-04-04
 Authors@R: 
     c(person(given = "Wilson",
              family = "Lara Henao",
@@ -32,10 +32,10 @@ Suggests: knitr, rmarkdown, curl, xml2, rvest, viridis
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2024-06-10 18:51:25 UTC; wihe
+Packaged: 2025-04-04 19:34:34 UTC; wihe
 Author: Wilson Lara Henao [aut, cre] (<https://orcid.org/0000-0003-3527-1380>),
   Victor Gutierrez-Velez [aut] (<https://orcid.org/0000-0003-1338-2020>),
   Ivan Gonzalez [ctb] (<https://orcid.org/0000-0002-0313-398X>),
   Maria C. Londono [ctb] (<https://orcid.org/0000-0002-2317-5503>)
 Repository: CRAN
-Date/Publication: 2024-06-11 09:30:08 UTC
+Date/Publication: 2025-04-05 11:20:17 UTC

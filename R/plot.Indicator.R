@@ -1,7 +1,7 @@
 plot.Indicator <- structure(function#Visualize Indicator objects
 ###Plots for objects from \code{\link{gaugeIndicator}} are produced.
 (
-    x, ##<<\code{\link{tibble}}. Data set of indicators such as that
+    x, ##<<\code{\link[tibble]{tibble}}. Data set of indicators such as that
        ##produced by \code{\link{gaugeIndicator}}.
     y, ##<<\code{character}. A color palette. If this is missing or
        ##the suggest \code{viridis} is not installed then

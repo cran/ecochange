@@ -1,5 +1,5 @@
 EBVstats <- structure(function #EBV Stats
-### This function is a wrapper of \code{cellStats} used to compute
+### This function is a wrapper of \code{\link[raster]{cellStats}} used to compute
 ### statistics for spatial indicators in the EBV class ecosystem
 ### structure. To derive the spatial indicators see functions
 ### \code{\link{echanges}} and \code{\link{sampleIndicator}} 
@@ -7,10 +7,10 @@ EBVstats <- structure(function #EBV Stats
     ccp, ##<< \code{echanges}, or \code{RasterStack} or
          ##\code{NULL}. If \code{NULL} then \code{NULL} is returned.
     stats, ##<<\code{character}. vector of stats defined in
-           ##\code{\link{cellStats}}. If missing then six summary
+           ##\code{\link[raster]{cellStats}}. If missing then six summary
            ##statistics, including \code{'mean'}, \code{'sd'},
            ##\code{'min'}, \code{'max'}, are computed.
-    ... ##<<Additional arguments in \code{cellStats}
+    ... ##<<Additional arguments in \code{\link[raster]{cellStats}}.
 
 ){
 

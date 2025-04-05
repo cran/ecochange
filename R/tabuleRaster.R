@@ -1,13 +1,13 @@
 tabuleRaster <- structure(function # Fast tabulation of pixel values
 ### This function generates frequency tables for scenes in ecosystem
-### remote sensing products by wrapping \code{\link{rasterDT}}. The
+### remote sensing products by wrapping \code{\link[rasterDT]{rasterDT}}. The
 ### function is mapped by \code{\link{gaugeIndicator}} to optimize
 ### computation of ecoystem extents.
 (
     layer = '',      ##<<\code{character}. File path to an ERSP scene.
     del0 = TRUE,    ##<<\code{logical}. Remove the 0-count categories.
     useNA = "no",   ##<<\code{logical}. Include NA values. This
-                    ##argument is passed to \code{rasterDT::freqDT}.
+                    ##argument is passed to \code{\link[rasterDT]{freqDT}}.
     n256 = FALSE      ##<<\code{logical}. Do the raster
                       ##contains less than 256 unique values?
 ) {

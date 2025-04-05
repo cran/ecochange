@@ -2,7 +2,7 @@ plot.EBVstats <- structure(function#Visualize EBVstats objects
 ###Plots for objects from \code{\link{EBVstats}} are printed.
                             ## details<<
 (
-    x, ##<<\code{\link{tibble}}. Data set of statistics such as that
+    x, ##<<\code{\link[tibble]{tibble}}. Data set of statistics such as that
        ##produced by \code{\link{EBVstats}}.
     y, ##<<\code{\link{character}}. Color scale. If missing then
        ##\code{grDevices::terrain.colors(n)}, where \code{n} is the

@@ -1,143 +1,133 @@
-New changes in ecochange V2.9.3.2
+# CHANGES in ecochange 2.9.3.3
 
--The 'gadm' function (geodata) is no longer used in this package.
-
-- Updated version of global product: Global Forest Cover version 1.11
-  (2023).
-
-New changes in ecochange V2.9.3.1
-
--fixed issue: the package can suppress its startup message.
-
-New changes in ecochange V2.9.3
-
-- Updated versions of global products: Global Forest Cover version 1.9
-  (2021), and Global Surface Water version 1.4 (2021)
-
-New changes in ecochange V2.9.2
-
-- Function 'getGADM': The internal algorithm now implements 'gadm'
- (geodata) to substitute routines previously controlled by the
- promptly extinct 'getData' (raster).  More user-friendly
- warning/error messages.
-
-- Function 'plot.echanges': Improved computation of extremes to define
-  color palettes.
-
-- Function 'rsp2ebv': preexisting .shp files stored in paths other
-  than tempdir() are not erased anymore.
-
-- Function 'getrsp': 'sf' class is supported.
-
-New changes in ecochange V2.9.1
-
-- Function 'rsp2ebv': Errors in the example from the incorrect removal
-  of temporary files were fixed by implementing an internal function
-  that removes unnecessary files more efficiently.
-
-- A citation file was included. Users can now cite the
-  scientific publication of the package by running
-  citation('ecochange').
+- Fixed missing Rd \link{} targets by providing appropriate package anchors:
+  - `EBVstats.Rd`: linked `cellStats` to **raster**.
+  - `gaugeIndicator.Rd`: linked `list_lsm`, `calculate_lsm` to **landscapemetrics**.
+  - `plot.EBVstats.Rd`, `plot.Indicator.Rd`: linked `tibble` to **tibble**.
+  - `sampleIndicator.Rd`: linked `list_lsm`, `sample_lsm` to **landscapemetrics**.
+  - `tabuleRaster.Rd`: linked `rasterDT` to **rasterDT**.
 
 
-New changes in ecochange V2.9
+# CHANGES in ecochange 2.9.3.2
 
--A broken URL was replaced. Previous
- "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip""
-was changed by
-"https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/WRS2_descending_0.zip"
--Additional arguments were included in two plot methods: 'plot.Indicator' and 'plot.echanges',
- see documentation of the package.
--'rgdal' is not implemented anymore. 'sp' is used instead
--An issue with 'proj4string' was fixed: 'proj4string' is now imported from 'sp'
-
--Methods 'plot.Indicator' and 'plot.echanges': New arguments to
-improve the diagnostic plots were created, see package documentation
-Function 'getWRS': a broken link necessary to download Landsat paths
-and rows was fixed
-
-New changes in ecochange V2.8
-
-The package has reduced the number of depends and imports, see package
-documentation.
-Functions 'ploebv' and 'plotind' have been replaced by two new plot
-methods: 'plot.echanges' and 'plot.Indicator'
+- Removed internal use of the `gadm()` function from the **geodata** package.
+- Updated support for the Global Forest Cover product to version 1.11 (2023).
 
 
-New changes in ecochange V2.6
+# CHANGES in ecochange 2.9.3.1
 
-Function 'rsp2ebv': sf::gdal_utils is implemented. Library gdalUtilities is not used anymore.
-Functions 'plotebv' and 'plotind': Import 'viridis' was moved to suggests.
-Function 'getrsp': Imports 'curl', 'xml2', and 'rves' were moved to suggests.
-Function 'getWRS': rgdal::readOGR was replaced by sf::st_read.
-Function 'tabuleRaster': gdaUtilities::gdalinfo was replaced by sf::gdal_utils.
-
-New changes in ecochange V2.5
-Function 'rsp2ebv': gdalwarp from gdalUtilities is implemented. Library gdalUtils is not used anymore
-
-New changes in ecochange V2.4
-Function 'getrsp': We added the argument 'rewrite.pass' to rewrite earth-data password
-Function 'rsp2ebv': file paths were normalized using normalizePath()
-
-New changes in ecochange V2.3
-Function 'rsp2ebv': Argument 'path' is expanded using path.expand()
-Function 'plotebv': Suggested depencence 'rasterVis' has been avoided.
-
-New changes in ecochange V2.1
-
-changes in function 'echanges': "gdal_calc.py" binary is not
-implemented anymore. Logical functions from the raster package are used
-instead.
-
-New changes in ecochange V2.0
-
-Error message: "sh: gdal_calc.py: not found, Error in .local(.Object, ...) :" was fixed 
-
-New changes in ecochange V1.9
-
-changes in function 'echanges': procedures for masking rasters have
-been improved incorporating functionlity of 'gdal.calc_py'
-
-New changes in ecochange V1.3:
-
-New function "getrsp" replaces previous
-function "FCPolygon" in old package "forestChange". The function can
-download now several ecological remote sensing products, see
-package documentation.
-
-New function "rsp2ebv" replaces previous functions
-"FCPolygon","CCPolygon", and "FCMosaic" in old package "forestChange",
-see the package documentation.
-
-New function "deforest" replaces previous function "FCMask" in old
-package "forestChange", see the package documentation.
+- Fixed startup behavior: the package now suppresses its startup message when required.
 
 
-New changes in forestChange V1.0:
+# CHANGES in ecochange 2.9.3
 
-Dependence "SDMTools" has been replace by "landscapemetrics".
+- Updated support for global products:
+  - Global Forest Cover to version 1.9 (2021).
+  - Global Surface Water to version 1.4 (2021).
 
-New functions "barplot.EBVstats", "CCPolygon", "EBVMask", "EBVstats",
-and "FCMask" has been added to the package, see the package
-documentation.
 
-Changes in function "plot.EBVmetric": New multi-panel plot has been created.
+# CHANGES in ecochange 2.9.2
 
-New changes in forestChange V0.6:
+- `getGADM()`: Now uses **geodata**'s `gadm()` function instead of the deprecated `getData()` from **raster**. Added improved user feedback through clearer error/warning messages.
+- `plot.echanges()`: Enhanced computation of data extremes for better color palette generation.
+- `rsp2ebv()`: No longer deletes `.shp` files located outside `tempdir()`.
+- `getrsp()`: Now supports **sf** class objects.
 
-Changes in function "FCPolygon": New argument 'url' has been added to
-the function, see manual of the package.
 
-New changes in forestChange V0.5:
+# CHANGES in ecochange 2.9.1
 
-Changes in function "GFCurls": 'readTable' is implemented changing two
-defaults: 'encoding = latin1' and 'skipNul = TRUE'.
+- `rsp2ebv()`: Fixed example errors caused by incorrect temporary file handling. Added internal cleanup logic.
+- Added `inst/CITATION`: users can now cite the scientific publication with `citation("ecochange")`.
 
-New changes in forestChange V0.4:
 
-Changes in function "GFCurls": A friendly message is printed if there
-is no internet connection. Besides, routines for processing URLs were
-changed implementing the functions "read_html" (package "curl"), and
-"html_nodes" and "html_attr" (package "rvest"). Finally, This function
-uses now the system of the machine ("Windows", "Linux") to change the
-encoding argument in "read.table" ("unknown", "UTF-8").
+# CHANGES in ecochange 2.9
+
+- Replaced a broken URL for Landsat path/row download:
+  - Old: `https://prd-wret...`
+  - New: `https://d9-wret...`
+- Added new arguments to `plot.Indicator()` and `plot.echanges()` for enhanced diagnostic visualization (see documentation).
+- Removed dependency on **rgdal**; the package now uses **sp**.
+- Fixed issue with `proj4string`: now correctly imported from **sp**.
+- `getWRS()`: Fixed broken download link.
+
+
+# CHANGES in ecochange 2.8
+
+- Reduced number of dependencies (see documentation).
+- Deprecated `ploebv()` and `plotind()`; replaced by:
+  - `plot.echanges()`
+  - `plot.Indicator()`
+
+
+# CHANGES in ecochange 2.6
+
+- `rsp2ebv()`: Now uses `sf::gdal_utils()`; dropped **gdalUtilities**.
+- `plotebv()` and `plotind()`: **viridis** moved to Suggests.
+- `getrsp()`: **curl**, **xml2**, and **rvest** moved to Suggests.
+- `getWRS()`: Switched from `rgdal::readOGR()` to `sf::st_read()`.
+- `tabuleRaster()`: Now uses `sf::gdal_utils()`.
+
+
+# CHANGES in ecochange 2.5
+
+- `rsp2ebv()`: Now uses `gdalwarp` from **gdalUtilities**; dropped **gdalUtils**.
+
+
+# CHANGES in ecochange 2.4
+
+- `getrsp()`: Added argument `rewrite.pass` to allow updating Earthdata credentials.
+- `rsp2ebv()`: File paths are now normalized with `normalizePath()`.
+
+
+# CHANGES in ecochange 2.3
+
+- `rsp2ebv()`: `path` argument is now expanded with `path.expand()`.
+- `plotebv()`: Removed suggested dependency on **rasterVis**.
+
+
+# CHANGES in ecochange 2.1
+
+- `echanges()`: Dropped use of `gdal_calc.py`; now relies on logical raster operations via **raster**.
+
+
+# CHANGES in ecochange 2.0
+
+- Fixed critical error: `sh: gdal_calc.py: not found`. Updated internal error handling.
+
+
+# CHANGES in ecochange 1.9
+
+- Improved masking routines in `echanges()` using `gdal_calc.py`.
+
+
+# CHANGES in ecochange 1.3
+
+- New functions replacing legacy **forestChange** package:
+  - `getrsp()` replaces `FCPolygon`.
+  - `rsp2ebv()` replaces `FCPolygon`, `CCPolygon`, and `FCMosaic`.
+  - `deforest()` replaces `FCMask`.
+
+
+# CHANGES in forestChange 1.0
+
+- Replaced **SDMTools** with **landscapemetrics**.
+- Added functions: `barplot.EBVstats`, `CCPolygon`, `EBVMask`, `EBVstats`, and `FCMask`.
+- `plot.EBVmetric()`: Added support for multi-panel plots.
+
+
+# CHANGES in forestChange 0.6
+
+- `FCPolygon()`: Added new argument `url`.
+
+
+# CHANGES in forestChange 0.5
+
+- `GFCurls()`: `read.table` now uses defaults `encoding = "latin1"` and `skipNul = TRUE`.
+
+
+# CHANGES in forestChange 0.4
+
+- `GFCurls()`: Improved URL processing:
+  - Displays user-friendly message if no internet.
+  - Uses **rvest** and **curl** for HTML parsing.
+  - Adjusts file encoding based on OS (`"unknown"` or `"UTF-8"`).
